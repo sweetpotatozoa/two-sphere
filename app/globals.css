@@ -2,26 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 모든 Pretendard 폰트 파일 정의 */
+@font-face {
+    font-family: 'Pretendard';
+    src: url('/static/fonts/Pretendard-Regular.woff') format('woff'),
+        url('/static/fonts/Pretendard-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pretendard';
+    src: url('/static/fonts/Pretendard-Bold.woff') format('woff'),
+        url('/static/fonts/Pretendard-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* 필요한 모든 font-weight와 style을 추가 정의 */
+@font-face {
+    font-family: 'Pretendard';
+    src: url('/static/fonts/Pretendard-Light.woff') format('woff'),
+        url('/static/fonts/Pretendard-Light.otf') format('opentype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Pretendard';
+    src: url('/static/fonts/Pretendard-ExtraBold.woff') format('woff'),
+        url('/static/fonts/Pretendard-ExtraBold.otf') format('opentype');
+    font-weight: 800;
+    font-style: normal;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+    color: var(--foreground);
+    background: var(--background);
+    font-family: 'Pretendard', sans-serif;
+    min-height: 100vh; /* 화면 전체 높이 */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 내용이 상단에서 시작되도록 설정 */
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    height: 100vh; /* 컨테이너가 전체 뷰포트 높이 차지 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Header와 BottomNav를 상하단에 배치 */
+    margin: 0 auto; /* 가운데 정렬 */
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
 }
