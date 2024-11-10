@@ -46,12 +46,12 @@ const JoinPage = ({ params }) => {
             </section>
 
             {/* 리더 희망 여부 */}
-            <section className="border-b border-black mx-auto max-w-[400px] py-4 space-y-2">
+            <section className="border-b border-black mx-auto max-w-[400px] space-y-4">
                 <h2 className="text-xl font-bold">*Sphere 리더를 희망하시나요?</h2>
                 <div className="flex justify-center space-x-4">
                     <button
                         onClick={() => setIsLeader(true)}
-                        className={`px-4 py-2 border rounded ${
+                        className={`w-32 py-2 border border-black font-bold rounded-xl ${
                             isLeader === true ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
@@ -59,22 +59,22 @@ const JoinPage = ({ params }) => {
                     </button>
                     <button
                         onClick={() => setIsLeader(false)}
-                        className={`px-4 py-2 border rounded ${
+                        className={`w-32 py-2 border border-black font-bold rounded-xl ${
                             isLeader === false ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
                         아니요
                     </button>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 pb-8">
                     * Sphere 리더는 해당 Sphere의 진행을 주도적으로 맡는 참여자입니다.
                 </p>
             </section>
 
             {/* 안내사항 */}
             <section className="pb-4 space-y-4">
-                <div className="mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-lg">
-                    <h2 className="text-xl font-bold">안내사항</h2>
+                <h2 className="text-xl font-bold">안내사항</h2>
+                <div className="mx-auto max-w-[360px] px-8 py-8 space-y-2 border border-black rounded-xl">
                     <p className="text-sm">
                         하나의 Sphere는 총 2회의 모임으로 진행됩니다. <br />
                         2회 모임 참석은 필수입니다. <br />
