@@ -19,7 +19,7 @@ export async function POST(req) {
         }
 
         // 유저가 있을 경우 JWT 토큰 생성
-        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '1000000h' });
 
         return new Response(JSON.stringify({ token }), {
             status: 200,
