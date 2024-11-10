@@ -20,35 +20,38 @@ const SphereParticipants = ({ participants }) => {
     ];
 
     return (
-        <section className="pb-28 pb-16 space-y-4">
+        <section className="pb-12 space-y-4">
             <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
                 <h2 className="text-xl font-bold">참여자 현황</h2>
                 <p className="text-sm text-gray-600">버튼을 눌러 프로필을 조회해보세요</p>
             </div>
-            <div className="relative w-32 h-32 mx-auto">
-                {Array.from({ length: 4 }).map((_, index) => (
-                    <div
-                        key={index}
-                        className={`absolute w-20 h-20 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                            participants[index] ? 'bg-black text-white' : 'bg-gray-300 text-gray-400'
-                        }`}
-                        style={{
-                            top: index === 0 ? '0%' : index === 2 ? '100%' : '50%',
-                            left: index === 1 ? '0%' : index === 3 ? '100%' : '50%',
-                            transform: 'translate(-50%, 0%)',
-                        }}
-                        onClick={() => participants[index] && handleParticipantClick(participants[index])}
-                    >
-                        {participants[index] ? (
-                            <div className="text-center text-sm font-bold">
-                                <p>{participants[index].name}</p>
-                                <p className="text-xs">{participants[index].career}</p>
-                            </div>
-                        ) : (
-                            <span>&nbsp;</span>
-                        )}
-                    </div>
-                ))}
+            {/* 참여자 원형 프로필 */}
+            <div className="pt-16 flex justify-center items-center">
+                <div className="relative w-32 h-32">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <div
+                            key={index}
+                            className={`absolute w-20 h-20 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                                participants[index] ? 'bg-black text-white' : 'bg-gray-300 text-gray-400'
+                            }`}
+                            style={{
+                                top: index === 0 ? '0%' : index === 2 ? '100%' : '50%',
+                                left: index === 1 ? '0%' : index === 3 ? '100%' : '50%',
+                                transform: 'translate(-50%, -50%)',
+                            }}
+                            onClick={() => participants[index] && handleParticipantClick(participants[index])}
+                        >
+                            {participants[index] ? (
+                                <div className="text-center text-sm font-bold">
+                                    <p>{participants[index].name}</p>
+                                    <p className="text-xs">{participants[index].career}</p>
+                                </div>
+                            ) : (
+                                <span>&nbsp;</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* 모달 */}
@@ -72,7 +75,7 @@ const SphereParticipants = ({ participants }) => {
                                 </div>
                             ))}
                         </div>
-                        <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-full">
+                        <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-lg">
                             닫기
                         </button>
                     </div>

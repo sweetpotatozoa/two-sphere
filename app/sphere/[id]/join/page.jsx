@@ -5,8 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { sphereData } from '../../../data/sphereData';
-import locationIcon from '/public/location-icon-black.svg';
-import calendarIcon from '/public/calendar-icon-black.svg';
+import SphereHeader from '../../../../components/SphereHeader';
 
 const JoinPage = ({ params }) => {
     const router = useRouter();
@@ -32,21 +31,15 @@ const JoinPage = ({ params }) => {
             <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
                 <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
             </div>
-
-            {/* 섹션 1 */}
-            <section className="border-b border-black pb-8 space-y-4">
-                <h1 className="text-2xl font-bold">{sphere.title}</h1>
-                <p>{sphere.description}</p>
-                <div className="flex items-center justify-center space-x-2">
-                    <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                    <span>{sphere.location}</span>
-                    <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
-                    <span>{sphere.date}</span>
-                </div>
-            </section>
+            <SphereHeader
+                title={sphere.title}
+                description={sphere.description}
+                location={sphere.location}
+                date={sphere.date}
+            />
 
             {/* 리더 희망 여부 */}
-            <section className="border-b border-black mx-auto max-w-[400px] space-y-4">
+            <section className="border-b border-black mx-auto max-w-[450px] pb-8 space-y-4">
                 <h2 className="text-xl font-bold">*Sphere 리더를 희망하시나요?</h2>
                 <div className="flex justify-center space-x-4">
                     <button
@@ -66,7 +59,7 @@ const JoinPage = ({ params }) => {
                         아니요
                     </button>
                 </div>
-                <p className="text-sm text-gray-600 pb-8">
+                <p className="text-sm text-gray-600">
                     * Sphere 리더는 해당 Sphere의 진행을 주도적으로 맡는 참여자입니다.
                 </p>
             </section>
