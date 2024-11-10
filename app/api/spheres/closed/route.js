@@ -29,6 +29,20 @@ export async function GET() {
             const firstDate = new Date(sphere.firstDate);
             const secondDate = new Date(sphere.secondDate);
 
+            // 날짜를 "~~월 ~~일" 형식으로 변환
+            const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
+
+            const formattedFirstDate = formatToMonthDay(firstDate);
+            const formattedSecondDate = formatToMonthDay(secondDate);
+
+            // 시간 정보를 "오전/오후 ~시" 형식으로 변환
+            const formatToHour = (date) => {
+                const hours = date.getHours();
+                const period = hours >= 12 ? '오후' : '오전';
+                const hour12 = hours % 12 || 12; // 0시는 12로 표시
+                return `${period} ${hour12}시`;
+            };
+
             let remainingDays;
 
             if (currentDate < firstDate) {
@@ -38,14 +52,17 @@ export async function GET() {
                 // 두 번째 날짜 이전이면 secondDate와의 남은 날짜를 계산
                 remainingDays = Math.floor((secondDate - currentDate) / (1000 * 60 * 60 * 24));
             } else {
-                // 두 번째 날짜가 지난 경우 "종료" 표시
-                remainingDays = 0;
+                // 두 번째 날짜가 지난 경우 -1 표시
+                remainingDays = -1;
             }
 
             return {
                 ...sphere,
                 location: sphere.location.title,
-                time: remainingDays,
+                firstDate: formattedFirstDate,
+                secondDate: formattedSecondDate,
+                time: formatToHour(firstDate),
+                remainingDays,
             };
         });
 
