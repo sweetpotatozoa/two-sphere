@@ -1,20 +1,29 @@
 // app/signup/page.jsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import DatePickerModal from '../../components/DatePickerModal';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import eyeIcon from '/public/eye-icon.svg';
 import arrowDownIcon from '/public/arrow-down-icon.svg';
 import arrowLeftIcon from '/public/arrow-left-icon.svg';
+import { useAuth } from '../../context/AuthContext';
 
 const SignUpPage = () => {
+    const router = useRouter();
+    const { isAuthenticated, login } = useAuth(); // AuthContext에서 값을 가져옴
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
     const [birthDate, setBirthDate] = useState('생년월일을 선택해주세요');
-    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    useEffect(() => {
+        // 이미 로그인된 경우 리디렉션
+        if (isAuthenticated) {
+            router.push('/');
+        }
+    }, [isAuthenticated, router]);
 
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
