@@ -7,8 +7,6 @@ import { useRouter } from 'next/navigation';
 const MenuBar = ({ isOpen, toggleMenu }) => {
     const router = useRouter();
 
-    console.log('Rendering MenuBar with isOpen:', isOpen); // 상태 확인
-
     if (!isOpen) return null;
 
     const handleNavigation = (path) => {
