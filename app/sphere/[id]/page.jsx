@@ -1,7 +1,7 @@
 // app/sphere/[id]/page.jsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { sphereData } from '../../data/sphereData';
