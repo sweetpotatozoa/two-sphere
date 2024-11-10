@@ -11,7 +11,7 @@ export function authMiddleware(handler) {
         const token = authHeader.split(' ')[1];
 
         try {
-            const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const verified = jwt.verify(token, process.env.ACCESS_TOKEN_DEV);
             req.user = verified.user; // 유효한 토큰일 경우 사용자 정보 추가
 
             // 인증 성공 시 handler로 요청 전달
