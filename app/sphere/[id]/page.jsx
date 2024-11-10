@@ -72,7 +72,7 @@ const SphereDetail = ({ params }) => {
                 </section>
 
                 {/* 섹션 3 - 참여자 현황 */}
-                <section className="pb-28 pb-4 space-y-4">
+                <section className="pb-28 pb-16 space-y-4">
                     {/* h2와 p를 묶는 래퍼 div */}
                     <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
                         <h2 className="text-xl font-bold">참여자 현황</h2>
@@ -82,7 +82,7 @@ const SphereDetail = ({ params }) => {
                         {Array.from({ length: 4 }).map((_, index) => (
                             <div
                                 key={index}
-                                className={`absolute w-20 h-20 flex items-center justify-center rounded-full border-2 ${
+                                className={`absolute w-20 h-20 flex items-center justify-center rounded-full border-2 m ${
                                     sphere.participants[index] ? 'bg-black text-white' : 'bg-gray-300 text-gray-400'
                                 }`}
                                 style={{

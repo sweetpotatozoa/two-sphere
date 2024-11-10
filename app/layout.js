@@ -1,6 +1,7 @@
 // app/layout.js
 import './globals.css';
 import ClientLayout from './ClientLayout';
+import clientPromise from '@/lib/mongodb';
 
 export const metadata = {
     title: '투스피어',
@@ -8,6 +9,10 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+    clientPromise.then(() => {
+        // 연결 테스트
+    });
+
     return (
         <html lang="en">
             <body className="antialiased">
