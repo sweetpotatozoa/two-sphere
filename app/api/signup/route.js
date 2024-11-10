@@ -31,6 +31,15 @@ export async function POST(req) {
             createdAt: new Date(),
             updatedAt: new Date(),
             isProfiled: false,
+            career: '',
+            answers: {
+                career: '',
+                keyword: '',
+                focus: '',
+                dream: '',
+                reputation: '',
+            },
+            image: '',
         };
 
         // MongoDB에 사용자 데이터 저장
