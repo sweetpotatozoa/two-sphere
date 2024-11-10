@@ -15,7 +15,6 @@ export async function GET() {
                 _id: 1,
                 title: 1,
                 subTitle: 1,
-                description: 1,
                 'location.title': 1,
                 thumbnail: 1,
                 firstDate: 1,
@@ -34,18 +33,19 @@ export async function GET() {
 
             if (currentDate < firstDate) {
                 // 첫 번째 날짜 이전이면 firstDate와의 남은 날짜를 계산
-                remainingDays = Math.floor((firstDate - currentDate) / (1000 * 60 * 60 * 24)).toString();
+                remainingDays = Math.floor((firstDate - currentDate) / (1000 * 60 * 60 * 24));
             } else if (currentDate < secondDate) {
                 // 두 번째 날짜 이전이면 secondDate와의 남은 날짜를 계산
-                remainingDays = Math.floor((secondDate - currentDate) / (1000 * 60 * 60 * 24)).toString();
+                remainingDays = Math.floor((secondDate - currentDate) / (1000 * 60 * 60 * 24));
             } else {
                 // 두 번째 날짜가 지난 경우 "종료" 표시
-                remainingDays = '종료';
+                remainingDays = 0;
             }
 
             return {
                 ...sphere,
-                remainingDays,
+                location: sphere.location.title,
+                time: remainingDays,
             };
         });
 
