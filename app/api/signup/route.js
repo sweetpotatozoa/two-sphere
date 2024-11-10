@@ -30,6 +30,7 @@ export async function POST(req) {
             phoneNumber,
             createdAt: new Date(),
             updatedAt: new Date(),
+            isProfiled: false,
         };
 
         // MongoDB에 사용자 데이터 저장

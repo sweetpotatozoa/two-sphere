@@ -10,7 +10,7 @@ export async function POST() {
         // 임시 데이터
         const sampleData = [
             {
-                username: 'test1',
+                userName: 'test1',
                 password: 123,
                 name: '홍길동',
                 birthDate: new Date('1990-01-01'),
@@ -31,7 +31,7 @@ export async function POST() {
                 },
             },
             {
-                username: 'test2',
+                userName: 'test2',
                 password: 123,
                 name: '김철수',
                 birthDate: new Date('1990-01-01'),
