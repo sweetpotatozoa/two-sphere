@@ -53,10 +53,6 @@ export async function POST() {
             },
         ];
 
-        // 기존 데이터 삭제 (옵션)
-        await db.collection('users').deleteMany({});
-        console.log('기존 데이터 삭제 완료');
-
         // 데이터 삽입
         const result = await db.collection('users').insertMany(sampleData);
         console.log(`${result.insertedCount}개의 문서가 삽입되었습니다.`);
