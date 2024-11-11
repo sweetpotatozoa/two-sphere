@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
 
     return (
         <html lang="en">
-            <body className="antialiased">
+            <body className="antialiased tracking-tighter">
                 <AuthProvider>
                     <ClientLayout>{children}</ClientLayout>
                 </AuthProvider>

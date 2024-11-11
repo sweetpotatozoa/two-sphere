@@ -53,7 +53,7 @@ const BottomNav = () => {
                     onClick={() => handleNavigation('/my-profile')}
                     className="flex-1 text-center text-white flex flex-col items-center space-y-1"
                 >
-                    <Image src="/profile-icon.svg" alt="Profile Icon" width={24} height={24} />
+                    <Image src="/profile.svg" alt="Profile Icon" width={24} height={24} />
                     <span>프로필</span>
                 </button>
             </nav>

@@ -47,18 +47,18 @@ const OpenSpheres = () => {
     };
 
     return (
-        <div className="w-full max-w-[500px] mx-auto p-4 border-b border-black">
+        <div className="w-full max-w-[500px] mx-auto mt-4 border-b border-black">
             {/* 상단 헤더 */}
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">진행 중인 Sphere</h2>
-                <button onClick={handleMoreClick} className="text-sm text-gray-600 hover:text-gray-800">
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="ml-6 text-xl font-extrabold">진행 중인 Sphere</h2>
+                <button onClick={handleMoreClick} className="mr-4 text-sm font-bold text-gray-600 hover:text-gray-800">
                     더보기 &gt;
                 </button>
             </div>
 
             {/* 슬라이딩 Sphere 목록 */}
             <div
-                className="flex overflow-x-auto space-x-4 scrollbar-hide"
+                className="mb-4 flex overflow-x-auto space-x-4 scrollbar-hide pr-4"
                 ref={scrollRef}
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}
@@ -69,7 +69,7 @@ const OpenSpheres = () => {
                     <div
                         key={sphere.id}
                         onClick={() => handleSphereClick(sphere.id)}
-                        className="relative w-[350px] h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden cursor-pointer"
+                        className="ml-4 last:mr-4 relative w-[350px] h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden cursor-pointer"
                     >
                         {/* Sphere 이미지 */}
                         <Image
@@ -86,12 +86,12 @@ const OpenSpheres = () => {
                                 <p className="text-sm">{sphere.description}</p>
                             </div>
                             {/* 하단 전체를 감싸는 배경 영역 */}
-                            <div className="absolute bottom-0 left-0 w-full bg-black p-4 flex justify-between items-center text-xs rounded-b-lg">
-                                <span className="flex items-center space-x-1">
+                            <div className="absolute bottom-0 left-0 w-full bg-black p-3 flex justify-between items-center text-xs rounded-b-lg">
+                                <span className="font-bold flex items-center space-x-1">
                                     <Image src="/location-icon.svg" alt="Location Icon" width={12} height={12} />
                                     <span>{sphere.location}</span>
                                 </span>
-                                <span className="flex items-center space-x-1">
+                                <span className="font-bold flex items-center space-x-1">
                                     <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
                                     <span>{sphere.date}</span>
                                 </span>
