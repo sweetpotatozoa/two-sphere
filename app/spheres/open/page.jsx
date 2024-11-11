@@ -18,8 +18,8 @@ export default function OpenSpheresPage() {
 
     return (
         <div className="w-full max-w-[500px] mx-auto p-4">
-            <h2 className="text-xl font-bold mb-4">진행 중인 Sphere</h2>
-            <div className="flex flex-col space-y-4">
+            <h2 className="ml-2 text-xl font-bold mb-3 mt-2">진행 중인 Sphere</h2>
+            <div className="flex flex-col space-y-2">
                 {openSpheres.length > 0 ? (
                     openSpheres.map((sphere) => (
                         <div
