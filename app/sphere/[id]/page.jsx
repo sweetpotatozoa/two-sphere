@@ -19,16 +19,16 @@ const SphereDetail = ({ params }) => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isLessThan24Hours, setIsLessThan24Hours] = useState(false);
 
-    if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
-    }
-
     useEffect(() => {
         const now = new Date();
         const firstDate = new Date(sphere.firstDate);
         const timeDifference = firstDate - now;
         setIsLessThan24Hours(timeDifference < 24 * 60 * 60 * 1000);
     }, [sphere.firstDate]);
+
+    if (!sphere) {
+        return <p>스피어 정보를 찾을 수 없습니다.</p>;
+    }
 
     // 참여하기 버튼 클릭 핸들러
     const handleJoinClick = () => {
