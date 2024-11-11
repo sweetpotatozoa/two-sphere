@@ -22,7 +22,7 @@ export default function ClientLayout({ children }) {
     const isSigninPage = pathname === '/signin';
 
     return (
-        <div className="container min-h-screen flex flex-col max-w-[500px] mx-auto relative shadow-xxl">
+        <div className="container min-h-screen flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
             {/* Header는 signup, signin 페이지에서는 표시되지 않음 */}
             {!isSignupPage && !isSigninPage && <Header toggleMenu={toggleMenu} />}
             {isSignupPage && <SignupHeader />}

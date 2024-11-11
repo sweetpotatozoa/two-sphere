@@ -59,9 +59,9 @@ const SignInPage = () => {
     };
 
     return (
-        <div className="max-w-[500px] mx-auto px-4 pt-16 space-y-6">
+        <div className="max-w-[500px] mx-auto px-4 pt-20 space-y-2">
             {/* 로고 이미지 */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-20">
                 <Image src="/twosphere-logo-black.svg" alt="TwoSphere Logo" width={240} height={70} />
             </div>
 

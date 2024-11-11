@@ -70,7 +70,7 @@ export default function MyProfilePage() {
             {/* 프로필 수정하기 버튼 */}
             <button
                 onClick={() => router.push('/my-profile/edit')} // 수정 페이지로 이동
-                className="w-full py-3 bg-black text-white font-bold rounded-xl mt-6"
+                className="w-full py-3 bg-black text-white font-bold rounded-xl "
             >
                 프로필 수정하기
             </button>

@@ -28,10 +28,10 @@ export default function EditProfilePage() {
 
     return (
         <div className="max-w-[500px] mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-8">프로필 수정</h1>
+            <h1 className="text-2xl font-bold mb-6 ml-2">프로필 수정</h1>
 
             {/* 커리어 수정 */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <label className="ml-4 block text-md font-bold mb-2">커리어</label>
                 <input
                     type="text"
@@ -63,7 +63,7 @@ export default function EditProfilePage() {
             ))}
 
             {/* 저장 버튼 */}
-            <button onClick={handleSave} className="w-full py-3 bg-black text-white font-bold rounded-xl mt-8">
+            <button onClick={handleSave} className="w-full py-3 bg-black text-white font-bold rounded-xl">
                 저장하기
             </button>
         </div>

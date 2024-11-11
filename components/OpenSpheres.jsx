@@ -54,7 +54,7 @@ const OpenSpheres = () => {
                 <h2 className="ml-6 text-xl font-extrabold">진행 중인 Sphere</h2>
                 <button
                     onClick={handleMoreClick}
-                    className="flex items-center justify-right mr-4 text-sm font-bold text-gray-600 hover:text-gray-800"
+                    className="flex items-center justify-right mr-2 text-sm font-bold text-gray-600 hover:text-gray-800"
                 >
                     더보기 <Image src={arrowRightIcon} alt="Toggle" width={16} height={16} className="mr-2" />
                 </button>
