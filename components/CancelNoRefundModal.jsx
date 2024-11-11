@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-const Cancel2 = ({ onClose, id }) => {
+const CancelNoRefundModal = ({ onClose, id }) => {
     const router = useRouter();
 
     return (
@@ -9,6 +9,8 @@ const Cancel2 = ({ onClose, id }) => {
             <div className="bg-white w-80 p-6 rounded-lg shadow-lg text-center">
                 <p className="text-sm font-medium mb-4">
                     참여 취소한 Sphere는 다시 참여할 수 없습니다.
+                    <br />
+                    1회차 모임 24시간 이내 취소로 참여비가 환불되지 않습니다
                     <br />
                     정말로 취소하시겠습니까?
                 </p>
@@ -18,7 +20,7 @@ const Cancel2 = ({ onClose, id }) => {
                     </button>
                     <button
                         onClick={() => {
-                            router.push(`/sphere/${id}/cancel/complete`);
+                            router.push(`/sphere/${id}/cancel`);
                         }}
                         className="w-full py-2 bg-gray-200 text-black font-bold rounded-lg"
                     >
@@ -30,4 +32,4 @@ const Cancel2 = ({ onClose, id }) => {
     );
 };
 
-export default Cancel2;
+export default CancelNoRefundModal;

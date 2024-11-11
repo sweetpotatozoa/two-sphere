@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-const Cancel1 = ({ onClose, id }) => {
+const CancelNoticeModal = ({ onClose, id }) => {
     const router = useRouter();
 
     return (
@@ -18,7 +18,7 @@ const Cancel1 = ({ onClose, id }) => {
                     </button>
                     <button
                         onClick={() => {
-                            router.push(`/sphere/${id}/cancel/complete`);
+                            router.push(`/sphere/${id}/cancel`);
                         }}
                         className="w-full py-2 bg-gray-200 text-black font-bold rounded-lg"
                     >
@@ -30,4 +30,4 @@ const Cancel1 = ({ onClose, id }) => {
     );
 };
 
-export default Cancel1;
+export default CancelNoticeModal;

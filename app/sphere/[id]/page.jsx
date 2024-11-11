@@ -9,19 +9,38 @@ import SphereHeader from '../../../components/SphereHeader';
 import SphereDetails from '../../../components/SphereDetails';
 import SphereParticipants from '../../../components/SphereParticipants';
 import SphereContents from '../../../components/SphereContents';
+import CancelNoticeModal from '../../../components/CancelNoticeModal';
+import CancelNoRefundModal from '../../../components/CancelNoRefundModal';
 
 const SphereDetail = ({ params }) => {
     const router = useRouter();
     const { id } = params;
     const sphere = sphereData.find((s) => s.id === parseInt(id));
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [isLessThan24Hours, setIsLessThan24Hours] = useState(false);
 
     if (!sphere) {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
+    useEffect(() => {
+        const now = new Date();
+        const firstDate = new Date(sphere.firstDate);
+        const timeDifference = firstDate - now;
+        setIsLessThan24Hours(timeDifference < 24 * 60 * 60 * 1000);
+    }, [sphere.firstDate]);
+
     // 참여하기 버튼 클릭 핸들러
     const handleJoinClick = () => {
         router.push(`/sphere/${id}/join`);
+    };
+
+    const handleCancelClick = () => {
+        setShowCancelModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowCancelModal(false);
     };
 
     return (
@@ -59,7 +78,29 @@ const SphereDetail = ({ params }) => {
                         참여하기
                     </button>
                 </div>
+
+                {/* 참여자가 spheres 안의 participants로 등록되어 있는지의 여부에 따라 참여하기/취소하기 버튼 다르게 표시해야 함! api needed */}
+
+                {/* 참여 취소하기 버튼 */}
+                {/* {isParticipant && (
+                    <div className="w-full px-4 pb-4 flex justify-center">
+                        <button
+                            onClick={handleCancelClick}
+                            className="w-full py-3 bg-black text-white font-bold rounded-xl"
+                        >
+                            참여 취소하기
+                        </button>
+                    </div>
+                )} */}
             </div>
+
+            {/* Conditional Modal Display */}
+            {showCancelModal &&
+                (isLessThan24Hours ? (
+                    <CancelNoRefundModal onClose={handleCloseModal} id={id} />
+                ) : (
+                    <CancelNoticeModal onClose={handleCloseModal} id={id} />
+                ))}
         </div>
     );
 };
