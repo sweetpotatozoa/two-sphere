@@ -1,15 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import ChevronDown from '/public/Chevron-down.svg';
-import ChevronRight from '/public/Chevron-right.svg';
+import arrowDownIcon from '/public/arrow-down-icon.svg';
+import arrowRightIcon from '/public/arrow-right-icon.svg';
 import Image from 'next/image';
 
 function FAQSection({ title, content, isOpen, onToggle }) {
     return (
         <div className="mb-4">
             <div className="flex items-center cursor-pointer" onClick={onToggle}>
-                <Image src={isOpen ? ChevronDown : ChevronRight} alt="Toggle" width={16} height={16} className="mr-2" />
+                <Image
+                    src={isOpen ? arrowDownIcon : arrowRightIcon}
+                    alt="Toggle"
+                    width={16}
+                    height={16}
+                    className="mr-2"
+                />
                 <span className="text-zinc-800 text-s font-extrabold font-['Pretendard']">{title}</span>
             </div>
             {isOpen && <div className="ml-7 text-zinc-800 text-s font-normal mt-2 font-['Pretendard']">{content}</div>}

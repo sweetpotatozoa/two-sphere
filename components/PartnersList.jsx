@@ -35,7 +35,10 @@ const PartnersList = () => {
 
     return (
         <div className="w-full max-w-[500px] mx-auto border-b border-black">
-            <h2 className="mb-3 mt-4 flex items-center justify-center text-xl font-bold">제휴 업체</h2>
+            <div className="flex flex-col items-center my-4 space-y-2">
+                <h2 className="text-xl font-bold">제휴 업체</h2>
+                <p className="text-sm text-gray-600">선별된 공간에서 투스피어만의 특별한 혜택을 경험하세요.</p>
+            </div>
             {/* 자동 슬라이딩 예정 */}
             <div
                 className="mb-4 pr-4 flex overflow-x-auto space-x-4 scrollbar-hide"

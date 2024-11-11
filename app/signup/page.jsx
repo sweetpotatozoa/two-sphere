@@ -5,8 +5,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import DatePickerModal from '../../components/DatePickerModal';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import eyeIcon from '/public/eye-icon.svg';
-import arrowDownIcon from '/public/arrow-down-icon.svg';
+import eyeClosedIcon from '/public/eye-closed-icon.svg';
+import eyeOpenIcon from '/public/eye-open-icon.svg';
 import arrowLeftIcon from '/public/arrow-left-icon.svg';
 import { useAuth } from '../../context/AuthContext';
 
@@ -46,21 +46,26 @@ const SignUpPage = () => {
                 <input
                     type="text"
                     placeholder="아이디를 입력해주세요"
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                 />
             </div>
 
             {/* 비밀번호 */}
             <div>
                 <label className="block text-lg font-bold mb-2">비밀번호</label>
-                <div className="flex items-center border border-gray-300 rounded-full px-4 py-2">
+                <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                     <input
                         type={showPassword ? 'text' : 'password'}
                         placeholder="비밀번호를 입력해주세요"
                         className="w-full outline-none text-gray-600"
                     />
                     <button onClick={togglePasswordVisibility} className="flex items-center justify-center ml-2">
-                        <Image src={eyeIcon} alt="Toggle Password Visibility" width={20} height={20} />
+                        <Image
+                            src={showPassword ? eyeOpenIcon : eyeClosedIcon}
+                            alt="Toggle Password Visibility"
+                            width={20}
+                            height={20}
+                        />
                     </button>
                 </div>
             </div>
@@ -68,14 +73,19 @@ const SignUpPage = () => {
             {/* 비밀번호 확인 */}
             <div className="mt-4">
                 <label className="block text-lg font-bold mb-2">비밀번호 확인</label>
-                <div className="flex items-center border border-gray-300 rounded-full px-4 py-2">
+                <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                     <input
                         type={showConfirmPassword ? 'text' : 'password'}
                         placeholder="비밀번호를 다시 입력해주세요"
                         className="w-full outline-none text-gray-600"
                     />
                     <button onClick={toggleConfirmPasswordVisibility} className="flex items-center justify-center ml-2">
-                        <Image src={eyeIcon} alt="Toggle Confirm Password Visibility" width={20} height={20} />
+                        <Image
+                            src={showConfirmPassword ? eyeOpenIcon : eyeClosedIcon}
+                            alt="Toggle Confirm Password Visibility"
+                            width={20}
+                            height={20}
+                        />
                     </button>
                 </div>
             </div>
@@ -86,7 +96,7 @@ const SignUpPage = () => {
                 <input
                     type="text"
                     placeholder="이름을 입력해주세요"
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                 />
             </div>
 
@@ -96,7 +106,7 @@ const SignUpPage = () => {
                 <input
                     type="date"
                     placeholder="생년월일을 선택해주세요"
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                 />
             </div>
 
@@ -104,9 +114,11 @@ const SignUpPage = () => {
             <div>
                 <label className="block text-lg font-bold mb-2">성별</label>
                 <select
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none appearance-none pr-10"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none appearance-none pr-10"
                     style={{
-                        background: `url(${arrowDownIcon}) no-repeat right 1rem center`,
+                        backgroundImage: 'url("/arrow-down-black-icon.svg")',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 1rem center',
                         backgroundSize: '1rem',
                     }}
                 >
@@ -120,9 +132,11 @@ const SignUpPage = () => {
             <div>
                 <label className="block text-lg font-bold mb-2">신분</label>
                 <select
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none appearance-none pr-10"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none appearance-none pr-10"
                     style={{
-                        background: `url(${arrowDownIcon}) no-repeat right 1rem center`,
+                        backgroundImage: 'url("/arrow-down-black-icon.svg")',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 1rem center',
                         backgroundSize: '1rem',
                     }}
                 >
@@ -138,9 +152,11 @@ const SignUpPage = () => {
             <div>
                 <label className="block text-lg font-bold mb-2">통신사</label>
                 <select
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none appearance-none pr-10"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none appearance-none pr-10"
                     style={{
-                        background: `url(${arrowDownIcon}) no-repeat right 1rem center`,
+                        backgroundImage: 'url("/arrow-down-black-icon.svg")',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 1rem center',
                         backgroundSize: '1rem',
                     }}
                 >
@@ -160,25 +176,37 @@ const SignUpPage = () => {
                 <input
                     type="tel"
                     placeholder="전화번호를 입력해주세요"
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
+                    onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, ''); // 숫자 이외의 문자는 제거
+                        if (value.length > 3 && value.length <= 7) {
+                            value = value.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+                        } else if (value.length > 7) {
+                            value = value.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3');
+                        }
+                        e.target.value = value;
+                    }}
+                    maxLength={13} // 000-0000-0000 형식에 맞춰 최대 길이 설정
                 />
             </div>
 
             {/* 인증번호 */}
             <div>
                 <label className="block text-lg font-bold mb-2">인증번호</label>
-                <div className="flex items-center border border-gray-300 rounded-full px-4 py-2">
+                <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                     <input
                         type="text"
                         placeholder="인증번호를 입력해주세요"
                         className="flex-grow outline-none text-gray-600 px-2"
                     />
-                    <button className="bg-black text-white px-4 py-2 rounded-full ml-2 font-semibold">인증하기</button>
+                    <button className="bg-black text-white text-sm px-4 py-2 rounded-xl ml-2 font-semibold">
+                        인증하기
+                    </button>
                 </div>
             </div>
 
             {/* 회원가입 버튼 */}
-            <button className="w-full py-3 bg-black text-white font-bold rounded-full">회원가입</button>
+            <button className="w-full py-3 bg-black text-white font-bold rounded-xl">회원가입</button>
         </div>
     );
 };

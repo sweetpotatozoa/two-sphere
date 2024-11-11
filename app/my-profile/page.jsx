@@ -29,7 +29,7 @@ export default function MyProfilePage() {
             <p className="text-gray-600 mt-2">{user?.career || '한 줄 커리어'}</p>
 
             {/* 로그아웃 버튼 */}
-            <button onClick={handleLogout} className="bg-black text-white py-1.5 px-4 rounded-full mt-4">
+            <button onClick={handleLogout} className="bg-black text-white py-1.5 px-4 rounded-xl mt-4">
                 로그아웃
             </button>
 
@@ -70,7 +70,7 @@ export default function MyProfilePage() {
             {/* 프로필 수정하기 버튼 */}
             <button
                 onClick={() => router.push('/my-profile/edit')} // 수정 페이지로 이동
-                className="w-full py-3 bg-black text-white font-bold rounded-full mt-6"
+                className="w-full py-3 bg-black text-white font-bold rounded-xl mt-6"
             >
                 프로필 수정하기
             </button>

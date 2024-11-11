@@ -37,7 +37,7 @@ export default function EditProfilePage() {
                     type="text"
                     value={career}
                     onChange={(e) => setCareer(e.target.value)}
-                    className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                     placeholder="커리어를 입력하세요"
                 />
             </div>
@@ -56,14 +56,14 @@ export default function EditProfilePage() {
                         type="text"
                         value={answers[index]}
                         onChange={(e) => handleAnswerChange(index, e.target.value)}
-                        className="w-full border border-gray-300 rounded-full px-4 py-2 outline-none"
+                        className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                         placeholder="답변을 입력하세요"
                     />
                 </div>
             ))}
 
             {/* 저장 버튼 */}
-            <button onClick={handleSave} className="w-full py-3 bg-black text-white font-bold rounded-full mt-8">
+            <button onClick={handleSave} className="w-full py-3 bg-black text-white font-bold rounded-xl mt-8">
                 저장하기
             </button>
         </div>

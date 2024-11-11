@@ -5,7 +5,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
-import eyeIcon from '/public/eye-icon.svg';
+import eyeClosedIcon from '/public/eye-closed-icon.svg';
+import eyeOpenIcon from '/public/eye-open-icon.svg';
 
 const SignInPage = () => {
     const router = useRouter();
@@ -65,7 +66,7 @@ const SignInPage = () => {
             </div>
 
             {/* 아이디 입력 */}
-            <div className="flex items-center border border-gray-300 rounded-full px-4 py-2">
+            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                 <input
                     type="text"
                     value={username}
@@ -76,7 +77,7 @@ const SignInPage = () => {
             </div>
 
             {/* 비밀번호 입력 */}
-            <div className="flex items-center border border-gray-300 rounded-full px-4 py-2">
+            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                 <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -85,7 +86,12 @@ const SignInPage = () => {
                     className="w-full outline-none text-gray-600"
                 />
                 <button onClick={togglePasswordVisibility} className="flex items-center justify-center">
-                    <Image src={eyeIcon} alt="Toggle Password Visibility" width={20} height={20} />
+                    <Image
+                        src={showPassword ? eyeOpenIcon : eyeClosedIcon}
+                        alt="Toggle Password Visibility"
+                        width={20}
+                        height={20}
+                    />
                 </button>
             </div>
 
@@ -93,15 +99,12 @@ const SignInPage = () => {
             {error && <p className="text-red-500 text-center">{error}</p>}
 
             {/* 로그인 버튼 */}
-            <button onClick={handleLogin} className="w-full py-3 bg-black text-white font-bold rounded-full">
+            <button onClick={handleLogin} className="w-full py-3 bg-black text-white font-bold rounded-xl">
                 로그인
             </button>
 
             {/* 회원가입 버튼 */}
-            <button
-                onClick={handleSignup}
-                className="w-full py-3 border border-black text-black font-bold rounded-full"
-            >
+            <button onClick={handleSignup} className="w-full py-3 border border-black text-black font-bold rounded-xl">
                 회원가입
             </button>
         </div>

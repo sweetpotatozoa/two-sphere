@@ -5,6 +5,7 @@ import React, { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { sphereData } from '../app/data/sphereData';
+import arrowRightIcon from '/public/arrow-right-icon.svg';
 
 const OpenSpheres = () => {
     const router = useRouter();
@@ -51,8 +52,11 @@ const OpenSpheres = () => {
             {/* 상단 헤더 */}
             <div className="flex justify-between items-center mb-3">
                 <h2 className="ml-6 text-xl font-extrabold">진행 중인 Sphere</h2>
-                <button onClick={handleMoreClick} className="mr-4 text-sm font-bold text-gray-600 hover:text-gray-800">
-                    더보기 &gt;
+                <button
+                    onClick={handleMoreClick}
+                    className="flex items-center justify-right mr-4 text-sm font-bold text-gray-600 hover:text-gray-800"
+                >
+                    더보기 <Image src={arrowRightIcon} alt="Toggle" width={16} height={16} className="mr-2" />
                 </button>
             </div>
 
@@ -77,7 +81,7 @@ const OpenSpheres = () => {
                             alt="Sphere Image"
                             layout="fill"
                             objectFit="cover"
-                            className="rounded-lg opacity-80"
+                            className="rounded-xl opacity-80"
                         />
                         {/* Sphere 정보 오버레이 */}
                         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
@@ -86,7 +90,7 @@ const OpenSpheres = () => {
                                 <p className="text-sm">{sphere.description}</p>
                             </div>
                             {/* 하단 전체를 감싸는 배경 영역 */}
-                            <div className="absolute bottom-0 left-0 w-full bg-black p-3 flex justify-between items-center text-xs rounded-b-lg">
+                            <div className="absolute bottom-0 left-0 w-full bg-black p-3 flex justify-between items-center text-xs rounded-b-xl">
                                 <span className="font-bold flex items-center space-x-1">
                                     <Image src="/location-icon.svg" alt="Location Icon" width={12} height={12} />
                                     <span>{sphere.location}</span>
@@ -95,13 +99,13 @@ const OpenSpheres = () => {
                                     <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
                                     <span>{sphere.date}</span>
                                 </span>
-                                <button className="py-1 px-2 bg-white text-black rounded-full text-xs font-bold">
+                                <button className="py-1 px-2 bg-white text-black rounded-xl text-xs font-bold">
                                     자세히보기
                                 </button>
                             </div>
                         </div>
                         {/* D-Day 표시 */}
-                        <span className="absolute top-1 right-1 text-white p-2 rounded-md text-sm font-bold bg-black bg-opacity-75">
+                        <span className="absolute top-1 right-1 text-white p-2 rounded-xl text-sm font-bold bg-black bg-opacity-75">
                             {sphere.dDay}
                         </span>
                     </div>
