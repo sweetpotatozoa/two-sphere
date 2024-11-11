@@ -8,6 +8,7 @@ import SignupHeader from '../components/SignupHeader';
 import MenuBar from '../components/MenuBar';
 import BottomNav from '../components/BottomNav';
 import Footer from '../components/Footer';
+import KakaoTalkButton from '../components/KakaoTalkButton';
 
 export default function ClientLayout({ children }) {
     const pathname = usePathname(); // usePathname을 사용하여 현재 경로 가져오기
@@ -31,6 +32,8 @@ export default function ClientLayout({ children }) {
 
             {/* Footer는 항상 표시 */}
             <Footer className="mb-20" />
+
+            <KakaoTalkButton />
 
             {/* BottomNav는 signup 페이지에서만 표시되지 않음 */}
             {!isSignupPage && (
