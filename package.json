@@ -11,6 +11,8 @@
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
+        "date-fns": "^4.1.0",
+        "date-fns-tz": "^3.2.0",
         "jose": "^5.9.6",
         "jsonwebtoken": "^9.0.2",
         "mongodb": "^6.10.0",

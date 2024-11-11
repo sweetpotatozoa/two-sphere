@@ -1,5 +1,6 @@
 import clientPromise from '@/lib/mongodb'; // MongoDB 클라이언트 설정 가져오기
 import { NextResponse } from 'next/server';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 export async function GET() {
     try {
@@ -22,7 +23,7 @@ export async function GET() {
             })
             .toArray();
 
-        const currentDate = new Date();
+        const currentDate = zonedTimeToUtc(new Date(), 'Asia/Seoul');
 
         // 남은 날짜 계산 및 응답 데이터 구성
         const sphereWithRemainingDays = spheres.map((sphere) => {
