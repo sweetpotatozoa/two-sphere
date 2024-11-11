@@ -29,9 +29,8 @@ export default function AboutPage() {
 
             <div className="px-4">
                 <p className="text-s text-zinc-800 font-normal font-['Pretendard Variable'] leading-tight text-center mb-6">
-                    Two Sphere는 일회성 만남이 아닌, 나와 관련된 주제로 맞닿아 있는 사람들과
-                    <br />
-                    양질의 네트워킹을 통해 스피어를 확장할 수 있도록 돕는 서비스입니다.
+                    Two Sphere는 일회성 만남이 아닌, 나와 관련된 주제로 맞닿아 있는 사람들과 양질의 네트워킹을 통해
+                    스피어를 확장할 수 있도록 돕는 서비스입니다.
                     <br />
                     <br />
                     ‘스피어’는 멤버들이 속하는 특별한 공간과 순간을 의미합니다
