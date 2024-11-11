@@ -12,7 +12,7 @@ export default function AboutPage() {
         <div className=" flex flex-col items-center bg-white relative">
             {/* Main Content */}
             <div className="text-center mt-8 px-4">
-                <h2 className="text-xs font-bold text-zinc-800 font-['Pretendard Variable'] leading-none mb-4">
+                <h2 className="text-s mb-6 font-bold text-zinc-800 font-['Pretendard Variable'] leading-none mb-4">
                     취향의 궤도가 만나는 두 번의 특별한 순간
                 </h2>
 
@@ -28,7 +28,7 @@ export default function AboutPage() {
             </div>
 
             <div className="px-4">
-                <p className="text-xs text-zinc-800 font-normal font-['Pretendard Variable'] leading-tight text-center mb-6">
+                <p className="text-s text-zinc-800 font-normal font-['Pretendard Variable'] leading-tight text-center mb-6">
                     Two Sphere는 일회성 만남이 아닌, 나와 관련된 주제로 맞닿아 있는 사람들과
                     <br />
                     양질의 네트워킹을 통해 스피어를 확장할 수 있도록 돕는 서비스입니다.
@@ -51,7 +51,7 @@ export default function AboutPage() {
                 <Image src={FBIcon} alt="F&B" width={144} height={144} className="ml-4" />
             </div>
             <div>
-                <p className="text-xs text-zinc-800 font-normal font-['Pretendard Variable'] leading-tight text-center">
+                <p className="text- text-zinc-800 font-extrabold font-['Pretendard Variable'] text-center">
                     Two Sphere에서 취향의 궤도가 겹치는
                     <br />
                     특별한 순간을 맞이해보세요!

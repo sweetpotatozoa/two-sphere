@@ -21,7 +21,7 @@ const SphereParticipants = ({ participants }) => {
 
     return (
         <section className="pb-12 space-y-4">
-            <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
+            <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 ">
                 <h2 className="text-xl font-bold">참여자 현황</h2>
                 <p className="text-sm text-gray-600">버튼을 눌러 프로필을 조회해보세요</p>
             </div>

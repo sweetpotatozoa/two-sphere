@@ -27,12 +27,12 @@ export default function EditProfilePage() {
     };
 
     return (
-        <div className="max-w-[500px] mx-auto px-4 py-16">
+        <div className="max-w-[500px] mx-auto px-4 py-8">
             <h1 className="text-2xl font-bold mb-8">프로필 수정</h1>
 
             {/* 커리어 수정 */}
             <div className="mb-8">
-                <label className="block text-lg font-bold mb-2">커리어</label>
+                <label className="ml-4 block text-md font-bold mb-2">커리어</label>
                 <input
                     type="text"
                     value={career}
@@ -51,7 +51,7 @@ export default function EditProfilePage() {
                 '다른 사람들에게 어떻게 기억되고 싶나요?',
             ].map((question, index) => (
                 <div key={index} className="mb-8">
-                    <label className="block text-lg font-bold mb-2">{`Q${index + 1}. ${question}`}</label>
+                    <label className="ml-4 block text-md font-bold mb-2">{`Q${index + 1}. ${question}`}</label>
                     <input
                         type="text"
                         value={answers[index]}

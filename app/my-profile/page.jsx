@@ -16,7 +16,7 @@ export default function MyProfilePage() {
     };
 
     return (
-        <div className="max-w-[500px] mx-auto px-4 py-16 text-center">
+        <div className="max-w-[500px] mx-auto px-4 py-8 text-center ">
             {/* 프로필 이미지 */}
             <div className="flex justify-center mb-4">
                 <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
@@ -34,35 +34,35 @@ export default function MyProfilePage() {
             </button>
 
             {/* 질문 목록 */}
-            <div className="border-t border-gray-300 my-8"></div>
+            <div className="border-t border-gray-300 my-4"></div>
 
             {/* 개별 질문 섹션 */}
-            <div className="text-left mb-8">
-                <h2 className="text-lg font-bold">Q1. 현재 어떤 일을 하고 있는지 알려주세요</h2>
+            <div className="text-left mb-6">
+                <h2 className="ml-3 text-md font-bold">Q1. 현재 어떤 일을 하고 있는지 알려주세요</h2>
                 <p className="text-gray-600 mt-2">{user?.answers[0]}</p>
                 <div className="border-b border-gray-300 mt-4"></div>
             </div>
 
-            <div className="text-left mb-8">
-                <h2 className="text-lg font-bold">Q2. 당신을 가장 잘 표현하는 세 가지 단어는 무엇인가요?</h2>
+            <div className="text-left mb-6">
+                <h2 className="ml-3 text-md font-bold">Q2. 당신을 가장 잘 표현하는 세 가지 단어는 무엇인가요?</h2>
                 <p className="text-gray-600 mt-2">{user?.answers[1]}</p>
                 <div className="border-b border-gray-300 mt-4"></div>
             </div>
 
-            <div className="text-left mb-8">
-                <h2 className="text-lg font-bold">Q3. 당신이 가장 몰입하는 순간은 언제인가요?</h2>
+            <div className="text-left mb-6">
+                <h2 className="ml-3 text-md font-bold">Q3. 당신이 가장 몰입하는 순간은 언제인가요?</h2>
                 <p className="text-gray-600 mt-2">{user?.answers[2]}</p>
                 <div className="border-b border-gray-300 mt-4"></div>
             </div>
 
-            <div className="text-left mb-8">
-                <h2 className="text-lg font-bold">Q4. 당신의 인생에서 꼭 이루고 싶은 목표가 있다면 무엇인가요?</h2>
+            <div className="text-left mb-6">
+                <h2 className="ml-3 text-md font-bold">Q4. 당신의 인생에서 꼭 이루고 싶은 목표가 있다면 무엇인가요?</h2>
                 <p className="text-gray-600 mt-2">{user?.answers[3]}</p>
                 <div className="border-b border-gray-300 mt-4"></div>
             </div>
 
-            <div className="text-left mb-8">
-                <h2 className="text-lg font-bold">Q5. 다른 사람들에게 어떻게 기억되고 싶나요?</h2>
+            <div className="text-left mb-6">
+                <h2 className="ml-3 text-md font-bold">Q5. 다른 사람들에게 어떻게 기억되고 싶나요?</h2>
                 <p className="text-gray-600 mt-2">{user?.answers[4]}</p>
                 <div className="border-b border-gray-300 mt-4"></div>
             </div>
@@ -70,7 +70,7 @@ export default function MyProfilePage() {
             {/* 프로필 수정하기 버튼 */}
             <button
                 onClick={() => router.push('/my-profile/edit')} // 수정 페이지로 이동
-                className="w-full py-3 bg-black text-white font-bold rounded-full mt-8"
+                className="w-full py-3 bg-black text-white font-bold rounded-full mt-6"
             >
                 프로필 수정하기
             </button>

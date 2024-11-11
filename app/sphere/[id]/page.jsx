@@ -26,8 +26,14 @@ const SphereDetail = ({ params }) => {
 
     return (
         <div className="max-w-[500px] space-y-8 text-center">
-            <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
-                <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
+            <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
+                <Image
+                    src={sphere.image}
+                    alt="Sphere Image"
+                    width={500}
+                    height={300}
+                    className="w-full object-cover object-center"
+                />
             </div>
             <SphereHeader
                 title={sphere.title}

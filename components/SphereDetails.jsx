@@ -4,13 +4,13 @@ import Image from 'next/image';
 import locationIcon from '/public/location-icon-black.svg';
 
 const SphereDetails = ({ briefIntro, location, address, additionalImages, placeStory }) => (
-    <section className="pb-4 space-y-4">
+    <section className="pb-4 space-y-2">
         {/* 스피어 설명 */}
         <p className="text-lg pb-4" style={{ whiteSpace: 'pre-line' }}>
             {briefIntro}
         </p>
         {/* 장소 기본정보 */}
-        <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
+        <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 ">
             <h2 className="text-xl font-bold">{location}</h2>
             <div className="flex items-center justify-center space-x-2">
                 <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
@@ -18,7 +18,7 @@ const SphereDetails = ({ briefIntro, location, address, additionalImages, placeS
             </div>
         </div>
         {/* 장소 사진 */}
-        <div className="pt-8 space-y-4">
+        <div className="pt-4 space-y-4">
             {additionalImages.map((img, index) => (
                 <Image
                     key={index}
