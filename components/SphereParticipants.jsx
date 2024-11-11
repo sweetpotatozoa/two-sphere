@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const SphereParticipants = ({ participants }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -12,10 +13,10 @@ const SphereParticipants = ({ participants }) => {
     };
 
     const questions = [
-        '현재 어떤 일을 하고 있는지 알려주세요',
-        '당신을 가장 잘 표현하는 세 가지 단어는 무엇인가요?',
-        '당신이 가장 몰입하는 순간은 언제인가요?',
-        '당신의 인생에서 꼭 이루고 싶은 목표가 있다면 무엇인가요?',
+        '현재 어떤 일을 하고 있는지 알려주세요.',
+        '나를 가장 잘 표현하는 세 가지 단어는 무엇인가요?',
+        '가장 몰입하는 순간은 언제인가요?',
+        '인생에서 꼭 이루고 싶은 목표가 있다면 무엇인가요?',
         '다른 사람들에게 어떻게 기억되고 싶나요?',
     ];
 
@@ -57,7 +58,13 @@ const SphereParticipants = ({ participants }) => {
             {/* 모달 */}
             {selectedParticipant && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg max-w-[400px] w-full p-6 space-y-4 text-center">
+                    <div className="bg-white rounded-xl max-w-[400px] w-full p-6 space-y-4 text-center">
+                        {/* 프로필 이미지 */}
+                        <div className="flex justify-center mb-4">
+                            <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
+                                <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
+                            </div>
+                        </div>
                         <h2 className="text-xl font-bold">{selectedParticipant.name}의 프로필</h2>
                         <p className="text-gray-600">{selectedParticipant.career}</p>
                         <div className="space-y-4 text-left">
@@ -75,7 +82,7 @@ const SphereParticipants = ({ participants }) => {
                                 </div>
                             ))}
                         </div>
-                        <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-lg">
+                        <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-xl">
                             닫기
                         </button>
                     </div>
