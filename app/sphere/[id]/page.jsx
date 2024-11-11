@@ -106,3 +106,5 @@ const SphereDetail = ({ params }) => {
 };
 
 export default SphereDetail;
+
+// 이것은 지워도 되는 주석입니다.
