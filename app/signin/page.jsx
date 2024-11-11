@@ -1,10 +1,10 @@
-// app/signin/page.jsx
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
+import { signIn } from '../../utils/fetcher'; // fetcher.js에서 signIn 함수 가져오기
 import eyeClosedIcon from '/public/eye-closed-icon.svg';
 import eyeOpenIcon from '/public/eye-open-icon.svg';
 
@@ -20,24 +20,16 @@ const SignInPage = () => {
     const handleLogin = async () => {
         setError(''); // 오류 초기화
         try {
-            const response = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('token', data.token); // JWT 토큰 저장
+            const response = await signIn(username, password); // fetcher.js의 signIn 함수 호출
+            if (response) {
+                localStorage.setItem('token', response.token); // JWT 토큰 저장
                 login(); // 로그인 상태 업데이트
                 router.push('/'); // 로그인 후 홈 페이지로 이동
             } else {
-                setError(data.message); // 오류 메시지 표시
+                setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Login error:', error.message);
             setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
         }
     };
