@@ -25,6 +25,15 @@ export async function GET(req) {
             return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
         }
 
+        // 날짜 포맷 함수들 정의
+        const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
+        const formatToHour = (date) => {
+            const hours = date.getHours();
+            const period = hours >= 12 ? '오후' : '오전';
+            const hour12 = hours % 12 || 12; // 0시는 12로 표시
+            return `${period} ${hour12}시`;
+        };
+
         // 상태에 따른 분류를 위해 스피어 ID를 저장할 배열 생성
         const openSpheres = [];
         const ongoingSpheres = [];
@@ -40,9 +49,9 @@ export async function GET(req) {
                 const isUserUnpaid = userParticipant && userParticipant.payment === 'unpaid';
                 const isPaid = !isUserUnpaid;
 
-                // 각 sphere의 참여자 ID들을 userId 배열로 수집
+                // `cancelInfo.isCancel`이 `true`인 참여자를 제외하고 `participantIds` 수집
                 const participantIds = sphere.participants
-                    .filter((participant) => participant.payment !== 'refunded')
+                    .filter((participant) => participant.payment !== 'refunded' && !participant.cancelInfo?.isCancel)
                     .map((participant) => participant.userId);
 
                 // 기본적으로 제외할 필드 설정
@@ -66,21 +75,28 @@ export async function GET(req) {
                     .find({ _id: { $in: participantIds } }, { projection })
                     .toArray();
 
-                // 참여자 정보를 매핑하여 추가 (userInfo 필드 없이)
-                sphere.participants = sphere.participants.map((participant) => {
-                    const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
+                // `cancelInfo.isCancel`이 `true`인 참여자를 제외하고 참여자 정보를 매핑하여 추가
+                sphere.participants = sphere.participants
+                    .filter((participant) => !participant.cancelInfo?.isCancel) // `isCancel`이 `true`인 참여자 제외
+                    .map((participant) => {
+                        const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
 
-                    // _id 대신 userId를 유지하고 _id는 제거하여 중복 방지
-                    const { _id, ...userInfoWithoutId } = userInfo;
+                        // _id 대신 userId를 유지하고 _id는 제거하여 중복 방지
+                        const { _id, ...userInfoWithoutId } = userInfo;
 
-                    return {
-                        ...participant,
-                        ...userInfoWithoutId, // userInfo의 각 필드를 직접 participants 객체에 병합
-                    };
-                });
+                        return {
+                            ...participant,
+                            ...userInfoWithoutId, // userInfo의 각 필드를 직접 participants 객체에 병합
+                        };
+                    });
 
                 // `isPaid` 필드를 sphere에 추가
                 sphere.isPaid = isPaid;
+
+                // 날짜 포맷 적용
+                sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));
+                sphere.secondDate = formatToMonthDay(new Date(sphere.secondDate));
+                sphere.time = formatToHour(new Date(sphere.firstDate));
 
                 // 스피어 상태에 따라 분류
                 if (sphere.status === 'open') {
