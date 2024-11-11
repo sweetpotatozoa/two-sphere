@@ -33,11 +33,12 @@ export async function GET(req) {
         // 참여자 정보를 포함한 스피어 정보를 구성
         const updatedSpheres = await Promise.all(
             spheres.map(async (sphere) => {
-                // 각 sphere에서 요청한 사용자의 `payment` 상태를 확인
+                // 각 sphere에서 요청한 사용자의 `payment` 상태를 확인하여 `isPaid` 설정
                 const userParticipant = sphere.participants.find((participant) =>
                     participant.userId.equals(new ObjectId(userId))
                 );
                 const isUserUnpaid = userParticipant && userParticipant.payment === 'unpaid';
+                const isPaid = !isUserUnpaid;
 
                 // 각 sphere의 참여자 ID들을 userId 배열로 수집
                 const participantIds = sphere.participants
@@ -77,6 +78,9 @@ export async function GET(req) {
                         ...userInfoWithoutId, // userInfo의 각 필드를 직접 participants 객체에 병합
                     };
                 });
+
+                // `isPaid` 필드를 sphere에 추가
+                sphere.isPaid = isPaid;
 
                 // 스피어 상태에 따라 분류
                 if (sphere.status === 'open') {
