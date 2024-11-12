@@ -50,7 +50,7 @@ export async function GET(req, { params }) {
             sphere.status === 'closed';
 
         // 이름과 이미지를 볼 수 있는지 여부 넣어주기
-        sphere.canViewNamesAndImages = !canNotViewNamesAndImages;
+        sphere.canNotViewNamesAndImages = canNotViewNamesAndImages;
 
         // 요청 유저의 결제 상태 넣어주기
         sphere.hasUnpaidStatus =
@@ -143,6 +143,11 @@ export async function POST(req, { params }) {
         const sphere = await db.collection('spheres').findOne({ _id: new ObjectId(id) });
         if (!sphere) {
             return NextResponse.json({ message: 'Sphere not found' }, { status: 404 });
+        }
+
+        // 스피어 상태 확인
+        if (sphere.status !== 'open') {
+            return NextResponse.json({ message: 'The sphere is not open' }, { status: 400 });
         }
 
         // 이미 참가자인지 확인
