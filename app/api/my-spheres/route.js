@@ -17,7 +17,7 @@ export async function GET(req) {
             .collection('spheres')
             .find({
                 'participants.userId': new ObjectId(userId),
-                'participants.payment': { $ne: 'refunded' },
+                'participants.cancelInfo.isCancel': { $ne: true },
             })
             .toArray();
 

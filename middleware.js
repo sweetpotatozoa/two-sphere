@@ -25,5 +25,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-    matcher: ['/api/my-profile', '/api/my-spheres'], // 특정 경로에만 적용
+    matcher: ['/api/my-profile', '/api/my-spheres', '/api/sphere/[id]/cancel'], // 특정 경로에만 적용
 };
