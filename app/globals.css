@@ -52,17 +52,17 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 내용이 상단에서 시작되도록 설정 */
+    align-items: flex-start;
     overflow-x: hidden;
 }
 
 .container {
     max-width: 500px;
     width: 100%;
-    height: auto; /* 컨테이너가 전체 뷰포트 높이 차지 */
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Header와 BottomNav를 상하단에 배치 */
+    justify-content: space-between;
     margin: 0 auto; /* 가운데 정렬 */
 }
 
