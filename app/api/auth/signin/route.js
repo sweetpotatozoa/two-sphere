@@ -1,20 +1,22 @@
-import clientPromise from '../../../../lib/mongodb';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import clientPromise from '../../../../lib/mongodb';
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
     try {
-        const { username, password } = await req.json(); // 요청으로부터 username과 password 추출
+        const { userName, password } = await req.json();
 
-        if (!username || !password) {
+        // 요청 데이터 확인
+        if (!userName || !password) {
             return NextResponse.json({ message: '아이디와 비밀번호를 입력해주세요.' }, { status: 400 });
         }
 
         const client = await clientPromise;
         const db = client.db('development'); // 데이터베이스 이름 확인
-        const user = await db.collection('users').findOne({ username });
+        const user = await db.collection('users').findOne({ userName });
 
+        // 유저 확인
         if (!user) {
             return NextResponse.json({ message: '존재하지 않는 사용자입니다.' }, { status: 401 });
         }
@@ -27,9 +29,8 @@ export async function POST(req) {
 
         // JWT 토큰 생성
         const token = jwt.sign(
-            { id: user._id, username: user.username }, // 토큰에 담을 정보
-            process.env.JWT_SECRET, // 비밀 키
-            { expiresIn: '1h' } // 토큰 만료 시간 설정
+            { user: { id: user._id } }, // 토큰에 담을 정보
+            process.env.ACCESS_TOKEN_DEV // ACCESS_TOKEN_DEV를 비밀 키로 사용
         );
 
         // 성공 응답
