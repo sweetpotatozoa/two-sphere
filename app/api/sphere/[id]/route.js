@@ -36,17 +36,31 @@ export async function GET(req, { params }) {
             return NextResponse.json({ message: 'Sphere not found' }, { status: 404 });
         }
 
+        // 요청 유저가 참여자인 경우 유저의 참여 정보 가져오기
         const userParticipant = userId
             ? sphere.participants.find((participant) => participant.userId.equals(new ObjectId(userId)))
             : null;
-        const isUserUnpaid = !userId || !userParticipant || userParticipant.payment === 'unpaid';
-        sphere.isUnpaid = userParticipant && userParticipant.payment === 'unpaid';
 
+        // 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
+        const canNotViewNamesAndImages =
+            !userId || !userParticipant || userParticipant.payment === 'unpaid' || userParticipant.cancelInfo?.isCancel;
+
+        // 이름과 이미지를 볼 수 있는지 여부 넣어주기
+        sphere.canViewNamesAndImages = !canNotViewNamesAndImages;
+
+        // 요청 유저의 결제 상태 넣어주기
+        sphere.hasUnpaidStatus =
+            userParticipant && userParticipant.payment === 'unpaid' && !userParticipant.cancelInfo?.isCancel;
+
+        // 요청 유저가 취소자인지 넣어주기
+        const isCanceled = userParticipant && userParticipant.cancelInfo?.isCancel;
+        sphere.isCanceled = isCanceled;
+
+        // 취소된 참여자 제외
         sphere.participants = sphere.participants.filter((participant) => !participant.cancelInfo?.isCancel);
 
-        const participantIds = sphere.participants
-            .filter((participant) => participant.payment !== 'refunded')
-            .map((participant) => participant.userId);
+        // 가져올 참여자 아이디 배열 생성
+        const participantIds = sphere.participants.map((participant) => participant.userId);
 
         let projection = {
             createdAt: 0,
@@ -57,15 +71,18 @@ export async function GET(req, { params }) {
             userName: 0,
         };
 
-        if (sphere.status === 'closed' || isUserUnpaid) {
+        // 모임이 종료되었거나 이름과 이미지를 볼 수 없는 경우 이름과 이미지를 제외
+        if (sphere.status === 'closed' || canNotViewNamesAndImages) {
             projection = { ...projection, name: 0, image: 0 };
         }
 
+        // 참여자 정보 가져오기
         const users = await db
             .collection('users')
             .find({ _id: { $in: participantIds } }, { projection })
             .toArray();
 
+        // 참여자 정보 매핑
         sphere.participants = sphere.participants.map((participant) => {
             const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
             const { _id, ...userInfoWithoutId } = userInfo;
@@ -76,6 +93,7 @@ export async function GET(req, { params }) {
             };
         });
 
+        // 날짜 및 시간 정보 포맷팅
         const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
         const formatToHour = (date) => {
             const hours = date.getHours();
