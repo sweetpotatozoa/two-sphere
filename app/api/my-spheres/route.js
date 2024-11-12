@@ -12,7 +12,7 @@ export async function GET(req) {
         const client = await clientPromise;
         const db = client.db();
 
-        // 사용자 참여 정보를 필터링하여 가져옴: `payment`가 `refunded`가 아닌 경우만 포함
+        // 유저가 취소하지 않은 스피어 목록 가져오기
         const spheres = await db
             .collection('spheres')
             .find({
@@ -25,33 +25,28 @@ export async function GET(req) {
             return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
         }
 
-        // 날짜 포맷 함수들 정의
-        const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
-        const formatToHour = (date) => {
-            const hours = date.getHours();
-            const period = hours >= 12 ? '오후' : '오전';
-            const hour12 = hours % 12 || 12; // 0시는 12로 표시
-            return `${period} ${hour12}시`;
-        };
-
-        // 상태에 따른 분류를 위해 스피어 ID를 저장할 배열 생성
+        // 상태별 분류 배열 초기화
         const openSpheres = [];
         const ongoingSpheres = [];
         const closedSpheres = [];
 
-        // 참여자 정보를 포함한 스피어 정보를 구성
-        const updatedSpheres = await Promise.all(
+        await Promise.all(
             spheres.map(async (sphere) => {
-                // 각 sphere에서 요청한 사용자의 `payment` 상태를 확인하여 `isPaid` 설정
+                // 유저 참여 정보 확인
                 const userParticipant = sphere.participants.find((participant) =>
                     participant.userId.equals(new ObjectId(userId))
                 );
-                const isUserUnpaid = userParticipant && userParticipant.payment === 'unpaid';
-                const isPaid = !isUserUnpaid;
 
-                // `cancelInfo.isCancel`이 `true`인 참여자를 제외하고 `participantIds` 수집
+                // 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
+                const canNotViewNamesAndImages = !userId || !userParticipant || userParticipant.payment === 'unpaid';
+
+                // 결제 상태 필드 추가
+                sphere.hasUnpaidStatus =
+                    userParticipant && userParticipant.payment === 'unpaid' && !userParticipant.cancelInfo?.isCancel;
+
+                // 필터링된 참여자 IDs
                 const participantIds = sphere.participants
-                    .filter((participant) => participant.payment !== 'refunded' && !participant.cancelInfo?.isCancel)
+                    .filter((participant) => !participant.cancelInfo?.isCancel)
                     .map((participant) => participant.userId);
 
                 // 기본적으로 제외할 필드 설정
@@ -64,34 +59,33 @@ export async function GET(req) {
                     userName: 0,
                 };
 
-                // sphere가 closed 상태이거나 요청한 유저의 payment 상태가 unpaid인 경우 name과 image 필드도 제외
-                if (sphere.status === 'closed' || isUserUnpaid) {
+                if (sphere.status === 'closed' || canNotViewNamesAndImages) {
                     projection = { ...projection, name: 0, image: 0 };
                 }
 
-                // 참여자 정보를 users 컬렉션에서 가져오기
+                // 참여자 정보 가져오기
                 const users = await db
                     .collection('users')
                     .find({ _id: { $in: participantIds } }, { projection })
                     .toArray();
 
-                // `cancelInfo.isCancel`이 `true`인 참여자를 제외하고 참여자 정보를 매핑하여 추가
+                // 참여자 정보를 병합
                 sphere.participants = sphere.participants
-                    .filter((participant) => !participant.cancelInfo?.isCancel) // `isCancel`이 `true`인 참여자 제외
+                    .filter((participant) => !participant.cancelInfo?.isCancel)
                     .map((participant) => {
                         const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
-
-                        // _id 대신 userId를 유지하고 _id는 제거하여 중복 방지
                         const { _id, ...userInfoWithoutId } = userInfo;
-
-                        return {
-                            ...participant,
-                            ...userInfoWithoutId, // userInfo의 각 필드를 직접 participants 객체에 병합
-                        };
+                        return { ...participant, ...userInfoWithoutId };
                     });
 
-                // `isPaid` 필드를 sphere에 추가
-                sphere.isPaid = isPaid;
+                // 날짜 포맷 함수
+                const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
+                const formatToHour = (date) => {
+                    const hours = date.getHours();
+                    const period = hours >= 12 ? '오후' : '오전';
+                    const hour12 = hours % 12 || 12;
+                    return `${period} ${hour12}시`;
+                };
 
                 // 날짜 포맷 적용
                 sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));
@@ -99,13 +93,9 @@ export async function GET(req) {
                 sphere.time = formatToHour(new Date(sphere.firstDate));
 
                 // 스피어 상태에 따라 분류
-                if (sphere.status === 'open') {
-                    openSpheres.push(sphere);
-                } else if (sphere.status === 'ongoing') {
-                    ongoingSpheres.push(sphere);
-                } else if (sphere.status === 'closed') {
-                    closedSpheres.push(sphere);
-                }
+                if (sphere.status === 'open') openSpheres.push(sphere);
+                else if (sphere.status === 'ongoing') ongoingSpheres.push(sphere);
+                else if (sphere.status === 'closed') closedSpheres.push(sphere);
 
                 return sphere;
             })
