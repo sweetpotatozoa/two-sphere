@@ -1,6 +1,8 @@
 // app/my-profile/page.jsx
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
@@ -8,24 +10,33 @@ import { useRouter } from 'next/navigation';
 
 export default function MyProfilePage() {
     const router = useRouter();
-    const { logout } = useAuth();
+    const { logout, user: authUser } = useAuth(); // 사용자 ID 가져오기
     const [user, setUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
+            if (!authUser) return; // 사용자 인증 여부 확인
             try {
-                const response = await fetch('/api/my-profile'); // 서버에서 사용자 데이터를 가져옴
+                const response = await fetch('/api/my-profile', {
+                    method: 'GET',
+                    headers: {
+                        'x-user-id': authUser.id, // 유저 ID를 헤더에 추가
+                    },
+                    cache: 'no-store',
+                });
                 if (response.ok) {
                     const data = await response.json();
-                    setUser(data);
+                    setUser(data.user); // data.user에 접근
+                } else {
+                    console.error('Failed to fetch user data:', response.status);
                 }
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
             }
         };
         fetchUserData();
-    }, []);
+    }, [authUser]);
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -35,12 +46,10 @@ export default function MyProfilePage() {
         router.push('/');
     };
 
-    if (!user)
-        return <p className="min-h-screen flex flex-col items-center mt-12">사용자 데이터를 불러오는 중입니다.</p>;
+    if (!user) return <p className="flex flex-col items-center mt-12">사용자 데이터를 불러오는 중입니다.</p>;
 
     return (
         <div className="max-w-[500px] mx-auto px-4 py-8 text-center ">
-            {/* 프로필 이미지 */}
             <div className="flex justify-center mb-4">
                 <div
                     className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center"
@@ -49,8 +58,6 @@ export default function MyProfilePage() {
                     <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
                 </div>
             </div>
-
-            {/* 기본 정보 */}
             <div className="flex justify-center items-center">
                 <h1 className="text-2xl font-bold">{user.name || '로그인 안 됨!'}</h1>
                 <button onClick={handleLogout} className="flex items-center justify-center py-1.5 px-4">
@@ -59,10 +66,8 @@ export default function MyProfilePage() {
             </div>
             <p className="text-gray-600 mt-2">{user.career || '한 줄 커리어'}</p>
 
-            {/* 질문 목록 */}
             <div className="border-t border-gray-300 my-4"></div>
 
-            {/* 개별 질문 섹션 */}
             {user.answers.map((answer, index) => (
                 <div key={index} className="text-left mb-6">
                     <h2 className="ml-4 text-md font-bold">
@@ -73,7 +78,6 @@ export default function MyProfilePage() {
                 </div>
             ))}
 
-            {/* 프로필 수정하기 버튼 */}
             <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
                 <button
                     onClick={() => router.push('/my-profile/edit')}
@@ -83,7 +87,6 @@ export default function MyProfilePage() {
                 </button>
             </div>
 
-            {/* 모달 */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
