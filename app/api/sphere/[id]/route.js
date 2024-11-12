@@ -41,9 +41,13 @@ export async function GET(req, { params }) {
             ? sphere.participants.find((participant) => participant.userId.equals(new ObjectId(userId)))
             : null;
 
-        // 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
+        // 완료된 스피어거나, 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
         const canNotViewNamesAndImages =
-            !userId || !userParticipant || userParticipant.payment === 'unpaid' || userParticipant.cancelInfo?.isCancel;
+            !userId ||
+            !userParticipant ||
+            userParticipant.payment === 'unpaid' ||
+            userParticipant.cancelInfo?.isCancel ||
+            sphere.status === 'closed';
 
         // 이름과 이미지를 볼 수 있는지 여부 넣어주기
         sphere.canViewNamesAndImages = !canNotViewNamesAndImages;

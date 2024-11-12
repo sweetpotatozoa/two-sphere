@@ -1,7 +1,3 @@
-import clientPromise from '@/lib/mongodb';
-import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
-
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
@@ -32,22 +28,21 @@ export async function GET(req) {
 
         await Promise.all(
             spheres.map(async (sphere) => {
-                // 유저 참여 정보 확인
                 const userParticipant = sphere.participants.find((participant) =>
                     participant.userId.equals(new ObjectId(userId))
                 );
 
-                // 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
-                const canNotViewNamesAndImages = !userId || !userParticipant || userParticipant.payment === 'unpaid';
+                // 이름과 이미지를 볼 수 있는지 여부 판단
+                const canNotViewNamesAndImages =
+                    !userParticipant || userParticipant.payment === 'unpaid' || sphere.status === 'closed';
+                sphere.canNotViewNamesAndImages = canNotViewNamesAndImages;
 
                 // 결제 상태 필드 추가
                 sphere.hasUnpaidStatus =
-                    userParticipant && userParticipant.payment === 'unpaid' && !userParticipant.cancelInfo?.isCancel;
+                    userParticipant && userParticipant.payment === 'unpaid' && sphere.status === 'open';
 
                 // 필터링된 참여자 IDs
-                const participantIds = sphere.participants
-                    .filter((participant) => !participant.cancelInfo?.isCancel)
-                    .map((participant) => participant.userId);
+                const participantIds = sphere.participants.map((participant) => participant.userId);
 
                 // 기본적으로 제외할 필드 설정
                 let projection = {
@@ -59,7 +54,7 @@ export async function GET(req) {
                     userName: 0,
                 };
 
-                if (sphere.status === 'closed' || canNotViewNamesAndImages) {
+                if (canNotViewNamesAndImages) {
                     projection = { ...projection, name: 0, image: 0 };
                 }
 
@@ -70,13 +65,11 @@ export async function GET(req) {
                     .toArray();
 
                 // 참여자 정보를 병합
-                sphere.participants = sphere.participants
-                    .filter((participant) => !participant.cancelInfo?.isCancel)
-                    .map((participant) => {
-                        const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
-                        const { _id, ...userInfoWithoutId } = userInfo;
-                        return { ...participant, ...userInfoWithoutId };
-                    });
+                sphere.participants = sphere.participants.map((participant) => {
+                    const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
+                    const { _id, ...userInfoWithoutId } = userInfo;
+                    return { ...participant, ...userInfoWithoutId };
+                });
 
                 // 날짜 포맷 함수
                 const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
