@@ -11,7 +11,7 @@ export async function GET() {
         // 조건에 맞는 모임 데이터 조회
         const spheres = await db
             .collection('spheres')
-            .find({ status: 'open' })
+            .find({ status: { $in: ['open', 'ongoing'] } })
             .project({
                 _id: 1,
                 title: 1,
