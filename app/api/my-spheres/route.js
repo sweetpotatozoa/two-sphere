@@ -12,14 +12,20 @@ export async function GET(req) {
         const client = await clientPromise;
         const db = client.db();
 
-        // 유저가 취소하지 않은 스피어 목록 가져오기
+        //유저가 취소하지 않은 스피어 찾기
         const spheres = await db
             .collection('spheres')
             .find({
-                'participants.userId': new ObjectId(userId),
-                'participants.cancelInfo.isCancel': { $ne: true },
+                participants: {
+                    $elemMatch: {
+                        userId: new ObjectId(userId),
+                        'cancelInfo.isCancel': false,
+                    },
+                },
             })
             .toArray();
+
+        console.log('spheres:', spheres);
 
         if (!spheres || spheres.length === 0) {
             return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
