@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 const SphereParticipants = ({ participants }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+        };
+    }, [selectedParticipant]);
 
     const handleParticipantClick = (participant) => {
         setSelectedParticipant(participant);
@@ -22,11 +30,10 @@ const SphereParticipants = ({ participants }) => {
 
     return (
         <section className="pb-12 space-y-4">
-            <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 ">
+            <div className="border-t border-b border-black mx-auto max-w-[300px] py-4">
                 <h2 className="text-xl font-bold">참여자 현황</h2>
                 <p className="text-sm text-gray-600">버튼을 눌러 프로필을 조회해보세요</p>
             </div>
-            {/* 참여자 원형 프로필 */}
             <div className="pt-16 flex justify-center items-center">
                 <div className="relative w-32 h-32">
                     {Array.from({ length: 4 }).map((_, index) => (
@@ -57,14 +64,11 @@ const SphereParticipants = ({ participants }) => {
 
             {/* 모달 */}
             {selectedParticipant && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl max-w-[400px] w-full p-6 space-y-4 text-center">
-                        {/* 프로필 이미지 */}
-                        <div className="flex justify-center mb-4">
-                            <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
-                                <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
-                            </div>
-                        </div>
+                <div
+                    className="fixed left-0 top-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    style={{ margin: 0, padding: 0 }}
+                >
+                    <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative">
                         <h2 className="text-xl font-bold">{selectedParticipant.name}의 프로필</h2>
                         <p className="text-gray-600">{selectedParticipant.career}</p>
                         <div className="space-y-4 text-left">
@@ -78,7 +82,6 @@ const SphereParticipants = ({ participants }) => {
                                             ? selectedParticipant.answers[index]
                                             : '아직 프로필을 완성하지 않았습니다.'}
                                     </p>
-                                    <div className="border-b border-gray-300 mt-4"></div>
                                 </div>
                             ))}
                         </div>

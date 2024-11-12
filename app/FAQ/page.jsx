@@ -81,7 +81,6 @@ export default function FAQPage() {
                     있는 기간이 주어집니다.
                     <br />
                     2회차 참여 희망 인원이 <span className="underline">3명 이상이라면 모임이 그대로 진행</span>되고,
-                    <br />
                     만약 <span className="underline">모임이 취소되었다면 참여자들에게 참여비 50%를 환불</span>
                     해드립니다.
                 </>
@@ -92,10 +91,8 @@ export default function FAQPage() {
             title: 'Sphere 리더는 어떤 역할을 하며 어떻게 정해지나요?',
             content: (
                 <>
-                    Sphere 리더는 해당 Sphere의 활동을 주도적으로 이끄는 참여자입니다.
-                    <br />
-                    참여 신청 시 희망여부를 조사하며, 희망자가 2명 이상일 경우 2명 중 임의로 결정되며 희망자가 없을
-                    경우에도 참여자 중 임의로 결정됩니다.
+                    Sphere 리더는 해당 Sphere의 활동을 주도적으로 이끄는 참여자입니다. 참여 신청 시 희망여부를 조사하며,
+                    희망자가 2명 이상일 경우 2명 중 임의로 결정되며 희망자가 없을 경우에도 참여자 중 임의로 결정됩니다.
                 </>
             ),
         },

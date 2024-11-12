@@ -1,7 +1,7 @@
 // app/my-profile/page.jsx
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation';
 export default function MyProfilePage() {
     const router = useRouter();
     const { user, logout } = useAuth();
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const handleLogout = () => {
         logout(); // 로그아웃 함수 호출
@@ -19,7 +23,10 @@ export default function MyProfilePage() {
         <div className="max-w-[500px] mx-auto px-4 py-8 text-center ">
             {/* 프로필 이미지 */}
             <div className="flex justify-center mb-4">
-                <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
+                <div
+                    className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center"
+                    onClick={openModal}
+                >
                     <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
                 </div>
             </div>
@@ -79,6 +86,21 @@ export default function MyProfilePage() {
                     프로필 수정하기
                 </button>
             </div>
+
+            {/* 모달 */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full p-6 space-y-4 text-center">
+                        <p>
+                            프로필 사진 등록을 원하시는 경우,
+                            <br /> 카카오톡으로 사진을 보내주세요.
+                        </p>
+                        <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

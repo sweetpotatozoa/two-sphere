@@ -45,9 +45,9 @@ export default function AboutPage() {
 
             {/* Icons and Line */}
             <div className="flex items-center justify-center mt-2 mb-6 relative">
-                <Image src={NetworkingIcon} alt="Networking" width={144} height={144} className="mr-4" />
+                <Image src={NetworkingIcon} alt="Networking" width={120} height={120} className="mr-4" />
                 <div className="border-t border-zinc-800 w-24"></div>
-                <Image src={FBIcon} alt="F&B" width={144} height={144} className="ml-4" />
+                <Image src={FBIcon} alt="F&B" width={120} height={120} className="ml-4" />
             </div>
             <div>
                 <p className="text- text-zinc-800 font-extrabold font-['Pretendard Variable'] text-center">

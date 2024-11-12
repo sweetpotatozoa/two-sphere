@@ -1,4 +1,3 @@
-// app/layout.js
 import './globals.css';
 import ClientLayout from './ClientLayout';
 import clientPromise from '@/lib/mongodb';

@@ -1,66 +1,49 @@
-// app/signin/page.jsx
 'use client';
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useAuth } from '../../context/AuthContext';
+import { signIn } from '../../utils/fetcher'; // fetcher.js에서 signIn 함수 가져오기
 import eyeClosedIcon from '/public/eye-closed-icon.svg';
 import eyeOpenIcon from '/public/eye-open-icon.svg';
 
 const SignInPage = () => {
     const router = useRouter();
-    const { isAuthenticated, login } = useAuth(); // AuthContext에서 값을 가져옴
-    const [username, setUsername] = useState('');
+    const [userName, setUserName] = useState(''); // userName 필드로 수정
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
-    // handleLogin 함수
+    // 로그인 요청 처리
     const handleLogin = async () => {
         setError(''); // 오류 초기화
         try {
-            const response = await fetch('/api/auth/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('token', data.token); // JWT 토큰 저장
-                login(); // 로그인 상태 업데이트
-                router.push('/'); // 로그인 후 홈 페이지로 이동
+            const response = await signIn(userName, password); // 서버로 로그인 요청
+            if (response) {
+                localStorage.setItem('token', response.token); // JWT 토큰 저장
+                router.push('/'); // 로그인 성공 후 이동
             } else {
-                setError(data.message); // 오류 메시지 표시
+                setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
             }
         } catch (error) {
-            console.error('Login error:', error);
-            setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
+            console.error('Login error:', error.message);
+            setError('서버와 통신 중 오류가 발생했습니다.');
         }
     };
 
-    // useEffect 부분
-    useEffect(() => {
-        // 로그인 상태라면 홈으로 리디렉션
-        if (isAuthenticated) {
-            router.push('/');
-        }
-    }, [isAuthenticated, router]);
-
+    // 비밀번호 표시/숨기기 토글
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    // 회원가입 페이지 이동
     const handleSignup = () => {
         router.push('/signup');
     };
 
     return (
         <div className="max-w-[500px] mx-auto px-4 pt-20 space-y-2">
-            {/* 로고 이미지 */}
+            {/* 로고 */}
             <div className="flex justify-center mb-20">
                 <Image src="/twosphere-logo-black.svg" alt="TwoSphere Logo" width={240} height={70} />
             </div>
@@ -69,8 +52,8 @@ const SignInPage = () => {
             <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
                 <input
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)} // userName으로 수정
                     placeholder="아이디를 입력해주세요"
                     className="w-full outline-none text-gray-600"
                 />
@@ -95,7 +78,7 @@ const SignInPage = () => {
                 </button>
             </div>
 
-            {/* 로그인 오류 메시지 */}
+            {/* 오류 메시지 */}
             {error && <p className="text-red-500 text-center">{error}</p>}
 
             {/* 로그인 버튼 */}

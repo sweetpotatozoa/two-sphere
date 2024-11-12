@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    color-scheme: light;
+}
 /* 모든 Pretendard 폰트 파일 정의 */
 @font-face {
     font-family: 'Pretendard';
@@ -39,13 +42,6 @@
 :root {
     --background: #ffffff;
     --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
 }
 
 body {
