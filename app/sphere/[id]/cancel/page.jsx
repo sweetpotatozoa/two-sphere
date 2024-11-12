@@ -68,14 +68,16 @@ const CancelComplete = ({ params }) => {
     };
 
     const handleConfirmClick = () => {
-        // Open completion modal instead of redirecting immediately
         setShowCompletionModal(true);
     };
 
     const handleCompletionConfirm = () => {
-        // Redirect to homepage when confirmation in modal is clicked
         router.push('/');
     };
+
+    // 모든 필수 항목이 입력되었는지 확인
+    const isFormComplete =
+        accountNumber && selectedBank && selectedReason && (selectedReason !== '직접 입력' || cancelReason);
 
     return (
         <div className="max-w-[500px] mx-auto space-y-8 text-center">
@@ -128,7 +130,6 @@ const CancelComplete = ({ params }) => {
                         placeholder="참여를 환불받을 계좌를 입력해주세요"
                         value={accountNumber}
                         onChange={(e) => {
-                            // 숫자만 입력하도록 필터링
                             const onlyNumbers = e.target.value.replace(/\D/g, '');
                             handleAccountChange({ target: { value: onlyNumbers } });
                         }}
@@ -175,7 +176,10 @@ const CancelComplete = ({ params }) => {
                 <div className="flex justify-center mt-8">
                     <button
                         onClick={handleConfirmClick}
-                        className="w-full py-3 bg-black text-white font-bold rounded-xl"
+                        disabled={!isFormComplete} // 버튼 비활성화 조건 추가
+                        className={`w-full py-3 font-bold rounded-xl ${
+                            isFormComplete ? 'bg-black text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        }`}
                     >
                         확인
                     </button>

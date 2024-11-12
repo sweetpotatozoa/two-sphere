@@ -15,12 +15,15 @@ const SignUpPage = () => {
     const [birthDate, setBirthDate] = useState('');
     const [sex, setSex] = useState('');
     const [jobStatus, setJobStatus] = useState('');
-    const [userName, setUserName] = useState(''); // username 상태 추가
+    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
+    const [isPasswordMatching, setIsPasswordMatching] = useState(null); // 비밀번호 일치 여부 상태 추가
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // 아이디 중복 확인
     const checkUsername = async () => {
@@ -33,7 +36,7 @@ const SignUpPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userName }), // username 전달
+                body: JSON.stringify({ userName }),
             });
 
             const data = await response.json();
@@ -50,6 +53,15 @@ const SignUpPage = () => {
         }
     };
 
+    // 비밀번호 일치 여부 확인
+    useEffect(() => {
+        if (confirmPassword) {
+            setIsPasswordMatching(password === confirmPassword);
+        } else {
+            setIsPasswordMatching(null);
+        }
+    }, [password, confirmPassword]);
+
     // 회원가입 처리
     const handleSignUp = async () => {
         setError('');
@@ -57,6 +69,12 @@ const SignUpPage = () => {
         // 필수 입력 필드 확인
         if (!name || !birthDate || !sex || !jobStatus || !userName || !password || !phoneNumber) {
             setError('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 비밀번호 일치 확인
+        if (password !== confirmPassword) {
+            setError('비밀번호가 일치하지 않습니다.');
             return;
         }
 
@@ -71,7 +89,7 @@ const SignUpPage = () => {
                     birthDate,
                     sex,
                     jobStatus,
-                    userName, // username 전달
+                    userName,
                     password,
                     phoneNumber,
                 }),
@@ -80,7 +98,7 @@ const SignUpPage = () => {
             const data = await response.json();
             if (response.status === 201) {
                 alert('회원가입 성공!');
-                router.push('/signin'); // 회원가입 성공 후 로그인 페이지로 이동
+                router.push('/signin');
             } else {
                 setError(data.message || '회원가입에 실패했습니다.');
             }
@@ -91,7 +109,7 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="max-w-[500px] mx-auto px-4 pt-28 space-y-4">
+        <div className="max-w-[500px] mx-auto px-4 pt-6 space-y-4">
             {/* 뒤로가기 버튼 */}
             <button onClick={() => router.back()}>
                 <Image src={arrowLeftIcon} alt="Go Back" width={20} height={20} />
@@ -138,7 +156,7 @@ const SignUpPage = () => {
             {/* 아이디 */}
             <div>
                 <label className="block text-lg font-bold mb-2">아이디</label>
-                <div className="flex items-center">
+                <div className="flex items-center justify-between relative">
                     <input
                         type="text"
                         value={userName}
@@ -146,25 +164,73 @@ const SignUpPage = () => {
                         placeholder="아이디를 입력해주세요"
                         className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
                     />
-                    <button onClick={checkUsername} className="ml-2 px-4 py-2 bg-black text-white font-bold rounded-xl">
+                    <button
+                        onClick={checkUsername}
+                        className="absolute right-0 text-md px-4 py-2 bg-black text-white font-bold rounded-xl mr-2"
+                    >
                         중복 확인
                     </button>
                 </div>
-                {isUsernameAvailable === true && <p className="text-green-500">사용 가능한 아이디입니다.</p>}
-                {isUsernameAvailable === false && <p className="text-red-500">이미 사용 중인 아이디입니다.</p>}
+                {isUsernameAvailable === true && (
+                    <p className="text-green-500 text-sm mt-1">사용 가능한 아이디입니다.</p>
+                )}
+                {isUsernameAvailable === false && (
+                    <p className="text-red-500 text-sm mt-1">이미 사용 중인 아이디입니다.</p>
+                )}
             </div>
 
             {/* 비밀번호 */}
             <div>
                 <label className="block text-lg font-bold mb-2">비밀번호</label>
-                <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="비밀번호를 입력해주세요"
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
-                />
-                <button onClick={() => setShowPassword((prev) => !prev)}>비밀번호 보기</button>
+                <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="비밀번호를 입력해주세요"
+                        className="w-full outline-none text-gray-600"
+                    />
+                    <button
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="flex items-center justify-center ml-2"
+                    >
+                        <Image
+                            src={showPassword ? eyeOpenIcon : eyeClosedIcon}
+                            alt="Toggle Password Visibility"
+                            width={20}
+                            height={20}
+                        />
+                    </button>
+                </div>
+            </div>
+
+            {/* 비밀번호 확인 */}
+            <div>
+                <label className="block text-lg font-bold mb-2">비밀번호 확인</label>
+                <div className="flex items-center border border-gray-300 rounded-xl px-4 py-2 relative">
+                    <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="비밀번호를 다시 입력해주세요"
+                        className="w-full outline-none text-gray-600"
+                    />
+                    <button
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="flex items-center justify-center ml-2"
+                    >
+                        <Image
+                            src={showConfirmPassword ? eyeOpenIcon : eyeClosedIcon}
+                            alt="Toggle Confirm Password Visibility"
+                            width={20}
+                            height={20}
+                        />
+                    </button>
+                </div>
+                {isPasswordMatching === true && <p className="text-green-500 text-sm mt-1">비밀번호가 일치합니다.</p>}
+                {isPasswordMatching === false && (
+                    <p className="text-red-500 text-sm mt-1">비밀번호가 일치하지 않습니다.</p>
+                )}
             </div>
 
             {/* 전화번호 */}

@@ -73,7 +73,7 @@ const OpenSpheres = () => {
                     <div
                         key={sphere.id}
                         onClick={() => handleSphereClick(sphere.id)}
-                        className="ml-4 last:mr-4 relative w-[350px] h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden cursor-pointer"
+                        className="ml-4 last:mr-4 relative w-[320px] h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden cursor-pointer"
                     >
                         {/* Sphere 이미지 */}
                         <Image
