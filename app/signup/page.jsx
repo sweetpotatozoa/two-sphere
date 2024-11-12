@@ -166,7 +166,8 @@ const SignUpPage = () => {
                     />
                     <button
                         onClick={checkUsername}
-                        className="absolute right-0 text-md px-4 py-2 bg-black text-white font-bold rounded-xl mr-2"
+                        className="absolute right-0 text-sm mr-1
+                         px-4 py-2 bg-black text-white font-bold rounded-xl "
                     >
                         중복 확인
                     </button>

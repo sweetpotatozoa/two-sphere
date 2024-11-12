@@ -47,7 +47,7 @@ export default function EditProfilePage() {
 
             {/* 커리어 수정 */}
             <div className="mb-6">
-                <label className="ml-4 block text-md font-bold mb-2">한 줄 커리어</label>
+                <label className="ml-3 block text-md font-bold mb-2">한 줄 커리어</label>
                 <input
                     type="text"
                     value={career}
@@ -66,7 +66,7 @@ export default function EditProfilePage() {
                 '다른 사람들에게 어떻게 기억되고 싶나요?',
             ].map((question, index) => (
                 <div key={index} className="mb-8">
-                    <label className="ml-4 block text-md font-bold mb-2">{`Q${index + 1}. ${question}`}</label>
+                    <label className="ml-3 block text-md font-bold mb-2">{`Q${index + 1}. ${question}`}</label>
                     <input
                         type="text"
                         value={answers[index]}
