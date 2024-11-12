@@ -1,7 +1,6 @@
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { DateTime } from 'luxon';
 
 export async function GET(req, { params }) {
     try {
@@ -176,7 +175,7 @@ export async function POST(req, { params }) {
                 createdAt: null,
             },
             attendCount: 0,
-            createdAt: DateTime.now().setZone('Asia/Seoul'),
+            createdAt: new Date(),
         };
 
         await db

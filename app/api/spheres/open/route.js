@@ -1,6 +1,5 @@
 import clientPromise from '@/lib/mongodb'; // MongoDB 클라이언트 설정 가져오기
 import { NextResponse } from 'next/server';
-import { DateTime } from 'luxon';
 
 export async function GET() {
     try {
@@ -23,7 +22,7 @@ export async function GET() {
             })
             .toArray();
 
-        const currentDate = DateTime.now().setZone('Asia/Seoul');
+        const currentDate = new Date();
 
         // 남은 날짜 계산 및 응답 데이터 구성
         const sphereWithRemainingDays = spheres.map((sphere) => {

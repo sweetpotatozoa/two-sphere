@@ -1,7 +1,6 @@
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
-import { DateTime } from 'luxon';
 
 export async function POST(req) {
     try {
@@ -29,8 +28,8 @@ export async function POST(req) {
             userName,
             password: hashedPassword, // 해싱된 비밀번호 저장
             phoneNumber,
-            createdAt: DateTime.now().setZone('Asia/Seoul'),
-            updatedAt: DateTime.now().setZone('Asia/Seoul'),
+            createdAt: new Date(),
+            updatedAt: new Date(),
             isProfiled: false,
             career: '',
             answers: {
