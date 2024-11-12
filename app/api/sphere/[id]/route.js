@@ -141,9 +141,18 @@ export async function POST(req, { params }) {
             return NextResponse.json({ message: 'Sphere not found' }, { status: 404 });
         }
 
+        // 이미 참가자인지 확인
         const isAlreadyParticipant = sphere.participants.some((participant) => participant.userId.equals(userObjectId));
         if (isAlreadyParticipant) {
             return NextResponse.json({ message: 'Already a participant' }, { status: 400 });
+        }
+
+        // 취소된 참가자인지 확인
+        const isCanceledParticipant = sphere.participants.some(
+            (participant) => participant.userId.equals(userObjectId) && participant.cancelInfo?.isCancel
+        );
+        if (isCanceledParticipant) {
+            return NextResponse.json({ message: '취소자는 재신청이 불가능합니다' }, { status: 400 });
         }
 
         const newParticipant = {
