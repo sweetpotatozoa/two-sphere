@@ -1,7 +1,7 @@
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { DateTime } from 'luxon';
 
 export async function GET(req, { params }) {
     try {
@@ -168,9 +168,15 @@ export async function POST(req, { params }) {
             userId: userObjectId,
             payment: 'unpaid',
             isHost,
-            cancelInfo: { isCancel: false, account: '', bank: '', reason: '', createdAt: null },
+            cancelInfo: {
+                isCancel: false,
+                account: '',
+                bank: '',
+                reason: '',
+                createdAt: null,
+            },
             attendCount: 0,
-            createdAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'), // KST 기준으로 현재 시간
+            createdAt: DateTime.now().setZone('Asia/Seoul'),
         };
 
         await db

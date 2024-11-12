@@ -1,7 +1,7 @@
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { DateTime } from 'luxon';
 
 export async function POST(req) {
     try {
@@ -29,8 +29,8 @@ export async function POST(req) {
             userName,
             password: hashedPassword, // 해싱된 비밀번호 저장
             phoneNumber,
-            createdAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'), // KST 기준으로 현재 시간
-            updatedAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'),
+            createdAt: DateTime.now().setZone('Asia/Seoul'),
+            updatedAt: DateTime.now().setZone('Asia/Seoul'),
             isProfiled: false,
             career: '',
             answers: {
