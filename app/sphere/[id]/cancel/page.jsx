@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { sphereData } from '../../../data/sphereData';
 import SphereHeader from '../../../../components/SphereHeader';
+import { cancelReservation } from '@/utils/fetcher';
 
 const bankList = [
     '한국은행',
@@ -67,8 +68,27 @@ const CancelComplete = ({ params }) => {
         setShowBankOptions(false);
     };
 
-    const handleConfirmClick = () => {
-        setShowCompletionModal(true);
+    const handleConfirmClick = async () => {
+        if (!isFormComplete) return; // 입력이 완료되지 않은 경우 함수 실행 중단
+
+        try {
+            // API로 전송할 데이터 구성
+            const cancelData = {
+                bank: selectedBank,
+                accountNumber,
+                reason: selectedReason === '직접 입력' ? cancelReason : selectedReason,
+            };
+
+            // 취소 API 호출
+            await cancelReservation(id, cancelData);
+
+            // 성공적으로 처리된 경우 모달 표시
+            setShowCompletionModal(true);
+        } catch (error) {
+            // 에러 발생 시 로그 출력 및 사용자 알림
+            console.error('취소 요청 실패:', error.message);
+            alert('취소 요청에 실패했습니다. 다시 시도해주세요.');
+        }
     };
 
     const handleCompletionConfirm = () => {
