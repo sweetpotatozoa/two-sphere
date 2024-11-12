@@ -35,7 +35,8 @@ export default function MyProfilePage() {
         router.push('/');
     };
 
-    if (!user) return <p>Loading...</p>;
+    if (!user)
+        return <p className="min-h-screen flex flex-col items-center mt-12">사용자 데이터를 불러오는 중입니다.</p>;
 
     return (
         <div className="max-w-[500px] mx-auto px-4 py-8 text-center ">
