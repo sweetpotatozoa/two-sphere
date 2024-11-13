@@ -4,7 +4,7 @@ import Image from 'next/image';
 import locationIcon from '/public/location-icon-black.svg';
 
 const SphereDetails = ({ description, place, subImage1, subImage2, placeStory }) => (
-    <section className="pb-4 space-y-2">
+    <section className="pb-4 space-y-4">
         {/* 스피어 설명 */}
         <p className="text-lg pb-4" style={{ whiteSpace: 'pre-line' }}>
             {description}
@@ -22,7 +22,7 @@ const SphereDetails = ({ description, place, subImage1, subImage2, placeStory })
         </div>
 
         {/* 장소 사진 */}
-        <div className="pt-4 space-y-4">
+        <div className="pt-8 space-y-4">
             {subImage1 ? (
                 <Image
                     src={subImage1}

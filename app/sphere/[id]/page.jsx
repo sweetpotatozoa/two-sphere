@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getSphereDetails } from '@/utils/fetcher';
+import { getSphereDetails, cancelReservation } from '@/utils/fetcher';
 import SphereHeader from '../../../components/SphereHeader';
 import SphereDetails from '../../../components/SphereDetails';
 import SphereParticipants from '../../../components/SphereParticipants';
@@ -23,6 +23,7 @@ const SphereDetail = ({ params }) => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isParticipating, setIsParticipating] = useState(false);
+    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 취소 완료 모달
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -65,6 +66,18 @@ const SphereDetail = ({ params }) => {
 
         fetchDetails();
     }, [id]);
+
+    const handleImmediateCancel = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            await cancelReservation(id, { reason: '24시간 내 취소' }, token); // 취소 API 호출
+            setShowCancelConfirmation(true); // 취소 완료 모달 표시
+            setIsParticipating(false); // 참여 상태 업데이트
+        } catch (err) {
+            console.error('취소 요청 실패:', err);
+            setError('취소에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
 
     if (isLoading) {
         return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
@@ -111,7 +124,7 @@ const SphereDetail = ({ params }) => {
     };
 
     return (
-        <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
+        <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
                 <Image
                     src={sphere.thumbnail}
@@ -128,7 +141,7 @@ const SphereDetail = ({ params }) => {
                 firstDate={sphere.firstDate}
             />
 
-            <div className="space-y-8">
+            <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
                 <SphereDetails
                     description={sphere.description}
                     place={sphere.place}
@@ -140,7 +153,6 @@ const SphereDetail = ({ params }) => {
                 <SphereParticipants participants={sphere.participants} />
                 <SphereQuestions questions={sphere.questions} />
 
-                {/* 참여 상태에 따른 버튼 표시 */}
                 {isParticipating ? (
                     <button
                         onClick={handleCancelClick}
@@ -188,10 +200,32 @@ const SphereDetail = ({ params }) => {
 
             {showCancelModal &&
                 (isLessThan24Hours ? (
-                    <CancelNoRefundModal onClose={handleCancelNo} id={id} />
+                    // 24시간 전이면 환불 불가 모달 표시
+                    <CancelNoRefundModal
+                        onClose={handleCancelNo}
+                        id={id}
+                        onConfirm={handleImmediateCancel} // 취소 확인 시 즉시 취소 수행
+                    />
                 ) : (
                     <CancelNoticeModal onClose={handleCancelNo} id={id} />
                 ))}
+
+            {showCancelConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                        <p>취소되었습니다.</p>
+                        <button
+                            onClick={() => {
+                                setShowCancelConfirmation(false);
+                                router.push(`/sphere/${id}`);
+                            }}
+                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

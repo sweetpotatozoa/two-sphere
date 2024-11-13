@@ -1,11 +1,12 @@
+// app/sphere/[id]/cancel/page.jsx
 'use client';
 
-import React, { useEffect, useState } from 'react'; // useEffect 추가
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getSphereStatus, cancelReservation } from '@/utils/fetcher'; // 상태 조회 함수 추가
-import { sphereData } from '../../../data/sphereData';
+import { getSphereStatus, cancelReservation } from '@/utils/fetcher'; // fetcher.js 함수 사용
 import SphereHeader from '../../../../components/SphereHeader';
+import jwt from 'jsonwebtoken';
 
 const bankList = [
     '한국은행',
@@ -41,25 +42,25 @@ const bankList = [
 const CancelComplete = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const sphere = sphereData.find((s) => s.id === parseInt(id));
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [cancelReason, setCancelReason] = useState('');
-    const [sphereStatus, setSphereStatus] = useState(null); // 스피어 상태 저장
-    const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
-    const [error, setError] = useState(null); // 에러 상태 관리
+    const [sphereStatus, setSphereStatus] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [showReasonOptions, setShowReasonOptions] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
     const [showBankOptions, setShowBankOptions] = useState(false);
-    const [showCompletionModal, setShowCompletionModal] = useState(false); // State for completion modal
+    const [showCompletionModal, setShowCompletionModal] = useState(false);
 
-    // 스피어 상태 조회
     useEffect(() => {
         const fetchSphereStatus = async () => {
             try {
-                const token = localStorage.getItem('token'); // 사용자 인증 토큰 가져오기
-                const status = await getSphereStatus(id, token); // 상태 조회 함수 호출
-                setSphereStatus(status); // 상태 업데이트
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('Access token is missing.');
+
+                const status = await getSphereStatus(id, token); // fetcher.js 함수 호출
+                setSphereStatus(status);
             } catch (err) {
                 setError('스피어 상태를 불러오는 데 실패했습니다.');
                 console.error(err);
@@ -89,7 +90,7 @@ const CancelComplete = ({ params }) => {
     };
 
     const handleAccountChange = (e) => {
-        setAccountNumber(e.target.value);
+        setAccountNumber(e.target.value.replace(/\D/g, '')); // 숫자만 허용
     };
 
     const handleBankSelect = (bank) => {
@@ -98,21 +99,27 @@ const CancelComplete = ({ params }) => {
     };
 
     const handleConfirmClick = async () => {
-        if (!isFormComplete) return; // 입력이 완료되지 않은 경우 함수 실행 중단
+        if (!isFormComplete) return;
 
         try {
-            const token = localStorage.getItem('token'); // 인증 토큰 가져오기
-            const cancelData = {
-                bank: selectedBank,
-                accountNumber,
-                reason: selectedReason === '직접 입력' ? cancelReason : selectedReason,
-            };
+            const token = localStorage.getItem('token');
+            if (token) {
+                const decodedToken = jwt.decode(token);
+                const userId = decodedToken?.user?.id || decodedToken?.userId;
 
-            // 취소 API 호출
-            await cancelReservation(id, cancelData, token);
+                if (!userId) throw new Error('UserId is missing in token payload');
 
-            // 성공적으로 처리된 경우 모달 표시
-            setShowCompletionModal(true);
+                const cancelData = {
+                    bank: selectedBank,
+                    accountNumber,
+                    reason: selectedReason === '직접 입력' ? cancelReason : selectedReason,
+                };
+
+                await cancelReservation(id, cancelData, token);
+                setShowCompletionModal(true);
+            } else {
+                setError('유효하지 않은 토큰입니다.');
+            }
         } catch (error) {
             console.error('취소 요청 실패:', error.message);
             alert('취소 요청에 실패했습니다. 다시 시도해주세요.');
@@ -123,29 +130,18 @@ const CancelComplete = ({ params }) => {
         router.push('/');
     };
 
-    // 모든 필수 항목이 입력되었는지 확인
     const isFormComplete =
         accountNumber && selectedBank && selectedReason && (selectedReason !== '직접 입력' || cancelReason);
 
     return (
         <div className="max-w-[500px] mx-auto space-y-8 text-center">
-            <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
-                <Image
-                    src={sphere.image}
-                    alt="Sphere Image"
-                    width={500}
-                    height={300}
-                    className="w-full object-cover object-center"
-                />
-            </div>
             <SphereHeader
-                title={sphere.title}
-                description={sphere.description}
-                location={sphere.location}
-                date={sphere.date}
+                title={sphereStatus.title}
+                description={sphereStatus.description}
+                location={sphereStatus.location}
+                date={sphereStatus.date}
             />
 
-            {/* 스피어 상태 표시 */}
             <p className={`text-lg font-semibold ${sphereStatus.isRefundable ? 'text-green-500' : 'text-red-500'}`}>
                 {sphereStatus.isRefundable ? '취소 가능한 상태입니다.' : '취소 불가능한 상태입니다.'}
             </p>
@@ -175,17 +171,13 @@ const CancelComplete = ({ params }) => {
                     )}
                 </div>
 
-                {/* Account Number Input */}
                 <div className="space-y-4">
                     <label className="block text-left font-medium">계좌번호</label>
                     <input
                         type="text"
                         placeholder="참여를 환불받을 계좌를 입력해주세요"
                         value={accountNumber}
-                        onChange={(e) => {
-                            const onlyNumbers = e.target.value.replace(/\D/g, '');
-                            handleAccountChange({ target: { value: onlyNumbers } });
-                        }}
+                        onChange={handleAccountChange}
                         className="w-full p-3 border border-gray-300 rounded-xl"
                     />
                     <p className="text-xs text-gray-500">
@@ -193,7 +185,6 @@ const CancelComplete = ({ params }) => {
                     </p>
                 </div>
 
-                {/* Cancel Reason */}
                 <div className="space-y-4">
                     <label className="block text-left font-medium">취소사유</label>
                     <div
@@ -229,7 +220,7 @@ const CancelComplete = ({ params }) => {
                 <div className="flex justify-center mt-8">
                     <button
                         onClick={handleConfirmClick}
-                        disabled={!isFormComplete} // 버튼 비활성화 조건 추가
+                        disabled={!isFormComplete}
                         className={`w-full py-3 font-bold rounded-xl ${
                             isFormComplete ? 'bg-black text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                         }`}
@@ -239,7 +230,6 @@ const CancelComplete = ({ params }) => {
                 </div>
             </div>
 
-            {/* Completion Modal */}
             {showCompletionModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white w-80 p-6 rounded-xl shadow-lg text-center">
