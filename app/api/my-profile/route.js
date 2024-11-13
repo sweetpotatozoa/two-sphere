@@ -4,6 +4,8 @@ import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic'; // 페이지를 동적 설정
+
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
@@ -22,7 +24,11 @@ export async function GET(req) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ user }, { status: 200 });
+        // 응답에서 캐시를 사용하지 않도록 설정
+        const headers = new Headers();
+        headers.set('Cache-Control', 'no-store');
+
+        return NextResponse.json({ user }, { status: 200, headers });
     } catch (error) {
         console.error('Get user info error:', error);
         return NextResponse.json({ message: 'An error occurred while fetching user info' }, { status: 500 });
@@ -63,7 +69,11 @@ export async function PUT(req) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200 });
+        // 응답에서 캐시를 사용하지 않도록 설정
+        const headers = new Headers();
+        headers.set('Cache-Control', 'no-store');
+
+        return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200, headers });
     } catch (error) {
         console.error('Update user profile error:', error);
         return NextResponse.json({ message: 'An error occurred while updating profile' }, { status: 500 });

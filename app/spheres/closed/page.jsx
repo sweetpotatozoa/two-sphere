@@ -1,15 +1,33 @@
 // app/spheres/closed/page.jsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { sphereData } from '../../data/sphereData';
+import { getClosedSpheres } from '@/utils/fetcher';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export default function ClosedSpheresPage() {
     const router = useRouter();
+    const [closedSpheres, setClosedSpheres] = useState([]); // 수정: 상태 관리 추가
+    const [isLoading, setIsLoading] = useState(true); // 수정: 로딩 상태 관리
+    const [error, setError] = useState(null); // 수정: 에러 상태 관리
 
-    const closedSpheres = sphereData.filter((sphere) => sphere.status === 'closed'); // 'closed' 상태의 스피어만 필터링
+    useEffect(() => {
+        const fetchClosedSpheres = async () => {
+            try {
+                const data = await getClosedSpheres(); // 수정: 백엔드 API에서 데이터 가져오기
+                setClosedSpheres(data); // 수정: 상태 업데이트
+            } catch (err) {
+                setError('데이터를 불러오는 중 오류가 발생했습니다.'); // 수정: 에러 상태 설정
+                console.error(err);
+            } finally {
+                setIsLoading(false); // 수정: 로딩 상태 비활성화
+            }
+        };
+
+        fetchClosedSpheres(); // 수정: useEffect 내에서 호출
+    }, []);
 
     const handleSphereClick = (id) => {
         router.push(`/sphere/${id}`);
@@ -17,12 +35,12 @@ export default function ClosedSpheresPage() {
 
     return (
         <div className="w-full max-w-[500px] mx-auto p-4">
-            <h2 className="text-xl font-bold mb-4">지난 Sphere</h2>
+            <h2 className="ml-2 text-xl font-bold mb-3 mt-2">지난 Sphere</h2>
             <div className="flex flex-col space-y-4">
                 {closedSpheres.length > 0 ? (
                     closedSpheres.map((sphere) => (
                         <div
-                            key={sphere.id}
+                            key={sphere._id}
                             onClick={() => handleSphereClick(sphere.id)}
                             className="relative w-full h-48 bg-gray-800 rounded-xl overflow-hidden cursor-pointer"
                         >

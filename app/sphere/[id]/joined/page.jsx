@@ -23,7 +23,7 @@ const JoinedPage = ({ params }) => {
     };
 
     return (
-        <div className="max-w-[500px] space-y-8 text-center mx-auto px-4">
+        <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
                 <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
             </div>
@@ -42,7 +42,7 @@ const JoinedPage = ({ params }) => {
 
             <section className="pb-4 space-y-4">
                 <h2 className="text-xl font-bold">참여 신청이 완료되었습니다!</h2>
-                <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-lg">
+                <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-xl">
                     참여비: 300,000원 <br />
                     계좌 : 토스 112119114111 <br />
                 </p>

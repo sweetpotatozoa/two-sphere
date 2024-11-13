@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    color-scheme: light;
+}
 /* 모든 Pretendard 폰트 파일 정의 */
 @font-face {
     font-family: 'Pretendard';
@@ -41,13 +44,6 @@
     --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
-}
-
 body {
     color: var(--foreground);
     background: var(--background);
@@ -56,17 +52,17 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 내용이 상단에서 시작되도록 설정 */
+    align-items: flex-start;
     overflow-x: hidden;
 }
 
 .container {
     max-width: 500px;
     width: 100%;
-    height: 100vh; /* 컨테이너가 전체 뷰포트 높이 차지 */
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Header와 BottomNav를 상하단에 배치 */
+    justify-content: space-between;
     margin: 0 auto; /* 가운데 정렬 */
 }
 
@@ -74,4 +70,17 @@ body {
     .text-balance {
         text-wrap: balance;
     }
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.shadow-xxl {
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.3); /* 그림자 크기, 흐림 정도, 색상 조절 */
 }
