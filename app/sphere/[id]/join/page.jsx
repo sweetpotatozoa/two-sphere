@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import SphereHeader from '../../../../components/SphereHeader';
+import { getSphereDetails } from '@/utils/fetcher';
 import { joinSphere } from '@/utils/fetcher'; // API 호출 함수 추가
 
 const JoinPage = ({ params }) => {
@@ -16,26 +17,13 @@ const JoinPage = ({ params }) => {
     const [error, setError] = useState(null); // 에러 상태 추가
 
     useEffect(() => {
-        // MongoDB에서 Sphere 데이터 가져오기
         const fetchSphereData = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
-                const response = await fetch(`/api/sphere/${id}`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch sphere data');
-                }
-
-                const data = await response.json();
+                const data = await getSphereDetails(id); // fetcher.js의 getSphereDetails 함수 호출
                 setSphere(data); // MongoDB에서 가져온 스피어 데이터 설정
             } catch (err) {
                 console.error('Failed to fetch sphere data:', err.message);
-                setError('스피어 데이터를 불러오는 데 실패했습니다.');
+                setError('스피어 정보를 불러오는 데 실패했습니다.');
             }
         };
 
@@ -46,7 +34,7 @@ const JoinPage = ({ params }) => {
     const handleJoinClick = async () => {
         if (isLeader !== null && isConfirmed) {
             try {
-                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
+                const token = localStorage.getItem('token'); // 사용자 인증 토큰 가져오기
                 await joinSphere(id, isLeader, token); // 참여 API 호출
                 router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
             } catch (err) {

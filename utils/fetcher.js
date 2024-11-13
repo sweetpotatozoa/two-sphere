@@ -117,7 +117,7 @@ export const joinSphere = async (sphereId, isHost) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/sphere/${sphereId}`;
 
-    const token = localStorage.getItem('accessToken'); // 토큰 가져오기
+    const token = localStorage.getItem('token'); // 토큰 가져오기
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }

@@ -14,7 +14,7 @@ export default function MySpheresPage() {
     useEffect(() => {
         const fetchMySpheres = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 인증 토큰 가져오기
+                const token = localStorage.getItem('token'); // 인증 토큰 가져오기
                 const data = await getUserSpheres(token); // fetcher를 통해 API 데이터 가져오기
                 setSpheres(data); // 상태 업데이트
             } catch (err) {

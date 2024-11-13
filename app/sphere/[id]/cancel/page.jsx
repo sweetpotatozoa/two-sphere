@@ -57,7 +57,7 @@ const CancelComplete = ({ params }) => {
     useEffect(() => {
         const fetchSphereStatus = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
+                const token = localStorage.getItem('token'); // 사용자 인증 토큰 가져오기
                 const status = await getSphereStatus(id, token); // 상태 조회 함수 호출
                 setSphereStatus(status); // 상태 업데이트
             } catch (err) {
@@ -101,7 +101,7 @@ const CancelComplete = ({ params }) => {
         if (!isFormComplete) return; // 입력이 완료되지 않은 경우 함수 실행 중단
 
         try {
-            const token = localStorage.getItem('accessToken'); // 인증 토큰 가져오기
+            const token = localStorage.getItem('token'); // 인증 토큰 가져오기
             const cancelData = {
                 bank: selectedBank,
                 accountNumber,

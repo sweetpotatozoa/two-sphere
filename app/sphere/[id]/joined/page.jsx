@@ -1,44 +1,64 @@
 // app/sphere/[id]/joined/page.jsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { sphereData } from '../../../data/sphereData';
+import SphereHeader from '../../../../components/SphereHeader';
+import { getSphereDetails } from '@/utils/fetcher';
 import locationIcon from '/public/location-icon-black.svg';
 import calendarIcon from '/public/calendar-icon-black.svg';
 
 const JoinedPage = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const sphere = sphereData.find((s) => s.id === parseInt(id));
+    const [sphere, setSphere] = useState(null); // MongoDB에서 가져온 스피어 데이터 상태
+    const [error, setError] = useState(null); // 에러 상태 관리
+
+    useEffect(() => {
+        const fetchSphereData = async () => {
+            try {
+                const data = await getSphereDetails(id); // fetcher.js의 getSphereDetails 함수 호출
+                setSphere(data); // MongoDB에서 가져온 스피어 데이터 설정
+            } catch (err) {
+                console.error('Failed to fetch sphere data:', err.message);
+                setError('스피어 정보를 불러오는 데 실패했습니다.');
+            }
+        };
+
+        fetchSphereData();
+    }, [id]);
+
+    // 참여 완료 후 확인 버튼 클릭 핸들러
+    const handleOkayClick = () => {
+        router.push(`/my-spheres`);
+    };
+
+    if (error) {
+        return <p>{error}</p>;
+    }
 
     if (!sphere) {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
-    // 참여하기 버튼 클릭 핸들러
-    const handleOkayClick = () => {
-        router.push(`/my-spheres`);
-    };
-
     return (
         <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
-                <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
+                <Image
+                    src={sphere.thumbnail} // MongoDB 데이터 사용
+                    alt="Sphere Image"
+                    width={500}
+                    height={300}
+                    className="w-full object-cover"
+                />
             </div>
-
-            {/* 섹션 1 */}
-            <section className="border-b border-black pb-8 space-y-4">
-                <h1 className="text-2xl font-bold">{sphere.title}</h1>
-                <p>{sphere.description}</p>
-                <div className="flex items-center justify-center space-x-2">
-                    <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                    <span>{sphere.location}</span>
-                    <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
-                    <span>{sphere.date}</span>
-                </div>
-            </section>
+            <SphereHeader
+                title={sphere.title}
+                subtitle={sphere.subtitle} // MongoDB 데이터 사용
+                place={sphere.place} // MongoDB 데이터 사용
+                firstDate={sphere.firstDate} // MongoDB 데이터 사용
+            />
 
             <section className="pb-4 space-y-4">
                 <h2 className="text-xl font-bold">참여 신청이 완료되었습니다!</h2>

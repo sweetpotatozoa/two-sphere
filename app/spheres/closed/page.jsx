@@ -14,7 +14,7 @@ export default function ClosedSpheresPage() {
     useEffect(() => {
         const fetchClosedSpheres = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 인증 토큰 가져오기
+                const token = localStorage.getItem('token'); // 인증 토큰 가져오기
                 const data = await getClosedSpheres(token); // MongoDB API 호출
                 setClosedSpheres(data); // 상태 업데이트
             } catch (err) {

@@ -54,7 +54,7 @@ const OpenSpheres = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 인증 토큰 가져오기
+                const token = localStorage.getItem('token'); // 인증 토큰 가져오기
                 const data = await getOpenSpheres(token); // MongoDB 데이터 호출
                 setSpheres(data); // state에 데이터 저장
             } catch (error) {
