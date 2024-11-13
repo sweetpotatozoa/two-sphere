@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { signIn } from '../../utils/fetcher'; // fetcher.js에서 signIn 함수 가져오기
@@ -19,14 +19,13 @@ const SignInPage = () => {
         setError(''); // 오류 초기화
         try {
             const response = await signIn(userName, password); // 서버로 로그인 요청
-            if (response) {
+            if (response && response.token) {
                 localStorage.setItem('token', response.token); // JWT 토큰 저장
                 router.push('/'); // 로그인 성공 후 이동
             } else {
                 setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
             }
         } catch (error) {
-            console.error('Login error:', error.message);
             setError('서버와 통신 중 오류가 발생했습니다.');
         }
     };

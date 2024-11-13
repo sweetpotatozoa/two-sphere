@@ -9,7 +9,7 @@ const WelcomePage = () => {
     const router = useRouter();
 
     const goToProfile = () => {
-        router.push('/signin'); // '프로필 완성하러 가기' 버튼 클릭 시 /login 경로로 이동
+        router.push('/signin'); // '프로필 완성하러 가기' 버튼 클릭 시 로그인 경로로 이동
     };
 
     return (

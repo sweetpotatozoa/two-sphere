@@ -5,29 +5,30 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function MyProfilePage() {
     const router = useRouter();
-    const { logout, user: authUser } = useAuth(); // 사용자 ID 가져오기
     const [user, setUser] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!authUser) return; // 사용자 인증 여부 확인
+            const token = localStorage.getItem('token'); // 로컬스토리지에서 토큰 가져오기
+            if (!token) {
+                router.push('/signin'); // 토큰 없으면 로그인 페이지로 이동
+                return;
+            }
             try {
                 const response = await fetch('/api/my-profile', {
                     method: 'GET',
                     headers: {
-                        'x-user-id': authUser.id, // 유저 ID를 헤더에 추가
+                        Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 추가
                     },
                     cache: 'no-store',
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    setUser(data.user); // data.user에 접근
+                    setUser(data.user);
                 } else {
                     console.error('Failed to fetch user data:', response.status);
                 }
@@ -36,14 +37,12 @@ export default function MyProfilePage() {
             }
         };
         fetchUserData();
-    }, [authUser]);
-
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    }, [router]);
 
     const handleLogout = () => {
-        logout();
-        router.push('/');
+        localStorage.removeItem('token'); // 토큰 제거
+        localStorage.setItem('logoutMessage', 'true'); // 로그아웃 메시지 상태 저장
+        router.push('/'); // 홈으로 즉시 이동
     };
 
     if (!user) return <p className="flex flex-col items-center mt-12">사용자 데이터를 불러오는 중입니다.</p>;
@@ -51,10 +50,7 @@ export default function MyProfilePage() {
     return (
         <div className="max-w-[500px] mx-auto px-4 py-8 text-center ">
             <div className="flex justify-center mb-4">
-                <div
-                    className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center"
-                    onClick={openModal}
-                >
+                <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
                     <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
                 </div>
             </div>
@@ -64,16 +60,20 @@ export default function MyProfilePage() {
                     <Image src="/logout-icon.svg" alt="Logout" width={20} height={20} />
                 </button>
             </div>
-            <p className="text-gray-600 mt-2">{user.career || '한 줄 커리어'}</p>
+            <p className="text-gray-600 mt-2">{user.career || '아직 한 줄 커리어가 없습니다.'}</p>
 
             <div className="border-t border-gray-300 my-4"></div>
 
-            {user.answers.map((answer, index) => (
+            {questions.map((question, index) => (
                 <div key={index} className="text-left mb-6">
                     <h2 className="ml-4 text-md font-bold">
-                        Q{index + 1}. {questions[index]}
+                        Q{index + 1}. {question}
                     </h2>
-                    <p className="text-gray-600 mt-2">{answer || '아직 답변을 작성하지 않았습니다.'}</p>
+                    <p className="text-gray-600 ml-4 mt-2">
+                        {Array.isArray(user.answers) && user.answers[index]
+                            ? user.answers[index]
+                            : '아직 답변을 작성하지 않았습니다.'}
+                    </p>
                     <div className="border-b border-gray-300 mt-4"></div>
                 </div>
             ))}
@@ -86,25 +86,11 @@ export default function MyProfilePage() {
                     프로필 수정하기
                 </button>
             </div>
-
-            {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
-                        <p>
-                            프로필 사진 등록을 원하시는 경우,
-                            <br /> 카카오톡으로 사진을 보내주세요.
-                        </p>
-                        <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
-                            닫기
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
 
-const questions = [
+export const questions = [
     '현재 어떤 일을 하고 있는지, 어떤 일상을 보내고 있는지 알려주세요.',
     '나를 가장 잘 표현하는 세 가지 단어는 무엇인가요?',
     '가장 몰입하는 순간은 언제인가요?',

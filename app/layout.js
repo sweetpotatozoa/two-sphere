@@ -1,7 +1,6 @@
 import './globals.css';
 import ClientLayout from './ClientLayout';
 import clientPromise from '@/lib/mongodb';
-import { AuthProvider } from '../context/AuthContext';
 
 export const metadata = {
     title: '투스피어',
@@ -16,9 +15,7 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className="antialiased tracking-tighter">
-                <AuthProvider>
-                    <ClientLayout>{children}</ClientLayout>
-                </AuthProvider>
+                <ClientLayout>{children}</ClientLayout>
             </body>
         </html>
     );

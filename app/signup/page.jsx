@@ -6,6 +6,7 @@ import Image from 'next/image';
 import eyeClosedIcon from '/public/eye-closed-icon.svg';
 import eyeOpenIcon from '/public/eye-open-icon.svg';
 import arrowLeftIcon from '/public/arrow-left-icon.svg';
+import { signUp } from '../../utils/fetcher';
 
 const SignUpPage = () => {
     const router = useRouter();
@@ -79,27 +80,20 @@ const SignUpPage = () => {
         }
 
         try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name,
-                    birthDate,
-                    sex,
-                    jobStatus,
-                    userName,
-                    password,
-                    phoneNumber,
-                }),
+            const response = await signUp({
+                name,
+                birthDate,
+                sex,
+                jobStatus,
+                userName,
+                password,
+                phoneNumber,
             });
 
-            const data = await response.json();
             if (response.status === 201) {
-                alert('회원가입 성공!');
-                router.push('/signin');
+                router.push('/welcome'); // 회원가입 성공 후 /welcome으로 즉시 이동
             } else {
+                const data = await response.json(); // 에러 메시지 확인
                 setError(data.message || '회원가입에 실패했습니다.');
             }
         } catch (err) {
@@ -239,10 +233,19 @@ const SignUpPage = () => {
                 <label className="block text-lg font-bold mb-2">전화번호</label>
                 <input
                     type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="전화번호를 입력해주세요"
+                    value={phoneNumber} // phoneNumber 상태 값 연결
                     className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
+                    onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, ''); // 숫자 이외의 문자는 제거
+                        if (value.length > 3 && value.length <= 7) {
+                            value = value.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+                        } else if (value.length > 7) {
+                            value = value.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3');
+                        }
+                        setPhoneNumber(value); // 상태 업데이트
+                    }}
+                    maxLength={13} // 000-0000-0000 형식에 맞춰 최대 길이 설정
                 />
             </div>
 

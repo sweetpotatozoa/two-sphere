@@ -1,13 +1,17 @@
-const fetcher = async (url, token, method, params = {}, responseType = 'json') => {
+// utils/fetcher.js
+
+const fetcher = async (url, token = null, method = 'GET', params = {}, responseType = 'json') => {
     const headers = { 'Content-Type': 'application/json' };
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
+
     const init = {
         method,
         headers,
-        ...(method !== 'GET' && { body: JSON.stringify(params) }), // GET 외 요청은 body 포함
+        ...(method !== 'GET' && { body: JSON.stringify(params) }), // GET 요청 외 body 추가
     };
+
     const res = await fetch(url, init);
 
     if (!res.ok) {
@@ -20,31 +24,46 @@ const fetcher = async (url, token, method, params = {}, responseType = 'json') =
 
 // 로그인 API 함수
 export const signIn = async (userName, password) => {
-    return await fetcher('/api/auth/signin', null, 'POST', { userName, password });
+    return await fetcher('/api/signin', null, 'POST', { userName, password });
 };
 
-// 회원가입 API 함수
+// 회원가입 API 함수 (fetcher를 사용하지 않는 방식)
 export const signUp = async (userData) => {
-    return await fetcher('/api/auth/signup', null, 'POST', userData);
-};
-// 예약 취소용 fetcher
-export const cancelReservation = async (reservationId, cancelData) => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // 환경 변수에서 API URL 가져옴
-    const endpoint = `${apiBaseUrl}/api/sphere/${reservationId}/cancel`; // 취소 API 엔드포인트 설정
+    const response = await fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+    });
 
-    return await fetcher(endpoint, null, 'POST', cancelData);
+    // 상태 코드와 JSON 응답을 함께 반환하여 상태 코드에 따라 처리 가능하도록 설정
+    return {
+        status: response.status,
+        json: await response.json(),
+    };
 };
-// 닫힌 스피어용 fetcher
-export const getClosedSpheres = async () => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // API 기본 URL 가져오기
-    const endpoint = `${apiBaseUrl}/api/spheres/closed`; // 'closed' 상태 스피어 조회 엔드포인트
-    return await fetcher(endpoint, null, 'GET'); // GET 요청
+
+// 예약 취소용 fetcher 함수
+export const cancelReservation = async (reservationId, cancelData, token) => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const endpoint = `${apiBaseUrl}/api/sphere/${reservationId}/cancel`;
+
+    return await fetcher(endpoint, token, 'POST', cancelData);
 };
-// 열린 스피어용 fetcher
-export const getOpenSpheres = async () => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // API 기본 URL 가져오기
-    const endpoint = `${apiBaseUrl}/api/spheres/open`; // 'open' 상태 스피어 조회 엔드포인트
-    return await fetcher(endpoint, null, 'GET'); // GET 요청
+
+// 닫힌 스피어용 fetcher 함수
+export const getClosedSpheres = async (token) => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const endpoint = `${apiBaseUrl}/api/spheres/closed`;
+    return await fetcher(endpoint, token, 'GET');
+};
+
+// 열린 스피어용 fetcher 함수
+export const getOpenSpheres = async (token) => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const endpoint = `${apiBaseUrl}/api/spheres/open`;
+    return await fetcher(endpoint, token, 'GET');
 };
 
 export default fetcher;
