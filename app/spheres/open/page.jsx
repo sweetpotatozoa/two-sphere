@@ -1,16 +1,33 @@
 // app/spheres/open/page.jsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { sphereData } from '../../data/sphereData';
 import Image from 'next/image';
+import { getOpenSpheres } from '@/utils/fetcher'; // Open 상태 데이터 호출 함수 추가
 import { useRouter } from 'next/navigation';
 
 export default function OpenSpheresPage() {
     const router = useRouter();
+    const [openSpheres, setOpenSpheres] = useState([]); // open 상태인 스피어 동적 필터링
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
+    const [error, setError] = useState(null); // 에러 상태 관리
 
-    // 'open' 상태의 스피어만 필터링
-    const openSpheres = sphereData.filter((sphere) => sphere.status === 'open');
+    useEffect(() => {
+        const fetchOpenSpheres = async () => {
+            try {
+                const data = await getOpenSpheres(); // Open 상태 데이터 가져오기
+                setOpenSpheres(data); // 상태 업데이트
+            } catch (err) {
+                setError('데이터를 불러오는 중 오류가 발생했습니다.'); // 에러 상태 설정
+                console.error(err);
+            } finally {
+                setIsLoading(false); // 로딩 상태 비활성화
+            }
+        };
+
+        fetchOpenSpheres();
+    }, []);
 
     const handleSphereClick = (id) => {
         router.push(`/sphere/${id}`);
@@ -24,7 +41,7 @@ export default function OpenSpheresPage() {
                     openSpheres.map((sphere) => (
                         <div
                             key={sphere.id}
-                            onClick={() => handleSphereClick(sphere.id)}
+                            onClick={() => handleSphereClick(sphere._id)}
                             className="relative w-full h-48 bg-gray-800 rounded-xl overflow-hidden cursor-pointer"
                         >
                             <Image
