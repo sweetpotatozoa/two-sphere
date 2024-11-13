@@ -29,11 +29,14 @@ export async function GET() {
             const firstDate = new Date(sphere.firstDate);
             const secondDate = new Date(sphere.secondDate);
 
+            // 한국 시간으로 변환
+            const toKoreanTime = (date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
+
             // 날짜를 "~~월 ~~일" 형식으로 변환
             const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
 
-            const formattedFirstDate = formatToMonthDay(firstDate);
-            const formattedSecondDate = formatToMonthDay(secondDate);
+            const formattedFirstDate = formatToMonthDay(toKoreanTime(new Date(sphere.firstDate)));
+            const formattedSecondDate = formatToMonthDay(toKoreanTime(new Date(sphere.secondDate)));
 
             // 시간 정보를 "오전/오후 ~시" 형식으로 변환
             const formatToHour = (date) => {
@@ -61,7 +64,7 @@ export async function GET() {
                 location: sphere.location.title,
                 firstDate: formattedFirstDate,
                 secondDate: formattedSecondDate,
-                time: formatToHour(firstDate),
+                time: formatToHour(toKoreanTime(new Date(sphere.firstDate))),
                 remainingDays,
             };
         });

@@ -81,6 +81,9 @@ export async function GET(req) {
                     return { ...participant, ...userInfoWithoutId };
                 });
 
+                // 한국 시간으로 변환
+                const toKoreanTime = (date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
+
                 // 날짜 포맷 함수
                 const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
                 const formatToHour = (date) => {
@@ -91,9 +94,9 @@ export async function GET(req) {
                 };
 
                 // 날짜 포맷 적용
-                sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));
-                sphere.secondDate = formatToMonthDay(new Date(sphere.secondDate));
-                sphere.time = formatToHour(new Date(sphere.firstDate));
+                sphere.firstDate = formatToMonthDay(toKoreanTime(new Date(sphere.firstDate)));
+                sphere.secondDate = formatToMonthDay(toKoreanTime(new Date(sphere.secondDate)));
+                sphere.time = formatToHour(toKoreanTime(new Date(sphere.firstDate)));
 
                 // 스피어 상태에 따라 분류
                 if (sphere.status === 'open') openSpheres.push(sphere);

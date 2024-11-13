@@ -96,7 +96,10 @@ export async function GET(req, { params }) {
             };
         });
 
-        // 날짜 및 시간 정보 포맷팅
+        // 한국 시간으로 변환
+        const toKoreanTime = (date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
+
+        // 날짜 포맷 함수
         const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
         const formatToHour = (date) => {
             const hours = date.getHours();
@@ -107,9 +110,9 @@ export async function GET(req, { params }) {
 
         const formattedSphere = {
             ...sphere,
-            firstDate: formatToMonthDay(new Date(sphere.firstDate)),
-            secondDate: formatToMonthDay(new Date(sphere.secondDate)),
-            time: formatToHour(new Date(sphere.firstDate)),
+            firstDate: formatToMonthDay(toKoreanTime(new Date(sphere.firstDate))),
+            secondDate: formatToMonthDay(toKoreanTime(new Date(sphere.secondDate))),
+            time: formatToHour(toKoreanTime(new Date(sphere.firstDate))),
         };
 
         return NextResponse.json(formattedSphere, { status: 200 });
