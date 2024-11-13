@@ -6,8 +6,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import SphereHeader from '../../../../components/SphereHeader';
 import { getSphereDetails } from '@/utils/fetcher';
-import locationIcon from '/public/location-icon-black.svg';
-import calendarIcon from '/public/calendar-icon-black.svg';
 
 const JoinedPage = ({ params }) => {
     const router = useRouter();

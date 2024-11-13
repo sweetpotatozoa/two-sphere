@@ -11,7 +11,7 @@ const SphereHeader = ({ title, subtitle, place, firstDate }) => (
         <div className="flex items-center justify-center space-x-4">
             <div className="flex items-center justify-center space-x-2">
                 <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                <span>{typeof place === 'object' && place !== null ? place.address || '주소 정보 없음' : place}</span>
+                <span>{typeof place === 'object' && place !== null ? place.name || '장소 이름 없음' : place}</span>
             </div>
             <div className="flex items-center justify-center space-x-2">
                 <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
