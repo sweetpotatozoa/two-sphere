@@ -23,7 +23,7 @@
                 "phoneNumber": "010-1234-5678",
                 "career": "네이버 마케팅 팀장",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,
@@ -43,7 +43,7 @@
                 "phoneNumber": "010-2345-6789",
                 "career": "카카오 콘텐츠 기획자",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,
@@ -63,7 +63,7 @@
                 "phoneNumber": "010-3456-7890",
                 "career": "CJ ENM 브랜드 매니저",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,
@@ -106,7 +106,7 @@
                 "phoneNumber": "010-8765-4321",
                 "career": "삼성전자 UX/UI 디자이너",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,
@@ -149,7 +149,7 @@
                 "phoneNumber": "010-1357-2468",
                 "career": "네이버 백엔드 개발자",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,
@@ -169,7 +169,7 @@
                 "phoneNumber": "010-2468-1357",
                 "career": "카카오 프론트엔드 개발자",
                 "answers": {},
-                "isHost": false,
+                "isLeader": false,
                 "cancelInfo": [
                     {
                         "isCancel": false,

@@ -37,7 +37,7 @@ export async function POST() {
                 participants: [
                     {
                         userId: '123',
-                        isHost: true,
+                        isLeader: true,
                         payment: 'paid',
                         attendCount: 0,
                         createdAt: new Date(),
@@ -51,7 +51,7 @@ export async function POST() {
                     },
                     {
                         userId: '123',
-                        isHost: false,
+                        isLeader: false,
                         payment: 'unpaid',
                         attendCount: 0,
                         createdAt: new Date(),
@@ -93,7 +93,7 @@ export async function POST() {
                 participants: [
                     {
                         userId: '123',
-                        isHost: true,
+                        isLeader: true,
                         payment: 'paid',
                         attendCount: 0,
                         createdAt: new Date(),
@@ -107,7 +107,7 @@ export async function POST() {
                     },
                     {
                         userId: '123',
-                        isHost: false,
+                        isLeader: false,
                         payment: 'unpaid',
                         attendCount: 0,
                         createdAt: new Date(),

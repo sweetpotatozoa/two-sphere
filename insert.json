@@ -23,7 +23,7 @@
         "participants": [
             {
                 "userId": "123",
-                "isHost": true,
+                "isLeader": true,
                 "payment": "paid",
                 "attendCount": 0,
                 "createdAt": "2024-11-13T10:30:00.000Z",
@@ -37,7 +37,7 @@
             },
             {
                 "userId": "123",
-                "isHost": false,
+                "isLeader": false,
                 "payment": "unpaid",
                 "attendCount": 0,
                 "createdAt": "2024-11-13T10:30:00.000Z",
@@ -75,7 +75,7 @@
         "participants": [
             {
                 "userId": "123",
-                "isHost": true,
+                "isLeader": true,
                 "payment": "paid",
                 "attendCount": 0,
                 "createdAt": "2024-11-13T10:30:00.000Z",
@@ -89,7 +89,7 @@
             },
             {
                 "userId": "123",
-                "isHost": false,
+                "isLeader": false,
                 "payment": "unpaid",
                 "attendCount": 0,
                 "createdAt": "2024-11-13T10:30:00.000Z",

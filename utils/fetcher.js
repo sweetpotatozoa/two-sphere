@@ -1,7 +1,8 @@
 // utils/fetcher.js
 
-const fetcher = async (url, token = null, method = 'GET', params = {}, responseType = 'json') => {
-    const headers = { 'Content-Type': 'application/json' };
+const fetcher = async (url, token = null, method = 'GET', params = {}, responseType = 'json', headers = {}) => {
+    // 기본 헤더 설정
+    headers['Content-Type'] = 'application/json';
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
@@ -54,7 +55,7 @@ export const cancelReservation = async (reservationId, cancelData) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/sphere/${reservationId}/cancel`;
 
-    const token = localStorage.getItem('accessToken'); // 토큰 가져오기
+    const token = localStorage.getItem('token'); // 토큰 가져오기
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
@@ -83,7 +84,7 @@ export const getUserSpheres = async () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/my-spheres`;
 
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
@@ -96,7 +97,7 @@ export const getSphereStatus = async (sphereId) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/sphere/${sphereId}/cancel`;
 
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
@@ -113,17 +114,23 @@ export const getSphereDetails = async (sphereId) => {
 };
 
 // 스피어 참여 요청 함수
-export const joinSphere = async (sphereId, isHost) => {
+export const joinSphere = async (sphereId, isLeader, userId, token) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/sphere/${sphereId}`;
 
-    const token = localStorage.getItem('token'); // 토큰 가져오기
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
 
-    const body = { isHost };
-    return await fetcher(endpoint, token, 'POST', body);
+    // userId를 'x-user-id' 헤더에 포함
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        'x-user-id': userId, // userId를 x-user-id로 설정
+    };
+
+    // isLeader 정보를 포함한 요청 본문
+    const body = { isLeader };
+    return await fetcher(endpoint, null, 'POST', body, 'json', headers); // 헤더를 fetcher로 전달
 };
 
 export default fetcher;

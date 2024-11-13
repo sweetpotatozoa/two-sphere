@@ -35,11 +35,18 @@ export async function POST(req, { params }) {
             return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
         }
 
+        // x-user-id 헤더 확인 및 로그 출력
+        const userId = req.headers.get('x-user-id');
+        console.log('UserId from x-user-id header:', userId);
+
+        if (!userId) {
+            return NextResponse.json({ message: 'Unauthorized: x-user-id header missing' }, { status: 401 });
+        }
+
         const client = await clientPromise;
         const db = client.db();
 
-        // 요청 본문에서 참여 데이터 가져오기
-        const { userId, isHost } = await req.json();
+        const { isLeader } = await req.json();
 
         // 스피어가 존재하는지 확인
         const sphere = await db.collection('spheres').findOne({ _id: new ObjectId(id) });
@@ -49,9 +56,9 @@ export async function POST(req, { params }) {
 
         // 참가자 정보 추가
         const participant = {
-            userId,
-            isHost,
-            payment: 'unpaid', // 기본값 설정
+            userId: new ObjectId(userId), // userId를 ObjectId로 변환
+            isLeader,
+            payment: 'unpaid',
             attendCount: 0,
             createdAt: new Date(),
             cancelInfo: {
