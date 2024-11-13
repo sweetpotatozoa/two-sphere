@@ -19,8 +19,8 @@ export async function POST() {
                 phoneNumber: '010-1234-5678',
                 Image: 'https://magazine.beattitude.kr/wp-content/uploads/2024/01/13_%EC%97%B0%EC%97%AC%EC%9D%B8YeonYeoin_A-man-scaled.jpg',
                 isProfiled: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                createdAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'),
+                updatedAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'),
                 career: '서울대학교 컴퓨터공학과',
                 answers: {
                     career: '일개 학생',
@@ -40,8 +40,8 @@ export async function POST() {
                 phoneNumber: '010-1234-5678',
                 Image: 'https://magazine.beattitude.kr/wp-content/uploads/2024/01/13_%EC%97%B0%EC%97%AC%EC%9D%B8YeonYeoin_A-man-scaled.jpg',
                 isProfiled: true,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                createdAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'),
+                updatedAt: zonedTimeToUtc(new Date(), 'Asia/Seoul'),
                 career: '서울대학교 경제학과',
                 answers: {
                     career: '일개 학생',

@@ -14,7 +14,7 @@ export async function POST() {
                 subTitle: '개쩌는 스타트업 대표들의 모임',
                 content: '좋은 분위기에서 맛있는 음식을 먹으며 대화를 나누는 시간을 가질 예정입니다.',
                 status: 'closed',
-                createdAt: new Date(),
+                createdAt: utcToZonedTime(new Date(), 'Asia/Seoul'),
                 location: { title: '야옹식당', address: '서울특별시 강남구 청담동 123-4' },
                 firstDate: new Date('2024-11-13T19:30:00'),
                 secondDate: new Date('2024-11-20T19:30:00'),
