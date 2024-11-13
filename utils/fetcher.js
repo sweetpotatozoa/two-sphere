@@ -80,15 +80,17 @@ export const getOpenSpheres = async () => {
 };
 
 // 사용자의 sphere 정보 조회 함수
-export const getUserSpheres = async () => {
+export const getUserSpheres = async (token) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/my-spheres`;
 
-    const token = localStorage.getItem('token');
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
 
+    console.log('getUserSpheres - Token:', token); // 토큰 확인 로그
+
+    // token을 사용하여 헤더 설정
     return await fetcher(endpoint, token, 'GET');
 };
 

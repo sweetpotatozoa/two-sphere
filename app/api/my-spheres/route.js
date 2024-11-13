@@ -5,11 +5,10 @@ import { ObjectId } from 'mongodb';
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
-        if (!userId) {
-            return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-        }
-        if (!ObjectId.isValid(userId)) {
-            return NextResponse.json({ message: 'Invalid user ID format' }, { status: 400 });
+        console.log('UserId from header:', userId);
+
+        if (!userId || !ObjectId.isValid(userId)) {
+            return NextResponse.json({ message: 'Unauthorized or invalid user ID format' }, { status: 401 });
         }
 
         const client = await clientPromise;
@@ -20,12 +19,14 @@ export async function GET(req) {
             .find({
                 participants: {
                     $elemMatch: {
-                        userId: new ObjectId(userId),
+                        userId: new ObjectId(userId), // 주어진 userId와 일치하는 참여자 찾기
                         'cancelInfo.isCancel': false,
                     },
                 },
             })
             .toArray();
+
+        console.log('Fetched spheres:', spheres);
 
         if (!spheres || spheres.length === 0) {
             return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
@@ -37,9 +38,12 @@ export async function GET(req) {
 
         await Promise.all(
             spheres.map(async (sphere) => {
-                const userParticipant = sphere.participants.find((participant) =>
-                    participant.userId.equals(new ObjectId(userId))
-                );
+                const userParticipant = sphere.participants.find((participant) => {
+                    const participantUserId = ObjectId.isValid(participant.userId)
+                        ? new ObjectId(participant.userId)
+                        : null;
+                    return participantUserId && participantUserId.equals(new ObjectId(userId));
+                });
 
                 const canNotViewNamesAndImages =
                     !userParticipant || userParticipant.payment === 'unpaid' || sphere.status === 'closed';
@@ -47,7 +51,11 @@ export async function GET(req) {
                 sphere.hasUnpaidStatus =
                     userParticipant && userParticipant.payment === 'unpaid' && sphere.status === 'open';
 
-                const participantIds = sphere.participants.map((participant) => participant.userId);
+                const participantIds = sphere.participants
+                    .map((participant) =>
+                        ObjectId.isValid(participant.userId) ? new ObjectId(participant.userId) : null
+                    )
+                    .filter(Boolean);
 
                 let projection = {
                     createdAt: 0,
@@ -67,7 +75,10 @@ export async function GET(req) {
                     .toArray();
 
                 sphere.participants = sphere.participants.map((participant) => {
-                    const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
+                    const participantUserId = ObjectId.isValid(participant.userId)
+                        ? new ObjectId(participant.userId)
+                        : null;
+                    const userInfo = users.find((user) => user._id.equals(participantUserId)) || {};
                     const { _id, ...userInfoWithoutId } = userInfo;
                     return { ...participant, ...userInfoWithoutId };
                 });
@@ -95,7 +106,7 @@ export async function GET(req) {
 
         return NextResponse.json({ openSpheres, ongoingSpheres, closedSpheres }, { status: 200 });
     } catch (error) {
-        console.error('Get user info error:', error);
+        console.error('Error fetching user spheres:', error);
         return NextResponse.json({ message: 'An error occurred while fetching sphere info' }, { status: 500 });
     }
 }
