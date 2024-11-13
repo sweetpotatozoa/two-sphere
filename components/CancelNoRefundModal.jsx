@@ -15,14 +15,14 @@ const CancelNoRefundModal = ({ onClose, id }) => {
                     정말로 취소하시겠습니까?
                 </p>
                 <div className="flex space-x-4 justify-center mt-4">
-                    <button onClick={onClose} className="w-full py-2 bg-black text-white font-bold rounded-lg">
+                    <button onClick={onClose} className="w-full py-2 bg-black text-white font-bold rounded-xl">
                         아니요
                     </button>
                     <button
                         onClick={() => {
                             router.push(`/sphere/${id}/cancel`);
                         }}
-                        className="w-full py-2 bg-gray-200 text-black font-bold rounded-lg"
+                        className="w-full py-2 bg-gray-200 text-black font-bold rounded-xl"
                     >
                         네
                     </button>

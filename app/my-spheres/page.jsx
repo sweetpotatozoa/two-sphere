@@ -46,7 +46,7 @@ export default function MySpheresPage() {
                 <h2 className="text-lg font-semibold mb-4">Open 상태</h2>
                 <div className="grid gap-4">
                     {spheres.openSpheres.map((sphere) => (
-                        <div key={sphere._id} className="border p-4 rounded-lg">
+                        <div key={sphere._id} className="border p-4 rounded-xl">
                             <h3 className="font-bold">{sphere.title}</h3>
                             <p className="text-sm">{sphere.subtitle}</p>
                         </div>
@@ -59,7 +59,7 @@ export default function MySpheresPage() {
                 <h2 className="text-lg font-semibold mb-4">Ongoing 상태</h2>
                 <div className="grid gap-4">
                     {spheres.ongoingSpheres.map((sphere) => (
-                        <div key={sphere._id} className="border p-4 rounded-lg">
+                        <div key={sphere._id} className="border p-4 rounded-xl">
                             <h3 className="font-bold">{sphere.title}</h3>
                             <p className="text-sm">{sphere.subtitle}</p>
                         </div>
@@ -72,7 +72,7 @@ export default function MySpheresPage() {
                 <h2 className="text-lg font-semibold mb-4">Closed 상태</h2>
                 <div className="grid gap-4">
                     {spheres.closedSpheres.map((sphere) => (
-                        <div key={sphere._id} className="border p-4 rounded-lg">
+                        <div key={sphere._id} className="border p-4 rounded-xl">
                             <h3 className="font-bold">{sphere.title}</h3>
                             <p className="text-sm">{sphere.subtitle}</p>
                         </div>

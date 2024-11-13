@@ -15,6 +15,8 @@ const SphereDetail = ({ params }) => {
     const router = useRouter();
     const { id } = params;
     const [sphere, setSphere] = useState(null); // 스피어 상태
+    const [user, setUser] = useState(null); // 사용자 상태 추가
+    const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false); // 모달 상태 추가
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isLessThan24Hours, setIsLessThan24Hours] = useState(false);
     const [error, setError] = useState(null); // 에러 상태 추가
@@ -23,18 +25,32 @@ const SphereDetail = ({ params }) => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
-                const sphereData = await getSphereDetails(id, token); // API 호출
-                setSphere(sphereData); // 스피어 상태 업데이트
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('Access token is missing.');
 
-                // 24시간 이내 여부 확인
+                const sphereData = await getSphereDetails(id, token);
+                setSphere(sphereData);
+
+                const response = await fetch('/api/my-profile', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    cache: 'no-store',
+                });
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch user data: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setUser(data.user);
+
                 const now = new Date();
                 const firstDate = new Date(sphereData.firstDate);
                 const timeDifference = firstDate - now;
                 setIsLessThan24Hours(timeDifference < 24 * 60 * 60 * 1000);
             } catch (err) {
-                setError('스피어 정보를 불러오는 데 실패했습니다.');
-                console.error(err);
+                setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
+                console.error('Detailed error:', err);
             } finally {
                 setIsLoading(false);
             }
@@ -55,16 +71,40 @@ const SphereDetail = ({ params }) => {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
-    const handleJoinClick = () => {
-        router.push(`/sphere/${id}/join`);
+    const isProfileComplete = () => {
+        // 프로필이 완성되었는지 확인
+        return user?.career && user.answers?.every((answer) => answer);
     };
 
-    const handleCancelClick = () => {
+    const handleJoinClick = () => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            // 로그인되지 않은 경우, 로그인 페이지로 이동하며 원래 경로로 리디렉션 설정
+            router.push(`/signin?redirect=/sphere/${id}/join`);
+        } else if (!isProfileComplete()) {
+            // 로그인은 되었으나 프로필이 완성되지 않은 경우, 모달을 표시
+            setShowProfileIncompleteModal(true);
+        } else {
+            // 로그인 및 프로필이 완성된 경우, 참여 페이지로 이동
+            router.push(`/sphere/${id}/join`);
+        }
+    };
+
+    const handleCancelYes = () => {
         setShowCancelModal(true);
     };
 
-    const handleCloseModal = () => {
+    const handleCancelNo = () => {
         setShowCancelModal(false);
+    };
+
+    const handleCloseModal = () => {
+        setShowProfileIncompleteModal(false);
+    };
+
+    const handleGoToProfile = () => {
+        router.push('/my-profile'); // 프로필 페이지로 이동
     };
 
     return (
@@ -104,11 +144,37 @@ const SphereDetail = ({ params }) => {
                 </div>
             </div>
 
+            {showProfileIncompleteModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
+                        <p>
+                            프로필을 완성해야 참여할 수 있습니다.
+                            <br />
+                            프로필 페이지로 이동하시겠습니까?
+                        </p>
+                        <div className="space-x-4">
+                            <button
+                                onClick={handleGoToProfile}
+                                className="w-32 py-2 bg-black text-white font-bold rounded-xl"
+                            >
+                                확인
+                            </button>
+                            <button
+                                onClick={handleCloseModal}
+                                className="w-32 py-2 bg-gray-200 text-black font-bold rounded-xl"
+                            >
+                                취소
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {showCancelModal &&
                 (isLessThan24Hours ? (
-                    <CancelNoRefundModal onClose={handleCloseModal} id={id} />
+                    <CancelNoRefundModal onClose={handleCancelNo} id={id} />
                 ) : (
-                    <CancelNoticeModal onClose={handleCloseModal} id={id} />
+                    <CancelNoticeModal onClose={handleCancelNo} id={id} />
                 ))}
         </div>
     );

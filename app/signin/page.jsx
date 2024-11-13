@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { signIn } from '../../utils/fetcher'; // fetcher.js에서 signIn 함수 가져오기
 import eyeClosedIcon from '/public/eye-closed-icon.svg';
@@ -13,15 +13,17 @@ const SignInPage = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get('redirect') || '/';
 
-    // 로그인 요청 처리
+    // 로그인 요청 처리 함수
     const handleLogin = async () => {
-        setError(''); // 오류 초기화
+        setError('');
         try {
-            const response = await signIn(userName, password); // 서버로 로그인 요청
+            const response = await signIn(userName, password);
             if (response && response.token) {
-                localStorage.setItem('token', response.token); // JWT 토큰 저장
-                router.push('/'); // 로그인 성공 후 이동
+                localStorage.setItem('token', response.token);
+                router.push(redirectPath); // 로그인 성공 후 redirectPath로 이동
             } else {
                 setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
             }
