@@ -7,7 +7,7 @@ import { getSphereDetails } from '@/utils/fetcher';
 import SphereHeader from '../../../components/SphereHeader';
 import SphereDetails from '../../../components/SphereDetails';
 import SphereParticipants from '../../../components/SphereParticipants';
-import SphereContents from '../../../components/SphereContents';
+import SphereQuestions from '../../../components/SphereQuestions';
 import CancelNoticeModal from '../../../components/CancelNoticeModal';
 import CancelNoRefundModal from '../../../components/CancelNoRefundModal';
 
@@ -135,7 +135,7 @@ const SphereDetail = ({ params }) => {
                     placeStory={sphere.placeStory}
                 />
                 <SphereParticipants participants={sphere.participants} />
-                <SphereContents questions={sphere.questions} />
+                <SphereQuestions questions={sphere.questions} />
 
                 <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
                     <button onClick={handleJoinClick} className="w-full py-3 bg-black text-white font-bold rounded-xl">
