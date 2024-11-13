@@ -61,6 +61,7 @@ export async function GET() {
 
             return {
                 ...sphere,
+                _id: sphere._id.toString(),
                 location: sphere.location.title,
                 firstDate: formattedFirstDate,
                 secondDate: formattedSecondDate,

@@ -1,5 +1,3 @@
-// app/api/my-profile/route.js
-
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
@@ -23,6 +21,9 @@ export async function GET(req) {
         if (!user) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
+
+        // _id를 문자열로 변환
+        user._id = user._id.toString();
 
         // 응답에서 캐시를 사용하지 않도록 설정
         const headers = new Headers();

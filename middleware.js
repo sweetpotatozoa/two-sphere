@@ -5,9 +5,19 @@ import { jwtVerify } from 'jose';
 
 export async function middleware(req) {
     const authHeader = req.headers.get('authorization');
+    const isSphereGetRequest = req.nextUrl.pathname.startsWith('/api/sphere') && req.method === 'GET';
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return NextResponse.redirect(new URL('/signin', req.url)); // 로그인 페이지로 리디렉션
+    // /api/sphere/[id] 경로의 GET 요청에서만 토큰 유무에 따라 처리
+    if (isSphereGetRequest) {
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            // GET 요청에서 토큰이 없으면 그대로 통과
+            return NextResponse.next();
+        }
+    } else {
+        // GET이 아닌 요청이나 다른 경로에서는 토큰이 반드시 있어야 함
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.redirect(new URL('/signin', req.url));
+        }
     }
 
     const token = authHeader.split(' ')[1];
@@ -25,5 +35,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-    matcher: ['/api/my-profile', '/api/my-spheres', '/api/sphere/[id]/cancel'], // 특정 경로에만 적용
+    matcher: ['/api/my-profile', '/api/my-spheres', '/api/sphere/[id]/cancel', '/api/sphere/[id]'], // 특정 경로에만 적용
 };

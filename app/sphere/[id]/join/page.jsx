@@ -1,24 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { sphereData } from '../../../data/sphereData';
 import SphereHeader from '../../../../components/SphereHeader';
 import { joinSphere } from '@/utils/fetcher'; // API 호출 함수 추가
 
 const JoinPage = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const sphere = sphereData.find((s) => s.id === parseInt(id));
 
+    const [sphere, setSphere] = useState(null); // MongoDB에서 가져온 스피어 데이터 상태
     const [isLeader, setIsLeader] = useState(null); // 리더 희망 여부 상태
     const [isConfirmed, setIsConfirmed] = useState(false); // 확인 체크박스 상태
     const [error, setError] = useState(null); // 에러 상태 추가
 
-    if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
-    }
+    useEffect(() => {
+        // MongoDB에서 Sphere 데이터 가져오기
+        const fetchSphereData = async () => {
+            try {
+                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
+                const response = await fetch(`/api/sphere/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch sphere data');
+                }
+
+                const data = await response.json();
+                setSphere(data); // MongoDB에서 가져온 스피어 데이터 설정
+            } catch (err) {
+                console.error('Failed to fetch sphere data:', err.message);
+                setError('스피어 데이터를 불러오는 데 실패했습니다.');
+            }
+        };
+
+        fetchSphereData();
+    }, [id]);
 
     // 참여하기 버튼 클릭 핸들러
     const handleJoinClick = async () => {
@@ -34,16 +56,26 @@ const JoinPage = ({ params }) => {
         }
     };
 
+    if (!sphere) {
+        return <p className="text-center">스피어 데이터를 불러오는 중입니다...</p>;
+    }
+
     return (
         <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
-                <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
+                <Image
+                    src={sphere.thumbnail} // MongoDB 데이터 사용
+                    alt="Sphere Image"
+                    width={500}
+                    height={300}
+                    className="w-full object-cover"
+                />
             </div>
             <SphereHeader
                 title={sphere.title}
-                description={sphere.description}
-                location={sphere.location}
-                date={sphere.date}
+                description={sphere.content} // MongoDB 데이터 사용
+                location={sphere.location.title} // MongoDB 데이터 사용
+                date={sphere.firstDate} // MongoDB 데이터 사용
             />
 
             {/* 리더 희망 여부 */}
