@@ -1,4 +1,3 @@
-// app/sphere/[id]/join/page.jsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { sphereData } from '../../../data/sphereData';
 import SphereHeader from '../../../../components/SphereHeader';
+import { joinSphere } from '@/utils/fetcher'; // API 호출 함수 추가
 
 const JoinPage = ({ params }) => {
     const router = useRouter();
@@ -14,15 +14,23 @@ const JoinPage = ({ params }) => {
 
     const [isLeader, setIsLeader] = useState(null); // 리더 희망 여부 상태
     const [isConfirmed, setIsConfirmed] = useState(false); // 확인 체크박스 상태
+    const [error, setError] = useState(null); // 에러 상태 추가
 
     if (!sphere) {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
     // 참여하기 버튼 클릭 핸들러
-    const handleJoinClick = () => {
+    const handleJoinClick = async () => {
         if (isLeader !== null && isConfirmed) {
-            router.push(`/sphere/${id}/joined`);
+            try {
+                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
+                await joinSphere(id, isLeader, token); // 참여 API 호출
+                router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
+            } catch (err) {
+                console.error('스피어 참여 실패:', err.message);
+                setError('스피어 참여에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 
@@ -85,6 +93,9 @@ const JoinPage = ({ params }) => {
                     <span className="text-sm">확인했습니다</span>
                 </div>
             </section>
+
+            {/* 에러 메시지 표시 */}
+            {error && <p className="text-red-500">{error}</p>}
 
             {/* 참여하기 버튼 */}
             <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-const SphereParticipants = ({ participants }) => {
+// map 메서드 호출 시 TypeError 해결 위한 수정
+
+const SphereParticipants = ({ participants = [] }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
 
     useEffect(() => {
@@ -51,8 +53,8 @@ const SphereParticipants = ({ participants }) => {
                         >
                             {participants[index] ? (
                                 <div className="text-center text-sm font-bold">
-                                    <p>{participants[index].name}</p>
-                                    <p className="text-xs">{participants[index].career}</p>
+                                    <p>{participants[index]?.name || '익명'}</p>
+                                    <p className="text-xs">{participants[index]?.career || '직업 정보 없음'}</p>
                                 </div>
                             ) : (
                                 <span>&nbsp;</span>
@@ -72,7 +74,7 @@ const SphereParticipants = ({ participants }) => {
                         <h2 className="text-xl font-bold">{selectedParticipant.name}의 프로필</h2>
                         <p className="text-gray-600">{selectedParticipant.career}</p>
                         <div className="space-y-4 text-left">
-                            {questions.map((question, index) => (
+                            {(questions || []).map((question, index) => (
                                 <div key={index}>
                                     <h3 className="font-semibold">
                                         Q{index + 1}. {question}

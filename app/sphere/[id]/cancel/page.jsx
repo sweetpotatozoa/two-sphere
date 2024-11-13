@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react'; // useEffect 추가
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { getSphereStatus, cancelReservation } from '@/utils/fetcher'; // 상태 조회 함수 추가
 import { sphereData } from '../../../data/sphereData';
 import SphereHeader from '../../../../components/SphereHeader';
-import { cancelReservation } from '@/utils/fetcher';
 
 const bankList = [
     '한국은행',
@@ -45,13 +45,42 @@ const CancelComplete = ({ params }) => {
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [cancelReason, setCancelReason] = useState('');
+    const [sphereStatus, setSphereStatus] = useState(null); // 스피어 상태 저장
+    const [isLoading, setIsLoading] = useState(true); // 로딩 상태 관리
+    const [error, setError] = useState(null); // 에러 상태 관리
     const [showReasonOptions, setShowReasonOptions] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
     const [showBankOptions, setShowBankOptions] = useState(false);
     const [showCompletionModal, setShowCompletionModal] = useState(false); // State for completion modal
 
-    if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
+    // 스피어 상태 조회
+    useEffect(() => {
+        const fetchSphereStatus = async () => {
+            try {
+                const token = localStorage.getItem('accessToken'); // 사용자 인증 토큰 가져오기
+                const status = await getSphereStatus(id, token); // 상태 조회 함수 호출
+                setSphereStatus(status); // 상태 업데이트
+            } catch (err) {
+                setError('스피어 상태를 불러오는 데 실패했습니다.');
+                console.error(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSphereStatus();
+    }, [id]);
+
+    if (isLoading) {
+        return <div className="text-center py-10">스피어 상태를 불러오는 중입니다...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-10 text-red-500">{error}</div>;
+    }
+
+    if (!sphereStatus) {
+        return <div className="text-center py-10 text-gray-500">스피어 상태를 확인할 수 없습니다.</div>;
     }
 
     const handleReasonSelect = (reason) => {
@@ -72,7 +101,7 @@ const CancelComplete = ({ params }) => {
         if (!isFormComplete) return; // 입력이 완료되지 않은 경우 함수 실행 중단
 
         try {
-            // API로 전송할 데이터 구성
+            const token = localStorage.getItem('accessToken'); // 인증 토큰 가져오기
             const cancelData = {
                 bank: selectedBank,
                 accountNumber,
@@ -80,12 +109,11 @@ const CancelComplete = ({ params }) => {
             };
 
             // 취소 API 호출
-            await cancelReservation(id, cancelData);
+            await cancelReservation(id, cancelData, token);
 
             // 성공적으로 처리된 경우 모달 표시
             setShowCompletionModal(true);
         } catch (error) {
-            // 에러 발생 시 로그 출력 및 사용자 알림
             console.error('취소 요청 실패:', error.message);
             alert('취소 요청에 실패했습니다. 다시 시도해주세요.');
         }
@@ -116,6 +144,11 @@ const CancelComplete = ({ params }) => {
                 location={sphere.location}
                 date={sphere.date}
             />
+
+            {/* 스피어 상태 표시 */}
+            <p className={`text-lg font-semibold ${sphereStatus.isRefundable ? 'text-green-500' : 'text-red-500'}`}>
+                {sphereStatus.isRefundable ? '취소 가능한 상태입니다.' : '취소 불가능한 상태입니다.'}
+            </p>
 
             <div className="max-w-[500px] mx-auto px-4 space-y-4">
                 {/* Bank Selection */}
