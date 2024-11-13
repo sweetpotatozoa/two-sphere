@@ -73,9 +73,9 @@ const JoinPage = ({ params }) => {
             </div>
             <SphereHeader
                 title={sphere.title}
-                description={sphere.content} // MongoDB 데이터 사용
-                location={sphere.location.title} // MongoDB 데이터 사용
-                date={sphere.firstDate} // MongoDB 데이터 사용
+                subtitle={sphere.subtitle} // MongoDB 데이터 사용
+                place={sphere.place} // MongoDB 데이터 사용
+                firstDate={sphere.firstDate} // MongoDB 데이터 사용
             />
 
             {/* 리더 희망 여부 */}

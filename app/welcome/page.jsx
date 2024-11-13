@@ -23,7 +23,7 @@ const WelcomePage = () => {
             <h1 className="text-2xl font-bold mb-4">가입을 환영합니다!</h1>
 
             {/* 프로필 완성 버튼 */}
-            <button onClick={goToProfile} className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-full">
+            <button onClick={goToProfile} className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl">
                 프로필 완성하러 가기
             </button>
         </div>

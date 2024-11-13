@@ -111,26 +111,34 @@ const OpenSpheres = () => {
                         <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
                             <div>
                                 <h3 className="text-lg font-bold">{sphere.title}</h3>
-                                <p className="text-sm">{sphere.content}</p>
+                                <p className="text-sm">{sphere.subtitle}</p>
                             </div>
                             {/* 하단 전체를 감싸는 배경 영역 */}
                             <div className="absolute bottom-0 left-0 w-full bg-black p-3 flex justify-between items-center text-xs rounded-b-xl">
-                                <span className="font-bold flex items-center space-x-1">
-                                    <Image src="/location-icon.svg" alt="Location Icon" width={12} height={12} />
-                                    <span>{sphere.location.title}</span> {/* MongoDB의 location.title 필드 */}
-                                </span>
+                                {/* 장소 표시 */}
+                                {sphere.place?.name ? (
+                                    <span className="font-bold flex items-center space-x-1">
+                                        <Image src="/location-icon.svg" alt="Location Icon" width={12} height={12} />
+                                        <span>{sphere.place.name}</span>
+                                    </span>
+                                ) : (
+                                    <span className="font-bold">위치 없음</span>
+                                )}
+                                {/* First Date 표시 */}
                                 <span className="font-bold flex items-center space-x-1">
                                     <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
-                                    <span>{sphere.firstDate}</span> {/* MongoDB의 firstDate 필드 */}
+                                    <span>{sphere.firstDate}</span>
                                 </span>
                                 <button className="py-1 px-2 bg-white text-black rounded-xl text-xs font-bold">
                                     자세히보기
                                 </button>
                             </div>
                         </div>
-                        {/* D-Day 표시 */}
+                        {/* D-Day 계산 */}
                         <span className="absolute top-1 right-1 text-white p-2 rounded-xl text-sm font-bold bg-black bg-opacity-75">
-                            D-{Math.ceil((new Date(sphere.firstDate) - new Date()) / (1000 * 60 * 60 * 24))}
+                            {sphere.firstDate && !isNaN(new Date(sphere.firstDate))
+                                ? `D-${Math.ceil((new Date(sphere.firstDate) - new Date()) / (1000 * 60 * 60 * 24))}`
+                                : 'D-Day 없음'}
                         </span>
                     </div>
                 ))}

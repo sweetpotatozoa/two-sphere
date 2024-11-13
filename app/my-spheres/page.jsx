@@ -48,7 +48,7 @@ export default function MySpheresPage() {
                     {spheres.openSpheres.map((sphere) => (
                         <div key={sphere._id} className="border p-4 rounded-lg">
                             <h3 className="font-bold">{sphere.title}</h3>
-                            <p className="text-sm">{sphere.subTitle}</p>
+                            <p className="text-sm">{sphere.subtitle}</p>
                         </div>
                     ))}
                 </div>
@@ -61,7 +61,7 @@ export default function MySpheresPage() {
                     {spheres.ongoingSpheres.map((sphere) => (
                         <div key={sphere._id} className="border p-4 rounded-lg">
                             <h3 className="font-bold">{sphere.title}</h3>
-                            <p className="text-sm">{sphere.subTitle}</p>
+                            <p className="text-sm">{sphere.subtitle}</p>
                         </div>
                     ))}
                 </div>
@@ -74,7 +74,7 @@ export default function MySpheresPage() {
                     {spheres.closedSpheres.map((sphere) => (
                         <div key={sphere._id} className="border p-4 rounded-lg">
                             <h3 className="font-bold">{sphere.title}</h3>
-                            <p className="text-sm">{sphere.subTitle}</p>
+                            <p className="text-sm">{sphere.subtitle}</p>
                         </div>
                     ))}
                 </div>

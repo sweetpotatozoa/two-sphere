@@ -57,12 +57,12 @@ export default function OpenSpheresPage() {
                             <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
                                 <div>
                                     <h3 className="text-lg font-bold">{sphere.title}</h3>
-                                    <p className="text-sm">{sphere.content}</p> {/* MongoDB의 content 필드 */}
+                                    <p className="text-sm">{sphere.subtitle}</p> {/* MongoDB의 subtitle 필드 */}
                                 </div>
                                 <div className="absolute bottom-0 left-0 w-full bg-black p-4 flex justify-between items-center text-xs rounded-b-lg">
                                     <span className="flex items-center space-x-1">
                                         <Image src="/location-icon.svg" alt="Location Icon" width={12} height={12} />
-                                        <span>{sphere.location.title}</span> {/* MongoDB의 location.title 필드 */}
+                                        <span>{sphere.place.name}</span> {/* MongoDB의 place.name 필드 */}
                                     </span>
                                     <span className="flex items-center space-x-1">
                                         <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />

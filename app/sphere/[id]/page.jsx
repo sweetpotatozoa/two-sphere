@@ -71,7 +71,7 @@ const SphereDetail = ({ params }) => {
         <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
                 <Image
-                    src={sphere.image}
+                    src={sphere.thumbnail}
                     alt="Sphere Image"
                     width={500}
                     height={300}
@@ -80,17 +80,18 @@ const SphereDetail = ({ params }) => {
             </div>
             <SphereHeader
                 title={sphere.title}
-                description={sphere.description}
-                location={sphere.location}
-                date={sphere.date}
+                subtitle={sphere.subtitle}
+                place={sphere.place}
+                firstDate={sphere.firstDate}
             />
 
             <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
                 <SphereDetails
-                    briefIntro={sphere.briefIntro}
-                    location={sphere.location}
+                    description={sphere.description}
+                    place={sphere.place}
                     address={sphere.address}
-                    additionalImages={sphere.additionalImages}
+                    subImage1={sphere.subImage1}
+                    subImage2={sphere.subImage2}
                     placeStory={sphere.placeStory}
                 />
                 <SphereParticipants participants={sphere.participants} />

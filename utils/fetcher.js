@@ -67,25 +67,15 @@ export const getClosedSpheres = async () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/spheres/closed`;
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        throw new Error('Access token is missing. Please log in again.');
-    }
-
-    return await fetcher(endpoint, token, 'GET');
+    return await fetcher(endpoint);
 };
 
-// 열린 스피어용 fetcher 함수
+// 열린 스피어용 fetcher 함수 - 로그인 없이 사용 가능
 export const getOpenSpheres = async () => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/spheres/open`;
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        throw new Error('Access token is missing. Please log in again.');
-    }
-
-    return await fetcher(endpoint, token, 'GET');
+    return await fetcher(endpoint); // 인증 없이 호출
 };
 
 // 사용자의 sphere 정보 조회 함수
@@ -119,12 +109,7 @@ export const getSphereDetails = async (sphereId) => {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const endpoint = `${apiBaseUrl}/api/sphere/${sphereId}`;
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        throw new Error('Access token is missing. Please log in again.');
-    }
-
-    return await fetcher(endpoint, token, 'GET');
+    return await fetcher(endpoint);
 };
 
 // 스피어 참여 요청 함수

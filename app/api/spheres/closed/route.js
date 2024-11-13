@@ -14,8 +14,8 @@ export async function GET() {
             .project({
                 _id: 1,
                 title: 1,
-                subTitle: 1,
-                'location.title': 1,
+                subtitle: 1,
+                'place.name': 1,
                 thumbnail: 1,
                 firstDate: 1,
                 secondDate: 1,
@@ -62,7 +62,7 @@ export async function GET() {
             return {
                 ...sphere,
                 _id: sphere._id.toString(),
-                location: sphere.location.title,
+                placeName: sphere.place.name,
                 firstDate: formattedFirstDate,
                 secondDate: formattedSecondDate,
                 time: formatToHour(toKoreanTime(new Date(sphere.firstDate))),

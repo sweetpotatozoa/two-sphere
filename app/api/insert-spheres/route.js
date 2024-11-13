@@ -10,24 +10,30 @@ export async function POST() {
         // 임시 데이터
         const sampleData = [
             {
-                title: '식당1',
-                subTitle: '개쩌는 스타트업 대표들의 모임',
-                content: '좋은 분위기에서 맛있는 음식을 먹으며 대화를 나누는 시간을 가질 예정입니다.',
+                title: '콘텐츠 마케터 Sphere',
+                subtitle: '요즘 마케터들은 콘텐츠 뭐 봄?',
+                description: '마케터들이 좋은 분위기에서 맛있는 음식을 먹으며 대화를 나누는 시간을 가질 예정입니다.',
                 status: 'closed',
                 createdAt: utcToZonedTime(new Date(), 'Asia/Seoul'),
-                location: { title: '야옹식당', address: '서울특별시 강남구 청담동 123-4' },
+                place: { name: '야옹식당', address: '서울특별시 강남구 청담동 123-4' },
+                placeStory: `WHAT WE WANT IS A PLACE
+        WHERE EVERYONE CAN HANG OUT FREELY
+        
+        아베크 청담은 18세기 프랑스 살롱 문화를 모티브로 하여
+        예술과 프라이빗한 공간이 어우러진 다이닝 카페, 바입니다.
+        
+        에피타이저부터 디저트까지 다채로운 디시 구성과
+        감각적인 인테리어의 공간에서 인사이트를 공유해보세요.`,
                 firstDate: new Date('2024-11-13T19:30:00'),
                 secondDate: new Date('2024-11-20T19:30:00'),
-                subjects: [
+                questions: [
                     '당신의 최근 관심 콘텐츠는 무엇인가요?',
                     '현재의 주요 업무와 도전 과제는 무엇인가요?',
                     '앞으로의 계획은 무엇인가요?',
                 ],
-                thumbnail:
-                    'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/17/3b/51/14/205-largejpg.jpg?w=1200&h=-1&s=1',
-                subImage1: 'https://www.palnews.co.kr/news/photo/201801/92969_25283_5321.jpg',
-                subImage2:
-                    'https://flexible.img.hani.co.kr/flexible/normal/970/582/imgdb/child/2024/0903/53_17253380473588_20240903501638.jpg',
+                thumbnail: '/sample-sphere.svg',
+                subImage1: '/sample-place-1.svg',
+                subImage2: '/sample-place-2.svg',
                 participants: [
                     {
                         userId: '123',
@@ -60,23 +66,30 @@ export async function POST() {
                 ],
             },
             {
-                title: '식당2',
-                subTitle: '개쩌는 마케터들의 모임',
-                content: '좋은 분위기에서 맛있는 음식을 먹으며 대화를 나누는 시간을 가질 예정입니다.',
-                status: 'open',
-                createdAt: new Date(),
-                location: { title: '멍멍식당', address: '서울특별시 성북구 보문동 123-4' },
+                title: '콘텐츠 마케터 Sphere',
+                subtitle: '요즘 마케터들은 콘텐츠 뭐 봄?',
+                description: '마케터들이 좋은 분위기에서 맛있는 음식을 먹으며 대화를 나누는 시간을 가질 예정입니다.',
+                status: 'closed',
+                createdAt: utcToZonedTime(new Date(), 'Asia/Seoul'),
+                place: { name: '야옹식당', address: '서울특별시 강남구 청담동 123-4' },
+                placeStory: `WHAT WE WANT IS A PLACE
+        WHERE EVERYONE CAN HANG OUT FREELY
+        
+        아베크 청담은 18세기 프랑스 살롱 문화를 모티브로 하여
+        예술과 프라이빗한 공간이 어우러진 다이닝 카페, 바입니다.
+        
+        에피타이저부터 디저트까지 다채로운 디시 구성과
+        감각적인 인테리어의 공간에서 인사이트를 공유해보세요.`,
                 firstDate: new Date('2024-11-13T19:30:00'),
                 secondDate: new Date('2024-11-20T19:30:00'),
-                subjects: [
+                questions: [
                     '당신의 최근 관심 콘텐츠는 무엇인가요?',
                     '현재의 주요 업무와 도전 과제는 무엇인가요?',
                     '앞으로의 계획은 무엇인가요?',
                 ],
-                thumbnail: 'https://cdn.sukbakmagazine.com/news/photo/201910/51105_402236_1336.jpg',
-                subImage1: 'https://cdn.hellodd.com/news/photo/202005/71835_craw1.jpg',
-                subImage2:
-                    'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/202203/25/2bb2f134-1dba-4bc7-b5fe-cad55781b023.jpg',
+                thumbnail: '/sample-sphere.svg',
+                subImage1: '/sample-place-1.svg',
+                subImage2: '/sample-place-2.svg',
                 participants: [
                     {
                         userId: '123',
