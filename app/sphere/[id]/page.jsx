@@ -1,3 +1,4 @@
+// app/sphere/[id]/page.jsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -14,13 +15,14 @@ import CancelNoRefundModal from '../../../components/CancelNoRefundModal';
 const SphereDetail = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const [sphere, setSphere] = useState(null); // 스피어 상태
-    const [user, setUser] = useState(null); // 사용자 상태 추가
-    const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false); // 모달 상태 추가
+    const [sphere, setSphere] = useState(null);
+    const [user, setUser] = useState(null);
+    const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [isLessThan24Hours, setIsLessThan24Hours] = useState(false);
-    const [error, setError] = useState(null); // 에러 상태 추가
-    const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isParticipating, setIsParticipating] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -43,6 +45,11 @@ const SphereDetail = ({ params }) => {
                 }
                 const data = await response.json();
                 setUser(data.user);
+
+                const isUserParticipating = sphereData.participants.some(
+                    (participant) => participant.userId === data.user._id
+                );
+                setIsParticipating(isUserParticipating);
 
                 const now = new Date();
                 const firstDate = new Date(sphereData.firstDate);
@@ -72,7 +79,6 @@ const SphereDetail = ({ params }) => {
     }
 
     const isProfileComplete = () => {
-        // 프로필이 완성되었는지 확인
         return user?.career && user.answers?.every((answer) => answer);
     };
 
@@ -80,18 +86,15 @@ const SphereDetail = ({ params }) => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // 로그인되지 않은 경우, 로그인 페이지로 이동하며 원래 경로로 리디렉션 설정
             router.push(`/signin?redirect=/sphere/${id}/join`);
         } else if (!isProfileComplete()) {
-            // 로그인은 되었으나 프로필이 완성되지 않은 경우, 모달을 표시
             setShowProfileIncompleteModal(true);
         } else {
-            // 로그인 및 프로필이 완성된 경우, 참여 페이지로 이동
             router.push(`/sphere/${id}/join`);
         }
     };
 
-    const handleCancelYes = () => {
+    const handleCancelClick = () => {
         setShowCancelModal(true);
     };
 
@@ -104,11 +107,11 @@ const SphereDetail = ({ params }) => {
     };
 
     const handleGoToProfile = () => {
-        router.push('/my-profile'); // 프로필 페이지로 이동
+        router.push('/my-profile');
     };
 
     return (
-        <div className="max-w-[500px] space-y-8 text-center">
+        <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
                 <Image
                     src={sphere.thumbnail}
@@ -125,7 +128,7 @@ const SphereDetail = ({ params }) => {
                 firstDate={sphere.firstDate}
             />
 
-            <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
+            <div className="space-y-8">
                 <SphereDetails
                     description={sphere.description}
                     place={sphere.place}
@@ -137,11 +140,24 @@ const SphereDetail = ({ params }) => {
                 <SphereParticipants participants={sphere.participants} />
                 <SphereQuestions questions={sphere.questions} />
 
-                <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
-                    <button onClick={handleJoinClick} className="w-full py-3 bg-black text-white font-bold rounded-xl">
-                        참여하기
+                {/* 참여 상태에 따른 버튼 표시 */}
+                {isParticipating ? (
+                    <button
+                        onClick={handleCancelClick}
+                        className="w-full mt-8 py-3 bg-black text-white font-bold rounded-xl"
+                    >
+                        취소하기
                     </button>
-                </div>
+                ) : (
+                    <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
+                        <button
+                            onClick={handleJoinClick}
+                            className="w-full py-3 bg-black text-white font-bold rounded-xl"
+                        >
+                            참여하기
+                        </button>
+                    </div>
+                )}
             </div>
 
             {showProfileIncompleteModal && (
