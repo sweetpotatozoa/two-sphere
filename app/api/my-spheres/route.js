@@ -5,7 +5,6 @@ import { ObjectId } from 'mongodb';
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
-        console.log('UserId from header:', userId);
 
         if (!userId || !ObjectId.isValid(userId)) {
             return NextResponse.json({ message: 'Unauthorized or invalid user ID format' }, { status: 401 });
@@ -25,8 +24,6 @@ export async function GET(req) {
                 },
             })
             .toArray();
-
-        console.log('Fetched spheres:', spheres);
 
         if (!spheres || spheres.length === 0) {
             return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
