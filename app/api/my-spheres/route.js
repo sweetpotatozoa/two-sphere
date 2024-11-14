@@ -115,6 +115,39 @@ export async function GET(req) {
                     return { ...participant, ...userInfoWithoutId };
                 });
 
+                let remainingDays;
+
+                const currentDate = new Date();
+                const firstDate = new Date(sphere.firstDate);
+                const secondDate = new Date(sphere.secondDate);
+
+                // 한국 시간대로 Date 객체 변환 함수
+                const toKoreanDate = (date) => {
+                    const koreanDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Seoul' });
+                    return new Date(koreanDateString); // 한국 시간대의 날짜로 변환된 Date 객체 반환
+                };
+
+                // 남은 날짜 계산 함수 (한국 시간대 기준)
+                const calculateRemainingDays = (currentDate, firstDate, secondDate) => {
+                    // 모든 날짜를 한국 시간대의 날짜로 변환
+                    const koreanCurrentDate = toKoreanDate(currentDate);
+                    const koreanFirstDate = toKoreanDate(firstDate);
+                    const koreanSecondDate = toKoreanDate(secondDate);
+
+                    let remainingDays;
+                    if (koreanCurrentDate < koreanFirstDate) {
+                        remainingDays = Math.ceil((koreanFirstDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
+                    } else if (koreanCurrentDate < koreanSecondDate) {
+                        remainingDays = Math.ceil((koreanSecondDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
+                    } else {
+                        remainingDays = -1; // 두 날짜 모두 지난 경우
+                    }
+                    return remainingDays;
+                };
+
+                remainingDays = calculateRemainingDays(currentDate, firstDate, secondDate);
+                sphere.remainingDays = remainingDays;
+
                 // 한국 시간대 기준으로 날짜와 시간 형식 설정
                 sphere.time = formatToHour(new Date(sphere.firstDate));
                 sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));

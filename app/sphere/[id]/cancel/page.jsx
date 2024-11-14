@@ -58,7 +58,6 @@ const CancelComplete = ({ params }) => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('Access token is missing.');
-
                 const status = await getSphereStatus(id, token); // fetcher.js 함수 호출
                 setSphereStatus(status);
             } catch (err) {
@@ -71,6 +70,8 @@ const CancelComplete = ({ params }) => {
 
         fetchSphereStatus();
     }, [id]);
+
+    console.log('sphereStatus:', sphereStatus);
 
     if (isLoading) {
         return <div className="text-center py-10">스피어 상태를 불러오는 중입니다...</div>;
@@ -111,7 +112,7 @@ const CancelComplete = ({ params }) => {
 
                 const cancelData = {
                     bank: selectedBank,
-                    accountNumber,
+                    account: accountNumber,
                     reason: selectedReason === '직접 입력' ? cancelReason : selectedReason,
                 };
 
@@ -135,15 +136,8 @@ const CancelComplete = ({ params }) => {
 
     return (
         <div className="max-w-[500px] mx-auto space-y-8 text-center">
-            <SphereHeader
-                title={sphereStatus.title}
-                description={sphereStatus.description}
-                location={sphereStatus.location}
-                date={sphereStatus.date}
-            />
-
             <p className={`text-lg font-semibold ${sphereStatus.isRefundable ? 'text-green-500' : 'text-red-500'}`}>
-                {sphereStatus.isRefundable ? '취소 가능한 상태입니다.' : '취소 불가능한 상태입니다.'}
+                {sphereStatus.isRefundable ? '환불 가능합니다.' : '환불 불가능 합니다.'}
             </p>
 
             <div className="max-w-[500px] mx-auto px-4 space-y-4">

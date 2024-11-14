@@ -51,16 +51,13 @@ export const signUp = async (userData) => {
 };
 
 // 예약 취소용 fetcher 함수
-export const cancelReservation = async (reservationId, cancelData) => {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const endpoint = `${apiBaseUrl}/api/sphere/${reservationId}/cancel`;
-
+export const cancelReservation = async (sphereId, cancelData) => {
     const token = localStorage.getItem('token'); // 토큰 가져오기
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
 
-    return await fetcher(endpoint, token, 'POST', cancelData);
+    return await fetcher(`/api/sphere/${sphereId}/cancel`, token, 'POST', cancelData);
 };
 
 // 닫힌 스피어용 fetcher 함수
@@ -89,8 +86,7 @@ export const getSphereStatus = async (sphereId) => {
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
-
-    return await fetcher(endpoint, token, 'GET');
+    return await fetcher(`/api/sphere/${sphereId}/cancel`, token, 'GET');
 };
 
 // 스피어 상세 정보 조회 함수
