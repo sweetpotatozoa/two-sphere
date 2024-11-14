@@ -20,9 +20,12 @@ const SignUpPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [verificationCode, setVerificationCode] = useState('');
+    const [isVerified, setIsVerified] = useState(false); // 인증 여부 상태
     const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
-    const [isPasswordMatching, setIsPasswordMatching] = useState(null); // 비밀번호 일치 여부 상태 추가
+    const [isPasswordMatching, setIsPasswordMatching] = useState(null);
     const [error, setError] = useState('');
+    const [verificationError, setVerificationError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -63,6 +66,49 @@ const SignUpPage = () => {
         }
     }, [password, confirmPassword]);
 
+    // 인증번호 요청
+    const requestVerificationCode = async () => {
+        try {
+            const response = await fetch('/api/verification-code/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: phoneNumber.replace(/-/g, '') }), // 하이픈 제거
+            });
+
+            if (response.status === 200) {
+                alert('인증번호가 전송되었습니다.');
+            } else {
+                const data = await response.json();
+                setVerificationError(data.message || '인증번호 요청 실패');
+            }
+        } catch (err) {
+            console.error('Verification request error:', err);
+            setVerificationError('인증번호 요청 중 오류가 발생했습니다.');
+        }
+    };
+
+    // 인증번호 확인
+    const verifyCode = async () => {
+        try {
+            const response = await fetch('/api/verification-code/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: phoneNumber.replace(/-/g, ''), code: verificationCode }),
+            });
+
+            if (response.status === 200) {
+                setIsVerified(true);
+                alert('전화번호 인증이 완료되었습니다.');
+            } else {
+                const data = await response.json();
+                setVerificationError(data.message || '인증 실패');
+            }
+        } catch (err) {
+            console.error('Verification error:', err);
+            setVerificationError('인증 중 오류가 발생했습니다.');
+        }
+    };
+
     // 회원가입 처리
     const handleSignUp = async () => {
         setError('');
@@ -70,6 +116,12 @@ const SignUpPage = () => {
         // 필수 입력 필드 확인
         if (!name || !birthDate || !sex || !jobStatus || !userName || !password || !phoneNumber) {
             setError('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 인증 여부 확인
+        if (!isVerified) {
+            setError('전화번호 인증을 완료해주세요.');
             return;
         }
 
@@ -87,13 +139,13 @@ const SignUpPage = () => {
                 jobStatus,
                 userName,
                 password,
-                phoneNumber,
+                phoneNumber: phoneNumber.replace(/-/g, ''), // 하이픈 제거 후 전달
             });
 
             if (response.status === 201) {
-                router.push('/welcome'); // 회원가입 성공 후 /welcome으로 즉시 이동
+                router.push('/welcome'); // 회원가입 성공 후 /welcome으로 이동
             } else {
-                const data = await response.json(); // 에러 메시지 확인
+                const data = await response.json();
                 setError(data.message || '회원가입에 실패했습니다.');
             }
         } catch (err) {
@@ -160,8 +212,7 @@ const SignUpPage = () => {
                     />
                     <button
                         onClick={checkUsername}
-                        className="absolute right-0 text-sm mr-1
-                         px-4 py-2 bg-black text-white font-bold rounded-xl "
+                        className="absolute right-0 text-sm mr-1 px-4 py-2 bg-black text-white font-bold rounded-xl"
                     >
                         중복 확인
                     </button>
@@ -234,19 +285,36 @@ const SignUpPage = () => {
                 <input
                     type="tel"
                     placeholder="전화번호를 입력해주세요"
-                    value={phoneNumber} // phoneNumber 상태 값 연결
+                    value={phoneNumber}
                     className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
-                    onChange={(e) => {
-                        let value = e.target.value.replace(/\D/g, ''); // 숫자 이외의 문자는 제거
-                        if (value.length > 3 && value.length <= 7) {
-                            value = value.replace(/(\d{3})(\d{0,4})/, '$1-$2');
-                        } else if (value.length > 7) {
-                            value = value.replace(/(\d{3})(\d{4})(\d{0,4})/, '$1-$2-$3');
-                        }
-                        setPhoneNumber(value); // 상태 업데이트
-                    }}
-                    maxLength={13} // 000-0000-0000 형식에 맞춰 최대 길이 설정
+                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))} // 숫자만 허용
+                    maxLength={11} // 01000000000 형태로 최대 길이 설정
                 />
+            </div>
+
+            {/* 인증번호 요청 */}
+            <button
+                onClick={requestVerificationCode}
+                className="w-full py-3 bg-gray-800 text-white font-bold rounded-xl"
+            >
+                인증번호 요청
+            </button>
+
+            {/* 인증번호 입력 */}
+            <div>
+                <label className="block text-lg font-bold mb-2">인증번호</label>
+                <input
+                    type="text"
+                    placeholder="인증번호를 입력해주세요"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-2 outline-none"
+                />
+                <button onClick={verifyCode} className="w-full py-3 mt-2 bg-black text-white font-bold rounded-xl">
+                    인증번호 확인
+                </button>
+                {isVerified && <p className="text-green-500 text-sm mt-1">전화번호 인증이 완료되었습니다.</p>}
+                {verificationError && <p className="text-red-500 text-sm mt-1">{verificationError}</p>}
             </div>
 
             {/* 직업 */}
