@@ -29,6 +29,7 @@ export async function GET(req, { params }) {
                     participants: 1,
                     status: 1,
                     placeStory: 1,
+                    questions: 1,
                 },
             }
         );

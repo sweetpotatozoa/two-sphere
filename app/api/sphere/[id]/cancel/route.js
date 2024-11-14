@@ -66,6 +66,22 @@ export async function POST(req, { params }) {
                 bank,
                 reason,
             };
+        } else {
+            // 환불 불가능한 경우에는 은행, 계좌 필드가 없어야 함
+            if (reason) {
+                const { reason } = await req.json();
+                if (!reason) {
+                    return NextResponse.json(
+                        { message: 'Reason field is required for a non-refundable cancellation.' },
+                        { status: 400 }
+                    );
+                }
+            }
+
+            cancelInfo = {
+                ...cancelInfo,
+                reason,
+            };
         }
 
         // 데이터베이스 업데이트
@@ -126,7 +142,7 @@ export async function GET(req, { params }) {
 
         // firstDate 하루 전까지 취소 가능 여부 확인
         const isRefundable = now < new Date(firstDate.getTime() - 24 * 60 * 60 * 1000);
-        return NextResponse.json({ status: 200 });
+        return NextResponse.json({ isRefundable: isRefundable }, { status: 200 });
     } catch (error) {
         console.error('Error checking refundable status:', error);
         return NextResponse.json({ message: 'An error occurred while checking refundable status' }, { status: 500 });
