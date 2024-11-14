@@ -136,9 +136,7 @@ const OpenSpheres = () => {
                         </div>
                         {/* D-Day 계산 */}
                         <span className="absolute top-1 right-1 text-white p-2 rounded-xl text-sm font-bold bg-black bg-opacity-75">
-                            {sphere.firstDate && !isNaN(new Date(sphere.firstDate))
-                                ? `D-${Math.ceil((new Date(sphere.firstDate) - new Date()) / (1000 * 60 * 60 * 24))}`
-                                : 'D-Day 없음'}
+                            {sphere.remainingDays === -1 ? 'DAY' : `D-${sphere.remainingDays}`}
                         </span>
                     </div>
                 ))}
