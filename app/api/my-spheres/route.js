@@ -36,6 +36,27 @@ export async function GET(req) {
         const ongoingSpheres = [];
         const closedSpheres = [];
 
+        // 한국 시간대로 월, 일 형식 변환
+        const formatToMonthDay = (date) => {
+            return date
+                .toLocaleDateString('ko-KR', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    timeZone: 'Asia/Seoul',
+                })
+                .replace('.', '월 ')
+                .replace('.', '일'); // 월과 일 추가
+        };
+
+        // 한국 시간대로 오전/오후 ~시 형식 변환
+        const formatToHour = (date) => {
+            return date.toLocaleTimeString('ko-KR', {
+                hour: 'numeric',
+                hour12: true,
+                timeZone: 'Asia/Seoul',
+            });
+        };
+
         await Promise.all(
             spheres.map(async (sphere) => {
                 const userParticipant = sphere.participants.find((participant) => {
@@ -83,18 +104,10 @@ export async function GET(req) {
                     return { ...participant, ...userInfoWithoutId };
                 });
 
-                const toKoreanTime = (date) => new Date(date.getTime() + 9 * 60 * 60 * 1000);
-                const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
-                const formatToHour = (date) => {
-                    const hours = date.getHours();
-                    const period = hours >= 12 ? '오후' : '오전';
-                    const hour12 = hours % 12 || 12;
-                    return `${period} ${hour12}시`;
-                };
-
-                sphere.firstDate = formatToMonthDay(toKoreanTime(new Date(sphere.firstDate)));
-                sphere.secondDate = formatToMonthDay(toKoreanTime(new Date(sphere.secondDate)));
-                sphere.time = formatToHour(toKoreanTime(new Date(sphere.firstDate)));
+                // 한국 시간대 기준으로 날짜와 시간 형식 설정
+                sphere.time = formatToHour(new Date(sphere.firstDate));
+                sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));
+                sphere.secondDate = formatToMonthDay(new Date(sphere.secondDate));
 
                 if (sphere.status === 'open') openSpheres.push(sphere);
                 else if (sphere.status === 'ongoing') ongoingSpheres.push(sphere);

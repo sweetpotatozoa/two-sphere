@@ -24,7 +24,7 @@ export async function POST() {
         
         에피타이저부터 디저트까지 다채로운 디시 구성과
         감각적인 인테리어의 공간에서 인사이트를 공유해보세요.`,
-                firstDate: new Date('2024-11-13T19:30:00'),
+                firstDate: new Date('2024-11-17T19:30:00'),
                 secondDate: new Date('2024-11-20T19:30:00'),
                 questions: [
                     '당신의 최근 관심 콘텐츠는 무엇인가요?',
@@ -36,7 +36,7 @@ export async function POST() {
                 subImage2: '/sample-place-2.svg',
                 participants: [
                     {
-                        userId: '123',
+                        userId: '67360b3656e5edc10c21f9e0',
                         isLeader: false,
                         requestLeader: true,
                         payment: 'unpaid',
