@@ -100,20 +100,12 @@ export const getSphereDetails = async (sphereId) => {
 };
 
 // 스피어 참여 요청 함수
-export const joinSphere = async (sphereId, isLeader, userId, token) => {
+export const joinSphere = async (sphereId, requestLeader) => {
+    const token = localStorage.getItem('token'); // 토큰 가져오기
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
-
-    // userId를 'x-user-id' 헤더에 포함
-    const headers = {
-        Authorization: `Bearer ${token}`,
-        'x-user-id': userId, // userId를 x-user-id로 설정
-    };
-
-    // isLeader 정보를 포함한 요청 본문
-    const body = { isLeader };
-    return await fetcher(endpoint, null, 'POST', body, 'json', headers); // 헤더를 fetcher로 전달
+    return await fetcher(`/api/sphere/${sphereId}`, token, 'POST', requestLeader);
 };
 
 export default fetcher;

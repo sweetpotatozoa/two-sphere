@@ -6,23 +6,129 @@ import { ObjectId } from 'mongodb';
 export async function GET(req, { params }) {
     try {
         const { id } = params;
-
-        if (!ObjectId.isValid(id)) {
-            return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
-        }
+        const userId = req.headers.get('x-user-id');
 
         const client = await clientPromise;
         const db = client.db();
 
-        const sphere = await db.collection('spheres').findOne({ _id: new ObjectId(id) });
+        // sphere 정보 가져오기
+        const sphere = await db.collection('spheres').findOne(
+            { _id: new ObjectId(id) },
+            {
+                projection: {
+                    _id: 1,
+                    title: 1,
+                    description: 1,
+                    place: 1,
+                    thumbnail: 1,
+                    firstDate: 1,
+                    secondDate: 1,
+                    subImage1: 1,
+                    subImage2: 1,
+                    subjects: 1,
+                    participants: 1,
+                    status: 1,
+                    placeStory: 1,
+                },
+            }
+        );
 
         if (!sphere) {
             return NextResponse.json({ message: 'Sphere not found' }, { status: 404 });
         }
 
-        return NextResponse.json(sphere, { status: 200 });
+        // 요청 유저가 참여자인 경우 유저의 참여 정보 가져오기
+        const userParticipant = userId
+            ? sphere.participants.find((participant) => participant.userId.equals(new ObjectId(userId)))
+            : null;
+
+        // 완료된 스피어거나, 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
+        const canNotViewNamesAndImages =
+            !userId ||
+            !userParticipant ||
+            userParticipant.payment === 'unpaid' ||
+            userParticipant.cancelInfo?.isCancel ||
+            sphere.status === 'closed';
+
+        // 이름과 이미지를 볼 수 있는지 여부 넣어주기
+        sphere.canNotViewNamesAndImages = canNotViewNamesAndImages;
+
+        // 요청 유저의 결제 상태 넣어주기
+        sphere.hasUnpaidStatus =
+            userParticipant && userParticipant.payment === 'unpaid' && !userParticipant.cancelInfo?.isCancel;
+
+        // 요청 유저가 취소자인지 넣어주기
+        const isCanceled = userParticipant && userParticipant.cancelInfo?.isCancel;
+        sphere.isCanceled = isCanceled;
+
+        // 취소된 참여자 제외
+        sphere.participants = sphere.participants.filter((participant) => !participant.cancelInfo?.isCancel);
+
+        // 가져올 참여자 아이디 배열 생성
+        const participantIds = sphere.participants.map((participant) => participant.userId);
+
+        let projection = {
+            createdAt: 0,
+            updatedAt: 0,
+            isProfiled: 0,
+            phoneNumber: 0,
+            password: 0,
+            userName: 0,
+        };
+
+        // 모임이 종료되었거나 이름과 이미지를 볼 수 없는 경우 이름과 이미지를 제외
+        if (sphere.status === 'closed' || canNotViewNamesAndImages) {
+            projection = { ...projection, name: 0, image: 0 };
+        }
+
+        // 참여자 정보 가져오기
+        const users = await db
+            .collection('users')
+            .find({ _id: { $in: participantIds } }, { projection })
+            .toArray();
+
+        // 참여자 정보 매핑
+        sphere.participants = sphere.participants.map((participant) => {
+            const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
+            const { _id, ...userInfoWithoutId } = userInfo;
+
+            return {
+                ...participant,
+                ...userInfoWithoutId,
+            };
+        });
+
+        // 한국 시간대로 월, 일 형식 변환
+        const formatToMonthDay = (date) => {
+            return date
+                .toLocaleDateString('ko-KR', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    timeZone: 'Asia/Seoul',
+                })
+                .replace('.', '월 ')
+                .replace('.', '일'); // 월과 일 추가
+        };
+
+        // 한국 시간대로 오전/오후 ~시 형식 변환
+        const formatToHour = (date) => {
+            return date.toLocaleTimeString('ko-KR', {
+                hour: 'numeric',
+                hour12: true,
+                timeZone: 'Asia/Seoul',
+            });
+        };
+
+        const formattedSphere = {
+            ...sphere,
+            firstDate: formatToMonthDay(new Date(sphere.firstDate)),
+            secondDate: formatToMonthDay(new Date(sphere.secondDate)),
+            time: formatToHour(new Date(sphere.firstDate)),
+        };
+
+        return NextResponse.json(formattedSphere, { status: 200 });
     } catch (error) {
-        console.error('Error fetching sphere:', error);
+        console.error('Get sphere info error:', error);
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
@@ -31,35 +137,51 @@ export async function GET(req, { params }) {
 export async function POST(req, { params }) {
     try {
         const { id } = params;
-        if (!ObjectId.isValid(id)) {
-            return NextResponse.json({ message: 'Invalid ID format' }, { status: 400 });
-        }
-
-        // x-user-id 헤더 확인 및 로그 출력
         const userId = req.headers.get('x-user-id');
 
         if (!userId) {
-            return NextResponse.json({ message: 'Unauthorized: x-user-id header missing' }, { status: 401 });
+            return NextResponse.json({ message: '로그인 후 이용해 주세요' }, { status: 401 });
         }
+
+        const { requestLeader } = await req.json();
 
         const client = await clientPromise;
         const db = client.db();
 
-        const { isLeader } = await req.json();
+        const userObjectId = new ObjectId(userId);
+        const user = await db.collection('users').findOne({ _id: userObjectId });
+        if (!user) {
+            return NextResponse.json({ message: 'User not found' }, { status: 404 });
+        }
 
-        // 스피어가 존재하는지 확인
         const sphere = await db.collection('spheres').findOne({ _id: new ObjectId(id) });
         if (!sphere) {
             return NextResponse.json({ message: 'Sphere not found' }, { status: 404 });
         }
 
-        // 참가자 정보 추가
-        const participant = {
-            userId: new ObjectId(userId), // userId를 ObjectId로 변환
-            isLeader,
+        // 스피어 상태 확인
+        if (sphere.status !== 'open') {
+            return NextResponse.json({ message: 'The sphere is not open' }, { status: 400 });
+        }
+
+        // 이미 참가자인지 확인
+        const isAlreadyParticipant = sphere.participants.some((participant) => participant.userId.equals(userObjectId));
+        if (isAlreadyParticipant) {
+            return NextResponse.json({ message: 'Already a participant' }, { status: 400 });
+        }
+
+        // 취소된 참가자인지 확인
+        const isCanceledParticipant = sphere.participants.some(
+            (participant) => participant.userId.equals(userObjectId) && participant.cancelInfo?.isCancel
+        );
+        if (isCanceledParticipant) {
+            return NextResponse.json({ message: '취소자는 재신청이 불가능합니다' }, { status: 400 });
+        }
+
+        const newParticipant = {
+            userId: userObjectId,
             payment: 'unpaid',
-            attendCount: 0,
-            createdAt: new Date(),
+            requestLeader,
             cancelInfo: {
                 isCancel: false,
                 account: '',
@@ -67,14 +189,17 @@ export async function POST(req, { params }) {
                 reason: '',
                 createdAt: null,
             },
+            attendCount: 0,
+            createdAt: new Date(),
         };
 
-        // MongoDB 업데이트
-        await db.collection('spheres').updateOne({ _id: new ObjectId(id) }, { $push: { participants: participant } });
+        await db
+            .collection('spheres')
+            .updateOne({ _id: new ObjectId(id) }, { $push: { participants: newParticipant } });
 
-        return NextResponse.json({ message: 'Participation successful' }, { status: 201 });
+        return NextResponse.json({ message: 'Successfully joined the sphere' }, { status: 200 });
     } catch (error) {
-        console.error('Error processing participation:', error);
-        return NextResponse.json({ message: error.message }, { status: 500 });
+        console.error('Join sphere error:', error);
+        return NextResponse.json({ message: 'An error occurred while joining the sphere' }, { status: 500 });
     }
 }
