@@ -1,3 +1,5 @@
+// app/api/my-spheres/route.js
+
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
@@ -5,6 +7,7 @@ import { ObjectId } from 'mongodb';
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
+        console.log('UserId from header:', userId);
 
         if (!userId || !ObjectId.isValid(userId)) {
             return NextResponse.json({ message: 'Unauthorized or invalid user ID format' }, { status: 401 });
@@ -25,8 +28,19 @@ export async function GET(req) {
             })
             .toArray();
 
+        console.log('Fetched spheres:', spheres);
+
         if (!spheres || spheres.length === 0) {
-            return NextResponse.json({ message: 'No spheres found' }, { status: 404 });
+            // 스피어가 없는 유저에 대한 메시지 반환
+            return NextResponse.json(
+                {
+                    message: '아직 참여 신청한 스피어가 없습니다.',
+                    openSpheres: [],
+                    ongoingSpheres: [],
+                    closedSpheres: [],
+                },
+                { status: 200 }
+            );
         }
 
         const openSpheres = [];
