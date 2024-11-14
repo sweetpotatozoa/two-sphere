@@ -37,7 +37,6 @@ export async function POST(req, { params }) {
 
         // x-user-id 헤더 확인 및 로그 출력
         const userId = req.headers.get('x-user-id');
-        console.log('UserId from x-user-id header:', userId);
 
         if (!userId) {
             return NextResponse.json({ message: 'Unauthorized: x-user-id header missing' }, { status: 401 });

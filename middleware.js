@@ -25,7 +25,6 @@ export async function middleware(req) {
     try {
         // 비동기로 토큰 검증 수행
         const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.ACCESS_TOKEN_DEV));
-        console.log('Middleware userId:', payload.user.id); // userId 확인
 
         const response = NextResponse.next();
         response.headers.set('x-user-id', payload.user.id); // 사용자 ID를 응답 헤더에 설정
@@ -36,11 +35,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-    matcher: [
-        '/api/my-profile',
-        '/api/my-spheres',
-        '/api/sphere/[id]',
-        '/api/sphere/[id]/join',
-        '/api/sphere/[id]/cancel',
-    ], // 특정 경로에만 적용
+    matcher: ['/api/my-profile', '/api/my-spheres', '/api/sphere/[id]', '/api/sphere/[id]/cancel'], // 특정 경로에만 적용
 };
