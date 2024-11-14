@@ -15,6 +15,14 @@ export async function POST(req) {
         const client = await clientPromise;
         const db = client.db();
 
+        // 데이터베이스에서 동일한 `username`이 있는지 확인
+        const existingUser = await db.collection('users').findOne({ userName });
+
+        if (existingUser) {
+            // 중복된 아이디가 있는 경우
+            return NextResponse.json({ message: 'Username is already taken' }, { status: 409 });
+        }
+
         // 비밀번호 해싱
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
