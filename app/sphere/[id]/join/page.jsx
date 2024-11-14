@@ -36,23 +36,8 @@ const JoinPage = ({ params }) => {
     const handleJoinClick = async () => {
         if (isLeader !== null && isConfirmed) {
             try {
-                const token = localStorage.getItem('token'); // 사용자 인증 토큰 가져오기
-                if (token) {
-                    const decodedToken = jwt.decode(token); // JWT 디코딩
-                    console.log('Decoded JWT Payload:', decodedToken); // JWT 디코드 확인
-
-                    // userId가 payload.user.id인지, payload.userId인지 확인하고 맞게 할당
-                    const userId = decodedToken?.user?.id || decodedToken?.userId;
-                    console.log('Extracted userId:', userId); // 확인용 로그
-
-                    if (!userId) throw new Error('UserId is missing in token payload');
-
-                    // joinSphere 함수 호출 시 userId 포함
-                    await joinSphere(id, isLeader, userId, token); // 수정된 함수 호출
-                    router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
-                } else {
-                    setError('토큰이 유효하지 않습니다.');
-                }
+                await joinSphere(id, isLeader); // 수정된 함수 호출
+                router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
             } catch (err) {
                 console.error('스피어 참여 실패:', err.message);
                 setError('스피어 참여에 실패했습니다. 다시 시도해주세요.');
