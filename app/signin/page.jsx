@@ -9,12 +9,12 @@ import eyeOpenIcon from '/public/eye-open-icon.svg';
 
 const SignInPage = () => {
     const router = useRouter();
-    const [userName, setUserName] = useState(''); // userName 필드로 수정
+    const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const searchParams = useSearchParams();
-    const redirectPath = searchParams.get('redirect') || '/';
+    const redirectPath = searchParams.get('redirect') || '/'; // 쿼리에서 redirect 값을 가져옴
 
     // 로그인 요청 처리 함수
     const handleLogin = async () => {
@@ -22,7 +22,7 @@ const SignInPage = () => {
         try {
             const response = await signIn(userName, password);
             if (response && response.token) {
-                localStorage.setItem('token', response.token);
+                localStorage.setItem('token', response.token); // 로그인 토큰 저장
                 router.push(redirectPath); // 로그인 성공 후 redirectPath로 이동
             } else {
                 setError('아이디 또는 비밀번호가 잘못되었습니다. 다시 시도해주세요.');
@@ -54,7 +54,7 @@ const SignInPage = () => {
                 <input
                     type="text"
                     value={userName}
-                    onChange={(e) => setUserName(e.target.value)} // userName으로 수정
+                    onChange={(e) => setUserName(e.target.value)}
                     placeholder="아이디를 입력해주세요"
                     className="w-full outline-none text-gray-600"
                 />

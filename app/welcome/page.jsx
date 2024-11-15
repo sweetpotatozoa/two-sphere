@@ -1,4 +1,3 @@
-// app/welcome/page.jsx
 'use client';
 
 import React from 'react';
@@ -9,7 +8,8 @@ const WelcomePage = () => {
     const router = useRouter();
 
     const goToProfile = () => {
-        router.push('/signin'); // '프로필 완성하러 가기' 버튼 클릭 시 로그인 경로로 이동
+        // 로그인 페이지로 이동하며 redirect 파라미터 추가
+        router.push('/signin?redirect=/my-profile');
     };
 
     return (
