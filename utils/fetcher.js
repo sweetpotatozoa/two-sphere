@@ -81,7 +81,7 @@ export const getUserSpheres = async (token) => {
 };
 
 // 취소 sphere 상태 조회 함수
-export const getSphereStatus = async (sphereId) => {
+export const getIsRefundable = async (sphereId) => {
     const token = localStorage.getItem('token');
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
@@ -101,7 +101,7 @@ export const joinSphere = async (sphereId, requestLeader) => {
     if (!token) {
         throw new Error('Access token is missing. Please log in again.');
     }
-    return await fetcher(`/api/sphere/${sphereId}`, token, 'POST', requestLeader);
+    return await fetcher(`/api/sphere/${sphereId}`, token, 'POST', { requestLeader: requestLeader });
 };
 
 export default fetcher;

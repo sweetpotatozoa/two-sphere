@@ -65,6 +65,21 @@ export async function PUT(req) {
             return NextResponse.json({ message: 'No valid fields to update' }, { status: 400 });
         }
 
+        // updatedAt 필드 추가
+        updateFields.updatedAt = new Date();
+
+        // career와 answer를 입력했다면 프로필 완성으로 체크
+        if (updateFields.career && updateFields.answers) {
+            // answers의 모든 필드가 값이 있는지 확인
+            const allAnswersFilled = Object.values(updateFields.answers).every(
+                (value) => value !== null && value !== undefined && value !== ''
+            );
+
+            if (allAnswersFilled) {
+                updateFields.isProfiled = true;
+            }
+        }
+
         // MongoDB에서 사용자 정보 업데이트
         const result = await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: updateFields });
 

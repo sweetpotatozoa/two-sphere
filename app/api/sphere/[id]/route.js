@@ -68,6 +68,38 @@ export async function GET(req, { params }) {
         // 가져올 참여자 아이디 배열 생성
         const participantIds = sphere.participants.map((participant) => participant.userId);
 
+        // 참여, 취소 가능 여부 상태 초기값
+        let showJoinOrCancelOrClosed = 'showJoin'; // 기본값을 참여 가능으로 설정
+
+        if (sphere.status !== 'open') {
+            showJoinOrCancelOrClosed = 'showClosed'; // 스피어가 열려 있지 않으면 상태 결정 중단
+        } else if (!userId || !userParticipant) {
+            showJoinOrCancelOrClosed = 'showJoin'; // 로그인하지 않았거나 참여자가 아니면 참여 가능
+        } else if (userParticipant && !isCanceled) {
+            showJoinOrCancelOrClosed = 'showCancel'; // 참여 중이고 아직 취소하지 않았으면 취소 가능
+        } else if (isCanceled) showJoinOrCancelOrClosed = 'showAlreadyCanceled'; // 참여 중이지만 이미 취소한 경우 다시 참여 가능
+
+        sphere.showJoinOrCancelOrClosed = showJoinOrCancelOrClosed;
+
+        // 요청 유저의 로그인, 프로필 완성 여부
+        let canJoin = 'haveToSignin';
+
+        if (!userId) {
+            canJoin = 'haveToSignin';
+        } else {
+            const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+
+            if (!user) {
+                canJoin = 'haveToSignin'; // user가 존재하지 않으면 로그인 필요 상태
+            } else if (!user.isProfiled) {
+                canJoin = 'haveToWriteProfile'; // 프로필이 완성되지 않은 경우
+            } else {
+                canJoin = 'canJoin'; // 기본적으로 참여 가능
+            }
+        }
+
+        sphere.canJoin = canJoin;
+
         let projection = {
             createdAt: 0,
             updatedAt: 0,
@@ -163,6 +195,7 @@ export async function POST(req, { params }) {
         }
 
         const { requestLeader } = await req.json();
+        console.log('Request leader:', requestLeader);
 
         const client = await clientPromise;
         const db = client.db();
@@ -200,7 +233,8 @@ export async function POST(req, { params }) {
         const newParticipant = {
             userId: userObjectId,
             payment: 'unpaid',
-            requestLeader,
+            requestLeader: requestLeader,
+            isLeader: false,
             cancelInfo: {
                 isCancel: false,
                 account: '',
