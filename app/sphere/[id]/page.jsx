@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getSphereDetails, cancelReservation, getIsRefundable } from '@/utils/fetcher';
+import { getSphereDetails, getIsRefundable } from '@/utils/fetcher';
 import SphereHeader from '../../../components/SphereHeader';
 import SphereDetails from '../../../components/SphereDetails';
 import SphereParticipants from '../../../components/SphereParticipants';
@@ -15,51 +15,19 @@ const SphereDetail = ({ params }) => {
     const router = useRouter();
     const { id } = params;
     const [sphere, setSphere] = useState(null);
-    const [user, setUser] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
-    const [isRefundable, setIsRefundable] = useState(null);
-    const [isParticipating, setIsParticipating] = useState(false);
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
+    const [isRefundable, setIsRefundable] = useState(null); // 환불 가능 여부 상태\
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 취소 완료 모달
 
-    // Fetch Sphere Details
+    // 최초 데이터 불러오기
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (token) {
-                    setIsLoggedIn(true);
-                } else {
-                    setIsLoggedIn(false);
-                }
-
-                const sphereData = await getSphereDetails(id, token);
+                const sphereData = await getSphereDetails(id);
                 setSphere(sphereData);
-
-                if (token) {
-                    const response = await fetch('/api/my-profile', {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                        cache: 'no-store',
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch user data: ${response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    setUser(data.user);
-
-                    const isUserParticipating = sphereData.participants.some(
-                        (participant) => participant.userId === data.user._id
-                    );
-                    setIsParticipating(isUserParticipating);
-                }
             } catch (err) {
                 setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
                 console.error('Detailed error:', err);
@@ -83,13 +51,8 @@ const SphereDetail = ({ params }) => {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
+    // 참여하기를 누르면 참여 페이지로 이동
     const handleJoinClick = () => {
-        if (!isLoggedIn) {
-            alert('로그인 후 참여할 수 있습니다.');
-            router.push('/signin'); // 로그인 페이지로 리디렉션
-            return;
-        }
-
         switch (sphere.canJoin) {
             case 'haveToWriteProfile':
                 setShowProfileIncompleteModal(true);
@@ -107,6 +70,7 @@ const SphereDetail = ({ params }) => {
         }
     };
 
+    // 취소 버튼 클릭 시점에 환불가능 여부에 따라 모달 표시가 달라야 함.
     const handleCancelClick = async () => {
         try {
             const { isRefundable } = await getIsRefundable(id); // 서버에서 환불 가능 여부 가져오기
@@ -118,8 +82,8 @@ const SphereDetail = ({ params }) => {
     };
 
     const handleCancelNo = () => {
-        setShowCancelModal(false);
-        setIsRefundable(null);
+        setShowCancelModal(false); // 모달 닫기
+        setIsRefundable(null); // 상태 초기화
     };
 
     const handleCloseModal = () => {
@@ -175,7 +139,7 @@ const SphereDetail = ({ params }) => {
                         취소하기
                     </button>
                 ) : sphere.showJoinOrCancelOrClosed === 'showAlreadyCanceled' ? (
-                    <div className="w-full mt-8 py-3 bg-gray-400 text-white font-bold rounded-xl text-center">
+                    <div className="w-full mt-8 py-3  bg-gray-400 text-white font-bold rounded-xl text-center">
                         한번 취소한 스피어는 참여할 수 없습니다.
                     </div>
                 ) : (
@@ -218,9 +182,18 @@ const SphereDetail = ({ params }) => {
 
             {showCancelModal &&
                 (isRefundable ? (
+                    // 환불 가능한 경우
                     <CancelNoticeModal onClose={handleCancelNo} id={id} />
                 ) : (
-                    <CancelNoRefundModal onClose={handleCancelNo} id={id} />
+                    // 환불 불가능한 경우
+                    <CancelNoRefundModal
+                        onClose={handleCancelNo}
+                        id={id}
+                        onConfirm={() => {
+                            handleImmediateCancel();
+                            handleCloseModal();
+                        }}
+                    />
                 ))}
 
             {showCancelConfirmation && (
