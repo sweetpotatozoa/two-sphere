@@ -60,7 +60,13 @@ export default function MyProfilePage() {
                     onClick={openModal} // 클릭 시 모달 열기
                 >
                     {user.image ? (
-                        <Image src={user.image} alt="User Profile" width={96} height={96} className="rounded-full" />
+                        <Image
+                            src={user.image}
+                            alt="User Profile"
+                            width={96}
+                            height={96}
+                            className="size-full rounded-full"
+                        />
                     ) : (
                         <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
                     )}
