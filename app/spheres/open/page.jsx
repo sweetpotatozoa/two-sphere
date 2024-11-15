@@ -66,12 +66,15 @@ export default function OpenSpheresPage() {
                                     </span>
                                     <span className="flex items-center space-x-1">
                                         <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
-                                        <span>{sphere.firstDate}</span> {/* MongoDB의 firstDate 필드 */}
+                                        <span>
+                                            {sphere.firstDate} / {sphere.secondDate} {sphere.time}
+                                        </span>{' '}
+                                        {/* MongoDB의 firstDate 필드 */}
                                     </span>
                                 </div>
                             </div>
                             <span className="absolute top-1 right-1 text-white p-2 rounded-md text-sm font-bold bg-black bg-opacity-75">
-                                {sphere.remainingDays === -1 ? 'D-DAY' : `D-${sphere.remainingDays}`}
+                                {sphere.remainingDays === 0 ? 'D-DAY' : `D-${sphere.remainingDays}`}
                             </span>
                         </div>
                     ))
