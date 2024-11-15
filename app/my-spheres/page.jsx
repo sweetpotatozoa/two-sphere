@@ -12,10 +12,18 @@ export default function MySpheresPage() {
     const [error, setError] = useState(null);
     const [selectedSphere, setSelectedSphere] = useState(null); // 선택된 Sphere 저장
 
+    // 로그인 상태 확인 후, 로그인되지 않으면 로그인 페이지로 리디렉션
     useEffect(() => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('로그인 후 이용 가능합니다.');
+            router.push('/signin'); // 로그인하지 않으면 로그인 페이지로 리디렉션
+            return;
+        }
+
         const fetchMySpheres = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const data = await getUserSpheres(token);
                 setSpheres(data);
             } catch (err) {
@@ -27,7 +35,7 @@ export default function MySpheresPage() {
         };
 
         fetchMySpheres();
-    }, []);
+    }, [router]); // `router`는 `useEffect` 의존성 배열에 추가
 
     const handleSphereClick = (sphere) => {
         if (sphere.hasUnpaidStatus) {
