@@ -113,7 +113,11 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
 
                         {/* 이름이 한 번 더 표시 (career 보다 한 계층 높음) */}
                         {!canNotViewNamesAndImages && (
-                            <p className="text-xl font-bold mt-4">{selectedParticipant?.name || '이름 없음'}</p>
+                            <div className="text-xl font-bold mt-4">
+                                {selectedParticipant?.name || '이름 없음'} |{'  '}
+                                {selectedParticipant?.age || '나이대 정보 없음'} |{'  '}
+                                {selectedParticipant?.sex || '성별 정보 없음'}
+                            </div>
                         )}
 
                         {/* career */}
