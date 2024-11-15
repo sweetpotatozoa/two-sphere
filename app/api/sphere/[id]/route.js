@@ -65,6 +65,10 @@ export async function GET(req, { params }) {
         // 취소된 참여자 제외
         sphere.participants = sphere.participants.filter((participant) => !participant.cancelInfo?.isCancel);
 
+        // 스피어 참여자가 4명 이상인 경우 참여 불가능
+        if (sphere.participants.length >= 4)
+            return NextResponse.json({ message: 'The sphere is full' }, { status: 400 });
+
         // 가져올 참여자 아이디 배열 생성
         const participantIds = sphere.participants.map((participant) => participant.userId);
 
@@ -195,7 +199,6 @@ export async function POST(req, { params }) {
         }
 
         const { requestLeader } = await req.json();
-        console.log('Request leader:', requestLeader);
 
         const client = await clientPromise;
         const db = client.db();
