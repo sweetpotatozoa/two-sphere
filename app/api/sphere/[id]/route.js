@@ -88,6 +88,23 @@ export async function GET(req, { params }) {
             .find({ _id: { $in: participantIds } }, { projection })
             .toArray();
 
+        // 나이대를 계산하는 함수
+        const calculateAgeGroup = (birthDate) => {
+            if (!birthDate) return '알 수 없음'; // birthDate가 없는 경우 처리
+            const birth = new Date(birthDate);
+            const current = new Date();
+            const currentYear = current.getFullYear();
+            const birthYear = birth.getFullYear();
+
+            // 한국 나이 계산 (태어난 해를 1살로 시작)
+            const koreanAge = currentYear - birthYear + 1;
+
+            if (koreanAge >= 20 && koreanAge < 30) return '20대';
+            if (koreanAge >= 30 && koreanAge < 40) return '30대';
+            if (koreanAge >= 40 && koreanAge < 50) return '40대';
+            return '50대 이상'; // 그 외 나이대 처리
+        };
+
         // 참여자 정보 매핑
         sphere.participants = sphere.participants.map((participant) => {
             const userInfo = users.find((user) => user._id.equals(participant.userId)) || {};
@@ -96,6 +113,7 @@ export async function GET(req, { params }) {
             return {
                 ...participant,
                 ...userInfoWithoutId,
+                age: calculateAgeGroup(userInfoWithoutId.birthDate),
             };
         });
 
