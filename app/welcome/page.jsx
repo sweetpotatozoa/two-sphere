@@ -26,6 +26,12 @@ const WelcomePage = () => {
             <button onClick={goToProfile} className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl">
                 프로필 완성하러 가기
             </button>
+            <br />
+            <h1 className="text-2xl font-bold mb-4 text-center">
+                Sphere 참여를 위해서는
+                <br />
+                프로필을 완성하셔야 합니다.
+            </h1>
         </div>
     );
 };
