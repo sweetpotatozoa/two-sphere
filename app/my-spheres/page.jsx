@@ -1,4 +1,3 @@
-// app/my-spheres/page.jsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -11,6 +10,7 @@ export default function MySpheresPage() {
     const [spheres, setSpheres] = useState({ openSpheres: [], ongoingSpheres: [], closedSpheres: [] });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedSphere, setSelectedSphere] = useState(null); // 선택된 Sphere 저장
 
     useEffect(() => {
         const fetchMySpheres = async () => {
@@ -29,22 +29,27 @@ export default function MySpheresPage() {
         fetchMySpheres();
     }, []);
 
-    const handleSphereClick = (id) => {
-        router.push(`/sphere/${id}`);
+    const handleSphereClick = (sphere) => {
+        if (sphere.hasUnpaidStatus) {
+            // unpaid 상태인 경우 모달 UI 표시
+            setSelectedSphere(sphere);
+        } else {
+            // 기본 라우팅
+            router.push(`/sphere/${sphere._id}`);
+        }
     };
 
-    if (isLoading) {
-        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
-    }
-
-    if (error) {
-        return <div className="text-center py-10 text-red-500">{error}</div>;
-    }
+    const handleOkayClick = () => {
+        if (selectedSphere) {
+            // Sphere 상세 페이지로 이동
+            router.push(`/sphere/${selectedSphere._id}`);
+        }
+    };
 
     const renderSphereCard = (sphere) => (
         <div
             key={sphere._id}
-            onClick={() => handleSphereClick(sphere._id)}
+            onClick={() => handleSphereClick(sphere)}
             className="relative w-full h-48 bg-gray-800 rounded-xl overflow-hidden cursor-pointer"
         >
             <Image
@@ -76,6 +81,14 @@ export default function MySpheresPage() {
         </div>
     );
 
+    if (isLoading) {
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-10 text-red-500">{error}</div>;
+    }
+
     return (
         <div className="min-h-screen flex flex-col items-center p-8">
             <h1 className="text-2xl font-bold">내 스피어</h1>
@@ -95,33 +108,33 @@ export default function MySpheresPage() {
                 </div>
             </section>
 
-            {/* Ongoing Spheres */}
-            <section className="w-full max-w-[500px] mt-6">
-                <h2 className="text-lg font-semibold mb-4">진행 중인 스피어</h2>
-                <div className="flex flex-col space-y-2">
-                    {spheres.ongoingSpheres.length > 0 ? (
-                        spheres.ongoingSpheres.map(renderSphereCard)
-                    ) : (
-                        <div className="flex items-center justify-center h-48 text-gray-500">
-                            현재 진행 중인 스피어가 없습니다.
-                        </div>
-                    )}
-                </div>
-            </section>
+            {/* Modal for unpaid spheres */}
+            {selectedSphere && selectedSphere.hasUnpaidStatus && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 w-[90%] max-w-[400px]">
+                        <h2 className="text-xl font-bold text-center">입금 정보</h2>
+                        <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-xl text-center">
+                            참여비: 300,000원 <br />
+                            계좌 : 토스 112119114111 <br />
+                        </p>
 
-            {/* Closed Spheres */}
-            <section className="w-full max-w-[500px] mt-6">
-                <h2 className="text-lg font-semibold mb-4">참여 완료한 스피어</h2>
-                <div className="flex flex-col space-y-2">
-                    {spheres.closedSpheres.length > 0 ? (
-                        spheres.closedSpheres.map(renderSphereCard)
-                    ) : (
-                        <div className="flex items-center justify-center h-48 text-gray-500">
-                            현재 완료된 스피어가 없습니다.
-                        </div>
-                    )}
+                        <p className="text-sm text-gray-600 text-center">
+                            위 계좌로 참여비 입금 시 참여 확정되며 안내 문자를 보내드립니다.
+                            <br />
+                            (참여비 입금이 확인되면 스피어 참여자의 상세 정보 조회가
+                            <br />
+                            가능합니다.)
+                        </p>
+
+                        <button
+                            onClick={handleOkayClick}
+                            className="w-full py-3 bg-black text-white font-bold rounded-xl"
+                        >
+                            확인
+                        </button>
+                    </div>
                 </div>
-            </section>
+            )}
         </div>
     );
 }
