@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getSphereStatus, cancelReservation } from '@/utils/fetcher'; // fetcher.js 함수 사용
+import { getIsRefundable, cancelReservation } from '@/utils/fetcher'; // fetcher.js 함수 사용
 import SphereHeader from '../../../../components/SphereHeader';
 import jwt from 'jsonwebtoken';
 
@@ -58,7 +58,7 @@ const CancelComplete = ({ params }) => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('Access token is missing.');
-                const status = await getSphereStatus(id, token); // fetcher.js 함수 호출
+                const status = await getIsRefundable(id, token); // fetcher.js 함수 호출
                 setSphereStatus(status);
             } catch (err) {
                 setError('스피어 상태를 불러오는 데 실패했습니다.');
