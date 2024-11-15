@@ -14,7 +14,7 @@ const JoinPage = ({ params }) => {
     const { id } = params;
 
     const [sphere, setSphere] = useState(null); // MongoDB에서 가져온 스피어 데이터 상태
-    const [isLeader, setIsLeader] = useState(null); // 리더 희망 여부 상태
+    const [requestLeader, setRequestLeader] = useState(null); // 리더 희망 여부 상태
     const [isConfirmed, setIsConfirmed] = useState(false); // 확인 체크박스 상태
     const [error, setError] = useState(null); // 에러 상태 추가
 
@@ -34,9 +34,9 @@ const JoinPage = ({ params }) => {
 
     // 참여하기 버튼 클릭 핸들러
     const handleJoinClick = async () => {
-        if (isLeader !== null && isConfirmed) {
+        if (requestLeader !== null && isConfirmed) {
             try {
-                await joinSphere(id, isLeader); // 수정된 함수 호출
+                await joinSphere(id, requestLeader); // 수정된 함수 호출
                 router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
             } catch (err) {
                 console.error('스피어 참여 실패:', err.message);
@@ -72,17 +72,17 @@ const JoinPage = ({ params }) => {
                 <h2 className="text-xl font-bold">*Sphere 리더를 희망하시나요?</h2>
                 <div className="flex justify-center space-x-4">
                     <button
-                        onClick={() => setIsLeader(true)}
+                        onClick={() => setRequestLeader(true)}
                         className={`w-32 py-2 border border-black font-bold rounded-xl ${
-                            isLeader === true ? 'bg-black text-white' : 'bg-white text-black'
+                            requestLeader === true ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
                         예
                     </button>
                     <button
-                        onClick={() => setIsLeader(false)}
+                        onClick={() => setRequestLeader(false)}
                         className={`w-32 py-2 border border-black font-bold rounded-xl ${
-                            isLeader === false ? 'bg-black text-white' : 'bg-white text-black'
+                            requestLeader === false ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
                         아니요
@@ -122,9 +122,9 @@ const JoinPage = ({ params }) => {
             <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
                 <button
                     onClick={handleJoinClick}
-                    disabled={isLeader === null || !isConfirmed}
+                    disabled={requestLeader === null || !isConfirmed}
                     className={`w-full py-3 font-bold rounded-xl ${
-                        isLeader === null || !isConfirmed
+                        requestLeader === null || !isConfirmed
                             ? 'border border-black bg-white text-black cursor-not-allowed'
                             : 'bg-black text-white'
                     }`}
