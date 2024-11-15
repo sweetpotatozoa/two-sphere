@@ -83,7 +83,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                     className="fixed left-0 top-0 right-0 bottom-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
                     style={{ margin: 0, padding: 0 }}
                 >
-                    <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative">
+                    <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative overflow-y-auto max-h-[80vh]">
                         {/* 검정색 원 */}
                         <div className="relative w-32 h-32 mx-auto">
                             {canNotViewNamesAndImages ? (
