@@ -1,5 +1,3 @@
-//app/api/spheres/open/route.js
-
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 
@@ -30,6 +28,11 @@ export async function GET() {
             const firstDate = new Date(sphere.firstDate);
             const secondDate = new Date(sphere.secondDate);
 
+            // 날짜만 비교하기 위해 현재 날짜와 기준 날짜를 "연-월-일"로 변환
+            const currentDateOnly = new Date(currentDate.toDateString());
+            const firstDateOnly = new Date(firstDate.toDateString());
+            const secondDateOnly = new Date(secondDate.toDateString());
+
             // "월 일" 형식으로 날짜 변환 (항상 한국 시간대 적용)
             const formatToMonthDay = (date) => {
                 const formattedDate = date.toLocaleDateString('ko-KR', {
@@ -52,33 +55,24 @@ export async function GET() {
                 });
             };
 
+            // 남은 날짜 계산
             let remainingDays;
-
-            // 한국 시간대로 Date 객체 변환 함수
-            const toKoreanDate = (date) => {
-                const koreanDateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Seoul' });
-                return new Date(koreanDateString); // 한국 시간대의 날짜로 변환된 Date 객체 반환
-            };
-
-            // 남은 날짜 계산 함수 (한국 시간대 기준)
-            const calculateRemainingDays = (currentDate, firstDate, secondDate) => {
-                // 모든 날짜를 한국 시간대의 날짜로 변환
-                const koreanCurrentDate = toKoreanDate(currentDate);
-                const koreanFirstDate = toKoreanDate(firstDate);
-                const koreanSecondDate = toKoreanDate(secondDate);
-
-                let remainingDays;
-                if (koreanCurrentDate < koreanFirstDate) {
-                    remainingDays = Math.ceil((koreanFirstDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
-                } else if (koreanCurrentDate < koreanSecondDate) {
-                    remainingDays = Math.ceil((koreanSecondDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
-                } else {
-                    remainingDays = -1; // 두 날짜 모두 지난 경우
-                }
-                return remainingDays;
-            };
-
-            remainingDays = calculateRemainingDays(currentDate, firstDate, secondDate);
+            if (currentDateOnly.getTime() === firstDateOnly.getTime()) {
+                // 첫 번째 날짜와 같은 날이면 0
+                remainingDays = 0;
+            } else if (currentDateOnly.getTime() === secondDateOnly.getTime()) {
+                // 두 번째 날짜와 같은 날이면 0
+                remainingDays = 0;
+            } else if (currentDateOnly < firstDateOnly) {
+                // 첫 번째 날짜 이전이면 남은 날짜 계산
+                remainingDays = Math.ceil((firstDateOnly - currentDateOnly) / (1000 * 60 * 60 * 24));
+            } else if (currentDateOnly < secondDateOnly) {
+                // 두 번째 날짜 이전이면 남은 날짜 계산
+                remainingDays = Math.ceil((secondDateOnly - currentDateOnly) / (1000 * 60 * 60 * 24));
+            } else {
+                // 두 날짜 모두 지난 경우
+                remainingDays = -1;
+            }
 
             return {
                 ...sphere,
