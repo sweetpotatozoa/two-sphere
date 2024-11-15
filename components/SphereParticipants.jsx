@@ -62,7 +62,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                         alt="Participant Image"
                                         width={40}
                                         height={40}
-                                        className="rounded-full"
+                                        className="size-full rounded-full"
                                     />
                                 ) : (
                                     <p className="text-sm font-bold text-white">
@@ -100,7 +100,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                     alt="Participant Image"
                                     width={90}
                                     height={90}
-                                    className="rounded-full mx-auto"
+                                    className="size-full rounded-full mx-auto"
                                 />
                             ) : (
                                 <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
