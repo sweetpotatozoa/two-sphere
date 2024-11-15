@@ -94,9 +94,9 @@ const SphereDetail = ({ params }) => {
 
     const handleCancelClick = async () => {
         try {
-            const { isRefundable } = await getIsRefundable(id);
+            const { isRefundable } = await getIsRefundable(id); // 서버에서 환불 가능 여부 가져오기
             setIsRefundable(isRefundable);
-            setShowCancelModal(true);
+            setShowCancelModal(true); // 모달 표시
         } catch (error) {
             console.error('Error fetching refundable status:', error);
         }
