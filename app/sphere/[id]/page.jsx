@@ -16,14 +16,8 @@ const SphereDetail = ({ params }) => {
     const { id } = params;
     const [sphere, setSphere] = useState(null);
     const [user, setUser] = useState(null);
-    const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
-    const [showCancelModal, setShowCancelModal] = useState(false);
-    const [isLessThan24Hours, setIsLessThan24Hours] = useState(false);
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [isParticipating, setIsParticipating] = useState(false);
-    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
-    const [showFullCapacityModal, setShowFullCapacityModal] = useState(false); // 추가된 상태
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -33,32 +27,8 @@ const SphereDetail = ({ params }) => {
 
                 const sphereData = await getSphereDetails(id, token);
                 setSphere(sphereData);
-
-                const response = await fetch('/api/my-profile', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    cache: 'no-store',
-                });
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch user data: ${response.statusText}`);
-                }
-                const data = await response.json();
-                setUser(data.user);
-
-                const isUserParticipating = sphereData.participants.some(
-                    (participant) => participant.userId === data.user._id
-                );
-                setIsParticipating(isUserParticipating);
-
-                const now = new Date();
-                const firstDate = new Date(sphereData.firstDate);
-                const timeDifference = firstDate - now;
-                setIsLessThan24Hours(timeDifference < 24 * 60 * 60 * 1000);
             } catch (err) {
                 setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
-                console.error('Detailed error:', err);
             } finally {
                 setIsLoading(false);
             }
@@ -66,59 +36,6 @@ const SphereDetail = ({ params }) => {
 
         fetchDetails();
     }, [id]);
-
-    const handleImmediateCancel = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            await cancelReservation(id, { reason: '24시간 내 취소' }, token); // 취소 API 호출
-            setShowCancelConfirmation(true); // 취소 완료 모달 표시
-            setIsParticipating(false); // 참여 상태 업데이트
-        } catch (err) {
-            console.error('취소 요청 실패:', err);
-            setError('취소에 실패했습니다. 다시 시도해주세요.');
-        }
-    };
-
-    const handleJoinClick = async () => {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            router.push(`/signin?redirect=/sphere/${id}/join`);
-            return;
-        }
-
-        try {
-            await fetch(`/api/sphere/${id}/join`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            router.push(`/sphere/${id}/join`);
-        } catch (err) {
-            if (err.message.includes('The sphere is full')) {
-                setShowFullCapacityModal(true); // 마감된 상태 모달 표시
-            } else {
-                alert('참여 중 문제가 발생했습니다. 다시 시도해 주세요.');
-            }
-        }
-    };
-
-    const handleCancelClick = () => {
-        setShowCancelModal(true);
-    };
-
-    const handleCancelNo = () => {
-        setShowCancelModal(false);
-    };
-
-    const handleCloseModal = () => {
-        setShowProfileIncompleteModal(false);
-    };
-
-    const handleGoToProfile = () => {
-        router.push('/my-profile');
-    };
 
     if (isLoading) {
         return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
@@ -131,10 +48,6 @@ const SphereDetail = ({ params }) => {
     if (!sphere) {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
-
-    const isProfileComplete = () => {
-        return user?.career && user.answers?.every((answer) => answer);
-    };
 
     return (
         <div className="max-w-[500px] space-y-8 text-center">
@@ -163,91 +76,15 @@ const SphereDetail = ({ params }) => {
                     subImage2={sphere.subImage2}
                     placeStory={sphere.placeStory}
                 />
-                <SphereParticipants participants={sphere.participants} />
+
+                {/* SphereParticipants 컴포넌트에 props 전달 */}
+                <SphereParticipants
+                    participants={sphere.participants}
+                    canNotViewNamesAndImages={sphere.canNotViewNamesAndImages}
+                />
+
                 <SphereQuestions questions={sphere.questions} />
-
-                {isParticipating ? (
-                    <button
-                        onClick={handleCancelClick}
-                        className="w-full mt-8 py-3 bg-black text-white font-bold rounded-xl"
-                    >
-                        취소하기
-                    </button>
-                ) : (
-                    <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
-                        <button
-                            onClick={handleJoinClick}
-                            className="w-full py-3 bg-black text-white font-bold rounded-xl"
-                        >
-                            참여하기
-                        </button>
-                    </div>
-                )}
             </div>
-
-            {showProfileIncompleteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
-                        <p>
-                            프로필을 완성해야 참여할 수 있습니다.
-                            <br />
-                            프로필 페이지로 이동하시겠습니까?
-                        </p>
-                        <div className="space-x-4">
-                            <button
-                                onClick={handleGoToProfile}
-                                className="w-32 py-2 bg-black text-white font-bold rounded-xl"
-                            >
-                                확인
-                            </button>
-                            <button
-                                onClick={handleCloseModal}
-                                className="w-32 py-2 bg-gray-200 text-black font-bold rounded-xl"
-                            >
-                                취소
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showFullCapacityModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
-                        <p>마감된 Sphere입니다.</p>
-                        <button
-                            onClick={() => setShowFullCapacityModal(false)} // 모달 닫기
-                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
-                        >
-                            확인
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showCancelModal &&
-                (isLessThan24Hours ? (
-                    <CancelNoRefundModal onClose={handleCancelNo} id={id} onConfirm={handleImmediateCancel} />
-                ) : (
-                    <CancelNoticeModal onClose={handleCancelNo} id={id} />
-                ))}
-
-            {showCancelConfirmation && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
-                        <p>취소되었습니다.</p>
-                        <button
-                            onClick={() => {
-                                setShowCancelConfirmation(false);
-                                router.push(`/sphere/${id}`);
-                            }}
-                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
-                        >
-                            확인
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
