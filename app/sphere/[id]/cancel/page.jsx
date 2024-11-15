@@ -69,8 +69,6 @@ const CancelComplete = ({ params }) => {
         fetchSphereStatus();
     }, [id]);
 
-    console.log('sphereStatus:', sphereStatus);
-
     if (isLoading) {
         return <div className="text-center py-10">스피어 상태를 불러오는 중입니다...</div>;
     }
