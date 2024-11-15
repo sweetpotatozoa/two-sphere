@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-// map 메서드 호출 시 TypeError 해결 위한 수정
-
 const SphereParticipants = ({ participants = [] }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
 
@@ -72,9 +70,22 @@ const SphereParticipants = ({ participants = [] }) => {
                     style={{ margin: 0, padding: 0 }}
                 >
                     <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative">
-                        <h2 className="text-xl font-bold">{selectedParticipant.name}의 프로필</h2>
+                        {/* 검정색 동그라미 */}
+                        <div className="relative w-32 h-32 mx-auto">
+                            <div
+                                className="absolute w-32 h-32 flex items-center justify-center rounded-full border-2 bg-black text-white"
+                                style={{ transform: 'translate(-50%, -50%)', top: '50%', left: '50%' }}
+                            >
+                                <div className="text-center text-sm font-bold">
+                                    <p>{selectedParticipant?.age || '나이대 정보 없음'}</p>
+                                    <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p>
+                                    <p className="text-xs">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p>
+                                </div>
+                            </div>
+                        </div>
                         <p className="text-gray-600">{selectedParticipant.career}</p>
-                        <div className="space-y-4 text-left">
+                        {/* 질문 및 답변 */}
+                        <div className="space-y-4 text-left mt-16">
                             {(questions || []).map((question, index) => (
                                 <div key={index}>
                                     <h3 className="font-semibold">
@@ -88,6 +99,7 @@ const SphereParticipants = ({ participants = [] }) => {
                                 </div>
                             ))}
                         </div>
+
                         <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-xl">
                             닫기
                         </button>
