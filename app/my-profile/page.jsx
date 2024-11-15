@@ -1,5 +1,5 @@
-// app/my-profile/page.jsx
 'use client';
+/* eslint-disable react/no-unescaped-entities */
 
 export const dynamic = 'force-dynamic';
 
