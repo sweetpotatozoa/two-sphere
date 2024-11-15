@@ -86,7 +86,15 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                     <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative">
                         {/* 검정색 원 */}
                         <div className="relative w-32 h-32 mx-auto">
-                            {selectedParticipant?.image ? (
+                            {canNotViewNamesAndImages ? (
+                                <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
+                                    <div className="text-center text-sm font-bold text-white">
+                                        <p>{selectedParticipant?.age || '나이대 정보 없음'}</p>
+                                        <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p>
+                                        <p className="text-xs">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p>
+                                    </div>
+                                </div>
+                            ) : selectedParticipant?.image ? (
                                 <Image
                                     src={selectedParticipant.image}
                                     alt="Participant Image"
@@ -103,8 +111,10 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                             )}
                         </div>
 
-                        {/* 이름 */}
-                        <p className="text-lg font-bold mt-2">{selectedParticipant?.name || '이름 없음'}</p>
+                        {/* 이름이 한 번 더 표시 (career 보다 한 계층 높음) */}
+                        {!canNotViewNamesAndImages && (
+                            <p className="text-xl font-bold mt-4">{selectedParticipant?.name || '이름 없음'}</p>
+                        )}
 
                         {/* career */}
                         <p className="text-gray-600">{selectedParticipant?.career || '경력 정보 없음'}</p>
