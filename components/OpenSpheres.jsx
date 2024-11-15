@@ -128,7 +128,7 @@ const OpenSpheres = () => {
                                 <span className="font-bold flex items-center space-x-1">
                                     <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
                                     <span>
-                                        {sphere.firstDate} / {sphere.secondDate}
+                                        {sphere.firstDate} / {sphere.secondDate} {sphere.time}
                                     </span>
                                 </span>
                                 <button className="py-1 px-2 bg-white text-black rounded-xl text-xs font-bold">
