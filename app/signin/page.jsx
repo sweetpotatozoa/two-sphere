@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { signIn } from '../../utils/fetcher'; // fetcher.js에서 signIn 함수 가져오기
 import eyeClosedIcon from '/public/eye-closed-icon.svg';
 import eyeOpenIcon from '/public/eye-open-icon.svg';
 
-const SignInPage = () => {
+const SignInForm = () => {
     const router = useRouter();
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -92,6 +92,15 @@ const SignInPage = () => {
                 회원가입
             </button>
         </div>
+    );
+};
+
+// Suspense로 감싸기
+const SignInPage = () => {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SignInForm />
+        </Suspense>
     );
 };
 
