@@ -66,7 +66,10 @@ export default function ClosedSpheresPage() {
                                     </span>
                                     <span className="flex items-center space-x-1">
                                         <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
-                                        <span>{sphere.firstDate}</span> {/* MongoDB의 firstDate 필드 */}
+                                        <span>
+                                            {sphere.firstDate} / {sphere.secondDate} {sphere.time}
+                                        </span>{' '}
+                                        {/* MongoDB의 firstDate 필드 */}
                                     </span>
                                 </div>
                             </div>
