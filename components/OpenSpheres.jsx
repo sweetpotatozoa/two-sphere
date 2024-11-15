@@ -127,7 +127,9 @@ const OpenSpheres = () => {
                                 {/* First Date 표시 */}
                                 <span className="font-bold flex items-center space-x-1">
                                     <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
-                                    <span>{sphere.firstDate}</span>
+                                    <span>
+                                        {sphere.firstDate} / {sphere.secondDate}
+                                    </span>
                                 </span>
                                 <button className="py-1 px-2 bg-white text-black rounded-xl text-xs font-bold">
                                     자세히보기
