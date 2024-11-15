@@ -16,6 +16,7 @@ const SphereDetail = ({ params }) => {
     const { id } = params;
     const [sphere, setSphere] = useState(null);
     const [user, setUser] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
@@ -29,28 +30,36 @@ const SphereDetail = ({ params }) => {
         const fetchDetails = async () => {
             try {
                 const token = localStorage.getItem('token');
-                if (!token) throw new Error('Access token is missing.');
+                if (token) {
+                    setIsLoggedIn(true);
+                } else {
+                    setIsLoggedIn(false);
+                }
 
                 const sphereData = await getSphereDetails(id, token);
                 setSphere(sphereData);
 
-                const response = await fetch('/api/my-profile', {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                    cache: 'no-store',
-                });
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch user data: ${response.statusText}`);
-                }
-                const data = await response.json();
-                setUser(data.user);
+                if (token) {
+                    const response = await fetch('/api/my-profile', {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                        cache: 'no-store',
+                    });
 
-                const isUserParticipating = sphereData.participants.some(
-                    (participant) => participant.userId === data.user._id
-                );
-                setIsParticipating(isUserParticipating);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch user data: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    setUser(data.user);
+
+                    const isUserParticipating = sphereData.participants.some(
+                        (participant) => participant.userId === data.user._id
+                    );
+                    setIsParticipating(isUserParticipating);
+                }
             } catch (err) {
                 setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
                 console.error('Detailed error:', err);
@@ -75,6 +84,12 @@ const SphereDetail = ({ params }) => {
     }
 
     const handleJoinClick = () => {
+        if (!isLoggedIn) {
+            alert('로그인 후 참여할 수 있습니다.');
+            router.push('/signin'); // 로그인 페이지로 리디렉션
+            return;
+        }
+
         switch (sphere.canJoin) {
             case 'haveToWriteProfile':
                 setShowProfileIncompleteModal(true);
