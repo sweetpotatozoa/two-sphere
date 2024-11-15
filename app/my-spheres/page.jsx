@@ -71,7 +71,7 @@ export default function MySpheresPage() {
                 </div>
             </div>
             <span className="absolute top-1 right-1 text-white p-2 rounded-md text-sm font-bold bg-black bg-opacity-75">
-                {sphere.remainingDays === -1 ? 'DAY' : `D-${sphere.remainingDays}`}
+                {sphere.remainingDays === -1 ? 'D-DAY' : `D-${sphere.remainingDays}`}
             </span>
         </div>
     );
