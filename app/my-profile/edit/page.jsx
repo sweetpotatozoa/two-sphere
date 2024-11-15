@@ -87,7 +87,13 @@ export default function EditProfilePage() {
                         className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
                         onClick={openModal}
                     >
-                        <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
+                        <Image
+                            src={user.image || '/profile-icon-black.svg'} // 조건부 렌더링
+                            alt="User Icon"
+                            width={48}
+                            height={48}
+                            className="size-full rounded-full"
+                        />
                     </div>
                 </div>
                 <h1 className="text-2xl font-bold">{user.name || '로그인 안 됨!'}</h1>
