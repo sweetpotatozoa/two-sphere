@@ -1,3 +1,5 @@
+//app/api/spheres/open/route.js
+
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 

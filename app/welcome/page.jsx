@@ -1,4 +1,3 @@
-// app/welcome/page.jsx
 'use client';
 
 import React from 'react';
@@ -9,7 +8,8 @@ const WelcomePage = () => {
     const router = useRouter();
 
     const goToProfile = () => {
-        router.push('/signin'); // '프로필 완성하러 가기' 버튼 클릭 시 로그인 경로로 이동
+        // 로그인 페이지로 이동하며 redirect 파라미터 추가
+        router.push('/signin?redirect=/my-profile');
     };
 
     return (
@@ -26,6 +26,12 @@ const WelcomePage = () => {
             <button onClick={goToProfile} className="mt-4 px-6 py-3 bg-white text-black font-bold rounded-xl">
                 프로필 완성하러 가기
             </button>
+            <br />
+            <h1 className="text-2xl font-bold mb-4 text-center">
+                Sphere 참여를 위해서는
+                <br />
+                프로필을 완성하셔야 합니다.
+            </h1>
         </div>
     );
 };

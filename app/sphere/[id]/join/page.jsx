@@ -1,13 +1,10 @@
-// app/sphere/[id]/join/page.jsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import SphereHeader from '../../../../components/SphereHeader';
-import { getSphereDetails } from '@/utils/fetcher';
-import { joinSphere } from '@/utils/fetcher'; // API 호출 함수 추가
-import jwt from 'jsonwebtoken';
+import { getSphereDetails, joinSphere } from '@/utils/fetcher';
 
 const JoinPage = ({ params }) => {
     const router = useRouter();
@@ -17,12 +14,18 @@ const JoinPage = ({ params }) => {
     const [requestLeader, setRequestLeader] = useState(null); // 리더 희망 여부 상태
     const [isConfirmed, setIsConfirmed] = useState(false); // 확인 체크박스 상태
     const [error, setError] = useState(null); // 에러 상태 추가
+    const [showFullCapacityModal, setShowFullCapacityModal] = useState(false); // 마감된 Sphere 모달 상태
 
     useEffect(() => {
         const fetchSphereData = async () => {
             try {
                 const data = await getSphereDetails(id); // fetcher.js의 getSphereDetails 함수 호출
-                setSphere(data); // MongoDB에서 가져온 스피어 데이터 설정
+                setSphere(data);
+
+                // 참가자 수가 4 이상이면 마감 모달 표시
+                if (data.participants.length >= 4) {
+                    setShowFullCapacityModal(true);
+                }
             } catch (err) {
                 console.error('Failed to fetch sphere data:', err.message);
                 setError('스피어 정보를 불러오는 데 실패했습니다.');
@@ -132,6 +135,21 @@ const JoinPage = ({ params }) => {
                     참여하기
                 </button>
             </div>
+
+            {/* 마감된 Sphere 모달 */}
+            {showFullCapacityModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                        <p>마감된 Sphere입니다.</p>
+                        <button
+                            onClick={() => router.push(`/sphere/${id}`)} // 스피어 상세 페이지로 이동
+                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

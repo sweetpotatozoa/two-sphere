@@ -71,7 +71,7 @@ export default function ClosedSpheresPage() {
                                 </div>
                             </div>
                             <span className="absolute top-1 right-1 text-white p-2 rounded-md text-sm font-bold bg-black bg-opacity-75">
-                                {sphere.remainingDays === -1 ? 'DAY' : `D+${Math.abs(sphere.remainingDays)}`}
+                                {'CLOSED'}
                             </span>
                         </div>
                     ))

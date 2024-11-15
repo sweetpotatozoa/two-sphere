@@ -1,4 +1,3 @@
-// app/ClientLayout.jsx
 'use client';
 
 import React, { useState } from 'react';
@@ -21,11 +20,12 @@ export default function ClientLayout({ children }) {
     // Header와 BottomNav의 제외 조건
     const isSignupPage = pathname === '/signup';
     const isSigninPage = pathname === '/signin';
+    const isWelcomePage = pathname === '/welcome'; // Welcome 페이지 여부 추가
 
     return (
         <div className="container min-h-screen flex flex-col max-w-[500px] mx-auto relative shadow-2xl">
-            {/* Header는 signup, signin 페이지에서는 표시되지 않음 */}
-            {!isSignupPage && !isSigninPage && <Header toggleMenu={toggleMenu} />}
+            {/* Header는 signup, signin, welcome 페이지에서는 표시되지 않음 */}
+            {!isSignupPage && !isSigninPage && !isWelcomePage && <Header toggleMenu={toggleMenu} />}
             {isSignupPage && <SignupHeader />}
 
             <main className="flex-grow mt-16">{children}</main>
@@ -35,8 +35,8 @@ export default function ClientLayout({ children }) {
 
             <KakaoTalkButton />
 
-            {/* BottomNav는 signup 페이지에서만 표시되지 않음 */}
-            {!isSignupPage && (
+            {/* BottomNav는 signup, welcome 페이지에서 표시되지 않음 */}
+            {!isSignupPage && !isWelcomePage && (
                 <BottomNav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px]" />
             )}
 

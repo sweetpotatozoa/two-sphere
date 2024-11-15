@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-// map 메서드 호출 시 TypeError 해결 위한 수정
-
-const SphereParticipants = ({ participants = [] }) => {
+const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
 
     useEffect(() => {
@@ -52,10 +50,25 @@ const SphereParticipants = ({ participants = [] }) => {
                             onClick={() => participants[index] && handleParticipantClick(participants[index])}
                         >
                             {participants[index] ? (
-                                <div className="text-center text-sm font-bold">
-                                    <p>{participants[index]?.name || '익명'}</p>
-                                    <p className="text-xs">{participants[index]?.career || '직업 정보 없음'}</p>
-                                </div>
+                                canNotViewNamesAndImages ? (
+                                    <div className="text-center text-sm font-bold">
+                                        <p>{participants[index]?.age || '나이대 정보 없음'}</p>
+                                        <p className="text-xs">{participants[index]?.sex || '성별 정보 없음'}</p>
+                                        <p className="text-xs">{participants[index]?.jobStatus || '직업 정보 없음'}</p>
+                                    </div>
+                                ) : participants[index]?.image ? (
+                                    <Image
+                                        src={participants[index].image}
+                                        alt="Participant Image"
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full"
+                                    />
+                                ) : (
+                                    <p className="text-sm font-bold text-white">
+                                        {participants[index]?.name || '이름 없음'}
+                                    </p>
+                                )
                             ) : (
                                 <span>&nbsp;</span>
                             )}
@@ -71,22 +84,57 @@ const SphereParticipants = ({ participants = [] }) => {
                     style={{ margin: 0, padding: 0 }}
                 >
                     <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative">
-                        <h2 className="text-xl font-bold">{selectedParticipant.name}의 프로필</h2>
-                        <p className="text-gray-600">{selectedParticipant.career}</p>
-                        <div className="space-y-4 text-left">
-                            {(questions || []).map((question, index) => (
+                        {/* 검정색 원 */}
+                        <div className="relative w-32 h-32 mx-auto">
+                            {canNotViewNamesAndImages ? (
+                                <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
+                                    <div className="text-center text-sm font-bold text-white">
+                                        <p>{selectedParticipant?.age || '나이대 정보 없음'}</p>
+                                        <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p>
+                                        <p className="text-xs">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p>
+                                    </div>
+                                </div>
+                            ) : selectedParticipant?.image ? (
+                                <Image
+                                    src={selectedParticipant.image}
+                                    alt="Participant Image"
+                                    width={90}
+                                    height={90}
+                                    className="rounded-full mx-auto"
+                                />
+                            ) : (
+                                <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
+                                    <p className="text-lg font-bold text-white">
+                                        {selectedParticipant?.name || '이름 없음'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 이름이 한 번 더 표시 (career 보다 한 계층 높음) */}
+                        {!canNotViewNamesAndImages && (
+                            <p className="text-xl font-bold mt-4">{selectedParticipant?.name || '이름 없음'}</p>
+                        )}
+
+                        {/* career */}
+                        <p className="text-gray-600">{selectedParticipant?.career || '경력 정보 없음'}</p>
+
+                        {/* 질문 및 답변 */}
+                        <div className="space-y-4 text-left mt-16">
+                            {questions.map((question, index) => (
                                 <div key={index}>
                                     <h3 className="font-semibold">
                                         Q{index + 1}. {question}
                                     </h3>
                                     <p className="text-gray-600">
-                                        {selectedParticipant.answers && selectedParticipant.answers[index]
+                                        {selectedParticipant?.answers && selectedParticipant.answers[index]
                                             ? selectedParticipant.answers[index]
                                             : '아직 프로필을 완성하지 않았습니다.'}
                                     </p>
                                 </div>
                             ))}
                         </div>
+
                         <button onClick={closeModal} className="mt-4 px-4 py-2 bg-black text-white rounded-xl">
                             닫기
                         </button>
