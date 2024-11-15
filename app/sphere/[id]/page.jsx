@@ -111,6 +111,7 @@ const SphereDetail = ({ params }) => {
                 place={sphere.place}
                 firstDate={sphere.firstDate}
                 secondDate={sphere.secondDate}
+                time={sphere.time}
             />
 
             <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
