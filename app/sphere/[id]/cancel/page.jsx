@@ -56,9 +56,7 @@ const CancelComplete = ({ params }) => {
     useEffect(() => {
         const fetchSphereStatus = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (!token) throw new Error('Access token is missing.');
-                const status = await getIsRefundable(id, token); // fetcher.js 함수 호출
+                const status = await getIsRefundable(id); // fetcher.js 함수 호출
                 setSphereStatus(status);
             } catch (err) {
                 setError('스피어 상태를 불러오는 데 실패했습니다.');
@@ -70,8 +68,6 @@ const CancelComplete = ({ params }) => {
 
         fetchSphereStatus();
     }, [id]);
-
-    console.log('sphereStatus:', sphereStatus);
 
     if (isLoading) {
         return <div className="text-center py-10">스피어 상태를 불러오는 중입니다...</div>;
@@ -127,103 +123,108 @@ const CancelComplete = ({ params }) => {
         }
     };
 
+    const isFormComplete =
+        (!sphereStatus.isRefundable || (accountNumber.trim() && selectedBank.trim())) && // 환불 가능 시 필수 입력
+        selectedReason.trim() && // 취소 사유 선택
+        (selectedReason !== '직접 입력' || cancelReason.trim()); // '직접 입력'일 경우 이유 필요
+
     const handleCompletionConfirm = () => {
         router.push('/');
     };
 
-    const isFormComplete =
-        accountNumber && selectedBank && selectedReason && (selectedReason !== '직접 입력' || cancelReason);
-
     return (
-        <div className="max-w-[500px] mx-auto space-y-8 text-center">
-            <p className={`text-lg font-semibold ${sphereStatus.isRefundable ? 'text-green-500' : 'text-red-500'}`}>
-                {sphereStatus.isRefundable ? '환불 가능합니다.' : '환불 불가능 합니다.'}
-            </p>
-
-            <div className="max-w-[500px] mx-auto px-4 space-y-4">
-                {/* Bank Selection */}
-                <div className="space-y-4">
-                    <label className="block text-left font-medium">은행 선택</label>
-                    <div
-                        className="w-full p-3 border border-gray-300 rounded-xl cursor-pointer"
-                        onClick={() => setShowBankOptions(!showBankOptions)}
-                    >
-                        {selectedBank || '은행을 선택해주세요'}
-                    </div>
-                    {showBankOptions && (
-                        <div className="w-full border border-gray-300 rounded-xl mt-2 bg-white shadow-lg max-h-60 overflow-y-auto">
-                            {bankList.map((bank) => (
-                                <div
-                                    key={bank}
-                                    className="p-2 cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleBankSelect(bank)}
-                                >
-                                    {bank}
-                                </div>
-                            ))}
+        <div className="max-w-[500px] mx-auto space-y-8 text-center px-4 pt-8">
+            {/* 환불 가능할 경우 UI */}
+            {sphereStatus.isRefundable && (
+                <div className="max-w-[500px] mx-auto px-4 space-y-4">
+                    {/* 은행 선택 */}
+                    <div className="space-y-4">
+                        <label className="block text-left font-medium">은행 선택</label>
+                        <div
+                            className="w-full p-3 border border-gray-300 rounded-xl cursor-pointer"
+                            onClick={() => setShowBankOptions(!showBankOptions)}
+                        >
+                            {selectedBank || '은행을 선택해주세요'}
                         </div>
-                    )}
-                </div>
-
-                <div className="space-y-4">
-                    <label className="block text-left font-medium">계좌번호</label>
-                    <input
-                        type="text"
-                        placeholder="참여를 환불받을 계좌를 입력해주세요"
-                        value={accountNumber}
-                        onChange={handleAccountChange}
-                        className="w-full p-3 border border-gray-300 rounded-xl"
-                    />
-                    <p className="text-xs text-gray-500">
-                        입력해주신 계좌로 참여비 환불 완료 시 안내 문자를 보내드립니다.
-                    </p>
-                </div>
-
-                <div className="space-y-4">
-                    <label className="block text-left font-medium">취소사유</label>
-                    <div
-                        className="w-full p-3 border border-gray-300 rounded-xl cursor-pointer"
-                        onClick={() => setShowReasonOptions(!showReasonOptions)}
-                    >
-                        {selectedReason || '취소사유를 선택해주세요'}
+                        {showBankOptions && (
+                            <div className="w-full border border-gray-300 rounded-xl mt-2 bg-white shadow-lg max-h-60 overflow-y-auto">
+                                {bankList.map((bank) => (
+                                    <div
+                                        key={bank}
+                                        className="p-2 cursor-pointer hover:bg-gray-200"
+                                        onClick={() => handleBankSelect(bank)}
+                                    >
+                                        {bank}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    {showReasonOptions && (
-                        <div className="w-full border border-gray-300 rounded-xl mt-2 bg-white shadow-lg">
-                            {['단순 변심', '일정 변동', '다른 참여자에 대한 불만', '직접 입력'].map((reason) => (
-                                <div
-                                    key={reason}
-                                    className="p-2 cursor-pointer hover:bg-gray-200"
-                                    onClick={() => handleReasonSelect(reason)}
-                                >
-                                    {reason}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {selectedReason === '직접 입력' && (
+
+                    {/* 계좌번호 입력 */}
+                    <div className="space-y-4">
+                        <label className="block text-left font-medium">계좌번호</label>
                         <input
                             type="text"
-                            placeholder="취소사유를 직접 입력해주세요"
-                            value={cancelReason}
-                            onChange={(e) => setCancelReason(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-xl mt-2"
+                            placeholder="참여를 환불받을 계좌를 입력해주세요"
+                            value={accountNumber}
+                            onChange={handleAccountChange}
+                            className="w-full p-3 border border-gray-300 rounded-xl"
                         />
-                    )}
+                        <p className="text-xs text-gray-500">
+                            입력해주신 계좌로 참여비 환불 완료 시 안내 문자를 보내드립니다.
+                        </p>
+                    </div>
                 </div>
+            )}
 
-                <div className="flex justify-center mt-8">
-                    <button
-                        onClick={handleConfirmClick}
-                        disabled={!isFormComplete}
-                        className={`w-full py-3 font-bold rounded-xl ${
-                            isFormComplete ? 'bg-black text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
-                        }`}
-                    >
-                        확인
-                    </button>
+            {/* 취소 사유 선택 */}
+            <div className="space-y-4">
+                <label className="block text-left font-medium">취소사유</label>
+                <div
+                    className="w-full p-3 border border-gray-300 rounded-xl cursor-pointer"
+                    onClick={() => setShowReasonOptions(!showReasonOptions)}
+                >
+                    {selectedReason || '취소사유를 선택해주세요'}
                 </div>
+                {showReasonOptions && (
+                    <div className="w-full border border-gray-300 rounded-xl mt-2 bg-white shadow-lg">
+                        {['단순 변심', '일정 변동', '다른 참여자에 대한 불만', '직접 입력'].map((reason) => (
+                            <div
+                                key={reason}
+                                className="p-2 cursor-pointer hover:bg-gray-200"
+                                onClick={() => handleReasonSelect(reason)}
+                            >
+                                {reason}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {selectedReason === '직접 입력' && (
+                    <input
+                        type="text"
+                        placeholder="취소사유를 직접 입력해주세요"
+                        value={cancelReason}
+                        onChange={(e) => setCancelReason(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-xl mt-2"
+                    />
+                )}
             </div>
 
+            {/* 확인 버튼 */}
+            <div className="flex justify-center mt-8">
+                <button
+                    onClick={handleConfirmClick}
+                    disabled={!isFormComplete}
+                    className={`w-full py-3 font-bold rounded-xl ${
+                        isFormComplete ? 'bg-black text-white' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    }`}
+                >
+                    확인
+                </button>
+            </div>
+
+            {/* 완료 모달 */}
             {showCompletionModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white w-80 p-6 rounded-xl shadow-lg text-center">
