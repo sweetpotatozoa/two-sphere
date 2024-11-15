@@ -76,8 +76,9 @@ const SphereDetail = ({ params }) => {
     // 취소 버튼 클릭 시점에 환불가능 여부에 따라 모달 표시가 달라야 함.
     const handleCancelClick = async () => {
         try {
-            const refundable = await getIsRefundable(id); // 서버에서 환불 가능 여부 가져오기
-            setIsRefundable(refundable);
+            const { isRefundable } = await getIsRefundable(id); // 서버에서 환불 가능 여부 가져오기
+            console.log('Refundable status:', isRefundable);
+            setIsRefundable(isRefundable);
             setShowCancelModal(true); // 모달 표시
         } catch (error) {
             console.error('Error fetching refundable status:', error);

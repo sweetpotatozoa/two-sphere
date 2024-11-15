@@ -10,7 +10,11 @@ const CancelNoRefundModal = ({ onClose, id }) => {
                 <p className="text-sm font-medium mb-4">
                     참여 취소한 Sphere는 다시 참여할 수 없습니다.
                     <br />
-                    1회차 모임 24시간 이내 취소로 참여비가 환불되지 않습니다
+                    <br />
+                    1회차 모임 24시간 이내 취소로
+                    <br />
+                    참여비가 환불되지 않습니다
+                    <br />
                     <br />
                     정말로 취소하시겠습니까?
                 </p>
