@@ -55,7 +55,7 @@ const SphereParticipants = ({ participants = [] }) => {
                                 <div className="text-center text-sm font-bold">
                                     <p>{participants[index]?.age || '나이대 정보 없음'}</p>
                                     <p className="text-xs">{participants[index]?.sex || '성별 정보 없음'}</p>
-                                    <p className="text-xs">{participants[index]?.career || '직업 정보 없음'}</p>
+                                    <p className="text-xs">{participants[index]?.jobStatus || '직업 정보 없음'}</p>
                                 </div>
                             ) : (
                                 <span>&nbsp;</span>
