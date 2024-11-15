@@ -1,3 +1,5 @@
+//app/api/my-profile/route.js
+
 import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
