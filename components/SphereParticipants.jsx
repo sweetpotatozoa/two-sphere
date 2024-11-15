@@ -62,7 +62,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                         alt="Participant Image"
                                         width={40}
                                         height={40}
-                                        className="rounded-full"
+                                        className="size-full rounded-full"
                                     />
                                 ) : (
                                     <p className="text-sm font-bold text-white">
