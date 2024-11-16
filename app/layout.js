@@ -14,7 +14,7 @@ export const metadata = {
         siteName: '투스피어 - 취향의 궤도가 만나는 두 번의 특별한 순간',
         images: [
             {
-                url: 'https://www.twosphere.kr/og_image.svg',
+                url: 'https://twosphere.kr/og_image.svg',
                 width: 800,
                 height: 400,
                 alt: '투스피어 - 취향의 궤도가 만나는 두 번의 특별한 순간',
@@ -26,7 +26,7 @@ export const metadata = {
         card: 'summary_large_image',
         title: '투스피어 - 취향의 궤도가 만나는 두 번의 특별한 순간',
         description: '소규모 프리미엄 소셜 살롱. 일회성 만남이 아닐 양질의 네트워킹을 추구합니다.',
-        images: ['https://www.twosphere.kr/og_image.svg'],
+        images: ['https://twosphere.kr/og_image.svg'],
     },
 };
 
