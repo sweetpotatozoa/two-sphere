@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState } from 'react';
 import { getUserSpheres } from '@/utils/fetcher';
 import Image from 'next/image';

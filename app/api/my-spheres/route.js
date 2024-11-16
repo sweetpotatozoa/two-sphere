@@ -4,6 +4,8 @@ import clientPromise from '@/lib/mongodb';
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic'; // 페이지를 동적 설정
+
 export async function GET(req) {
     try {
         const userId = req.headers.get('x-user-id');
