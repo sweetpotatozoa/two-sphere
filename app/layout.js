@@ -11,7 +11,6 @@ export const metadata = {
     openGraph: {
         title: '투스피어 - 취향의 궤도가 만나는 두 번의 특별한 순간',
         description: '소규모 프리미엄 소셜 살롱. 일회성 만남이 아닐 양질의 네트워킹을 추구합니다.',
-        url: 'https://twosphere.kr/',
         siteName: '투스피어 - 취향의 궤도가 만나는 두 번의 특별한 순간',
         images: [
             {
