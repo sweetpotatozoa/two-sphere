@@ -33,6 +33,9 @@ module.exports = {
                         display: 'none', // Safari and Chrome
                     },
                 },
+                '.kakaobutton-right': {
+                    right: 'clamp(8px, 5vw, 16px)', // 5vw 기준으로 반응형 줄어듦
+                },
             });
         },
     ],
