@@ -34,11 +34,14 @@ const PartnersList = () => {
     };
 
     return (
-        <div className="w-full max-w-[500px] mx-auto p-4 border-b border-black">
-            <h2 className="mb-4 flex items-center justify-center text-xl font-bold">제휴 업체</h2>
+        <div className="w-full max-w-[500px] mx-auto border-b border-black">
+            <div className="flex flex-col items-center my-4">
+                <h2 className="text-xl font-bold">제휴 업체</h2>
+                <p className="text-sm text-gray-600">선별된 공간에서 투스피어만의 특별한 혜택을 경험하세요</p>
+            </div>
             {/* 자동 슬라이딩 예정 */}
             <div
-                className="flex overflow-x-auto space-x-4 scrollbar-hide"
+                className="mb-4 pr-4 flex overflow-x-auto space-x-4 scrollbar-hide"
                 ref={scrollRef}
                 onMouseDown={handleMouseDown}
                 onMouseLeave={handleMouseLeave}
@@ -48,7 +51,7 @@ const PartnersList = () => {
                 {[1, 2, 3, 4, 5].map((sphere, index) => (
                     <div
                         key={index}
-                        className="relative w-48 h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden"
+                        className="ml-4 relative w-48 h-48 bg-gray-800 rounded-xl flex-shrink-0 overflow-hidden"
                     >
                         {/* 장소 이미지 */}
                         <Image

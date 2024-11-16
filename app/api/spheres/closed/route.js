@@ -14,8 +14,8 @@ export async function GET() {
             .project({
                 _id: 1,
                 title: 1,
-                subTitle: 1,
-                'location.title': 1,
+                subtitle: 1,
+                'place.name': 1,
                 thumbnail: 1,
                 firstDate: 1,
                 secondDate: 1,
@@ -24,43 +24,72 @@ export async function GET() {
 
         const currentDate = new Date();
 
-        // 남은 날짜 계산 및 응답 데이터 구성
+        // 한국 시간대로 날짜 변환 함수
+        const toKoreanDateOnly = (date) => {
+            const dateString = date.toLocaleDateString('en-US', { timeZone: 'Asia/Seoul' });
+            return new Date(dateString); // "연-월-일" 형태의 순수 날짜 객체 반환
+        };
+
+        // "월 일" 형식으로 날짜 변환 함수
+        const formatToMonthDay = (date) => {
+            const formattedDate = date.toLocaleDateString('ko-KR', {
+                month: 'numeric',
+                day: 'numeric',
+                timeZone: 'Asia/Seoul',
+            });
+            return formattedDate.replace('.', '월 ').replace('.', '일'); // 월과 일 추가
+        };
+
+        // "오전/오후 ~시" 형식으로 시간 변환 함수
+        const formatToHour = (date) => {
+            return date.toLocaleTimeString('ko-KR', {
+                hour: 'numeric',
+                hour12: true,
+                timeZone: 'Asia/Seoul',
+            });
+        };
+
+        // 남은 날짜 계산 함수
+        const calculateRemainingDays = (currentDate, firstDate, secondDate) => {
+            // 모든 날짜를 한국 시간대로 변환
+            const koreanCurrentDate = toKoreanDateOnly(currentDate);
+            const koreanFirstDate = toKoreanDateOnly(firstDate);
+            const koreanSecondDate = toKoreanDateOnly(secondDate);
+
+            let remainingDays;
+
+            if (koreanCurrentDate.getTime() === koreanFirstDate.getTime()) {
+                // 첫 번째 날짜와 같은 날이면 0
+                remainingDays = 0;
+            } else if (koreanCurrentDate.getTime() === koreanSecondDate.getTime()) {
+                // 두 번째 날짜와 같은 날이면 0
+                remainingDays = 0;
+            } else if (koreanCurrentDate < koreanFirstDate) {
+                // 첫 번째 날짜 이전이면 남은 날짜 계산
+                remainingDays = Math.ceil((koreanFirstDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
+            } else if (koreanCurrentDate < koreanSecondDate) {
+                // 두 번째 날짜 이전이면 남은 날짜 계산
+                remainingDays = Math.ceil((koreanSecondDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
+            } else {
+                // 두 날짜 모두 지난 경우
+                remainingDays = -1;
+            }
+
+            return remainingDays;
+        };
+
+        // 응답 데이터 구성
         const sphereWithRemainingDays = spheres.map((sphere) => {
             const firstDate = new Date(sphere.firstDate);
             const secondDate = new Date(sphere.secondDate);
 
-            // 날짜를 "~~월 ~~일" 형식으로 변환
-            const formatToMonthDay = (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`;
-
-            const formattedFirstDate = formatToMonthDay(firstDate);
-            const formattedSecondDate = formatToMonthDay(secondDate);
-
-            // 시간 정보를 "오전/오후 ~시" 형식으로 변환
-            const formatToHour = (date) => {
-                const hours = date.getHours();
-                const period = hours >= 12 ? '오후' : '오전';
-                const hour12 = hours % 12 || 12; // 0시는 12로 표시
-                return `${period} ${hour12}시`;
-            };
-
-            let remainingDays;
-
-            if (currentDate < firstDate) {
-                // 첫 번째 날짜 이전이면 firstDate와의 남은 날짜를 계산
-                remainingDays = Math.floor((firstDate - currentDate) / (1000 * 60 * 60 * 24));
-            } else if (currentDate < secondDate) {
-                // 두 번째 날짜 이전이면 secondDate와의 남은 날짜를 계산
-                remainingDays = Math.floor((secondDate - currentDate) / (1000 * 60 * 60 * 24));
-            } else {
-                // 두 번째 날짜가 지난 경우 -1 표시
-                remainingDays = -1;
-            }
+            const remainingDays = calculateRemainingDays(currentDate, firstDate, secondDate);
 
             return {
                 ...sphere,
-                location: sphere.location.title,
-                firstDate: formattedFirstDate,
-                secondDate: formattedSecondDate,
+                placeName: sphere.place.name,
+                firstDate: formatToMonthDay(firstDate),
+                secondDate: formatToMonthDay(secondDate),
                 time: formatToHour(firstDate),
                 remainingDays,
             };
@@ -68,6 +97,7 @@ export async function GET() {
 
         return NextResponse.json(sphereWithRemainingDays, { status: 200 });
     } catch (error) {
+        console.error('Error fetching closed spheres:', error);
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }

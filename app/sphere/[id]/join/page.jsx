@@ -1,66 +1,91 @@
-// app/sphere/[id]/join/page.jsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { sphereData } from '../../../data/sphereData';
-import locationIcon from '/public/location-icon-black.svg';
-import calendarIcon from '/public/calendar-icon-black.svg';
+import SphereHeader from '../../../../components/SphereHeader';
+import { getSphereDetails, joinSphere } from '@/utils/fetcher';
 
 const JoinPage = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const sphere = sphereData.find((s) => s.id === parseInt(id));
 
-    const [isLeader, setIsLeader] = useState(null); // 리더 희망 여부 상태
+    const [sphere, setSphere] = useState(null); // MongoDB에서 가져온 스피어 데이터 상태
+    const [requestLeader, setRequestLeader] = useState(null); // 리더 희망 여부 상태
     const [isConfirmed, setIsConfirmed] = useState(false); // 확인 체크박스 상태
+    const [error, setError] = useState(null); // 에러 상태 추가
+    const [showFullCapacityModal, setShowFullCapacityModal] = useState(false); // 마감된 Sphere 모달 상태
 
-    if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
-    }
+    useEffect(() => {
+        const fetchSphereData = async () => {
+            try {
+                const data = await getSphereDetails(id); // fetcher.js의 getSphereDetails 함수 호출
+                setSphere(data);
+
+                // 참가자 수가 4 이상이면 마감 모달 표시
+                if (data.participants.length >= 4) {
+                    setShowFullCapacityModal(true);
+                }
+            } catch (err) {
+                console.error('Failed to fetch sphere data:', err.message);
+                setError('스피어 정보를 불러오는 데 실패했습니다.');
+            }
+        };
+
+        fetchSphereData();
+    }, [id]);
 
     // 참여하기 버튼 클릭 핸들러
-    const handleJoinClick = () => {
-        if (isLeader !== null && isConfirmed) {
-            router.push(`/sphere/${id}/joined`);
+    const handleJoinClick = async () => {
+        if (requestLeader !== null && isConfirmed) {
+            try {
+                await joinSphere(id, requestLeader); // 수정된 함수 호출
+                router.push(`/sphere/${id}/joined`); // 참여 완료 페이지로 이동
+            } catch (err) {
+                console.error('스피어 참여 실패:', err.message);
+                setError('스피어 참여에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
+
+    if (!sphere) {
+        return <p className="text-center">스피어 데이터를 불러오는 중입니다...</p>;
+    }
 
     return (
         <div className="max-w-[500px] space-y-8 text-center">
             <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
-                <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
+                <Image
+                    src={sphere.thumbnail} // MongoDB 데이터 사용
+                    alt="Sphere Image"
+                    width={500}
+                    height={300}
+                    className="w-full object-cover"
+                />
             </div>
-
-            {/* 섹션 1 */}
-            <section className="border-b border-black pb-8 space-y-4">
-                <h1 className="text-2xl font-bold">{sphere.title}</h1>
-                <p>{sphere.description}</p>
-                <div className="flex items-center justify-center space-x-2">
-                    <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                    <span>{sphere.location}</span>
-                    <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
-                    <span>{sphere.date}</span>
-                </div>
-            </section>
+            <SphereHeader
+                title={sphere.title}
+                subtitle={sphere.subtitle} // MongoDB 데이터 사용
+                place={sphere.place} // MongoDB 데이터 사용
+                firstDate={sphere.firstDate} // MongoDB 데이터 사용
+            />
 
             {/* 리더 희망 여부 */}
-            <section className="border-b border-black mx-auto max-w-[400px] py-4 space-y-2">
+            <section className="border-b border-black mx-auto max-w-[450px] pb-8 space-y-4">
                 <h2 className="text-xl font-bold">*Sphere 리더를 희망하시나요?</h2>
                 <div className="flex justify-center space-x-4">
                     <button
-                        onClick={() => setIsLeader(true)}
-                        className={`px-4 py-2 border rounded ${
-                            isLeader === true ? 'bg-black text-white' : 'bg-white text-black'
+                        onClick={() => setRequestLeader(true)}
+                        className={`w-32 py-2 border border-black font-bold rounded-xl ${
+                            requestLeader === true ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
                         예
                     </button>
                     <button
-                        onClick={() => setIsLeader(false)}
-                        className={`px-4 py-2 border rounded ${
-                            isLeader === false ? 'bg-black text-white' : 'bg-white text-black'
+                        onClick={() => setRequestLeader(false)}
+                        className={`w-32 py-2 border border-black font-bold rounded-xl ${
+                            requestLeader === false ? 'bg-black text-white' : 'bg-white text-black'
                         }`}
                     >
                         아니요
@@ -73,8 +98,8 @@ const JoinPage = ({ params }) => {
 
             {/* 안내사항 */}
             <section className="pb-4 space-y-4">
-                <div className="mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-lg">
-                    <h2 className="text-xl font-bold">안내사항</h2>
+                <h2 className="text-xl font-bold">안내사항</h2>
+                <div className="mx-auto max-w-[360px] px-8 py-8 space-y-2 border border-black rounded-xl">
                     <p className="text-sm">
                         하나의 Sphere는 총 2회의 모임으로 진행됩니다. <br />
                         2회 모임 참석은 필수입니다. <br />
@@ -93,13 +118,16 @@ const JoinPage = ({ params }) => {
                 </div>
             </section>
 
+            {/* 에러 메시지 표시 */}
+            {error && <p className="text-red-500">{error}</p>}
+
             {/* 참여하기 버튼 */}
             <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
                 <button
                     onClick={handleJoinClick}
-                    disabled={isLeader === null || !isConfirmed}
+                    disabled={requestLeader === null || !isConfirmed}
                     className={`w-full py-3 font-bold rounded-xl ${
-                        isLeader === null || !isConfirmed
+                        requestLeader === null || !isConfirmed
                             ? 'border border-black bg-white text-black cursor-not-allowed'
                             : 'bg-black text-white'
                     }`}
@@ -107,6 +135,21 @@ const JoinPage = ({ params }) => {
                     참여하기
                 </button>
             </div>
+
+            {/* 마감된 Sphere 모달 */}
+            {showFullCapacityModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                        <p>마감된 Sphere입니다.</p>
+                        <button
+                            onClick={() => router.push(`/sphere/${id}`)} // 스피어 상세 페이지로 이동
+                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

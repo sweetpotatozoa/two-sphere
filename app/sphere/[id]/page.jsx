@@ -1,126 +1,219 @@
-// app/sphere/[id]/page.jsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { sphereData } from '../../data/sphereData';
-import locationIcon from '/public/location-icon-black.svg';
-import calendarIcon from '/public/calendar-icon-black.svg';
+import { getSphereDetails, getIsRefundable } from '@/utils/fetcher';
+import SphereHeader from '../../../components/SphereHeader';
+import SphereDetails from '../../../components/SphereDetails';
+import SphereParticipants from '../../../components/SphereParticipants';
+import SphereQuestions from '../../../components/SphereQuestions';
+import CancelNoticeModal from '../../../components/CancelNoticeModal';
+import CancelNoRefundModal from '../../../components/CancelNoRefundModal';
 
 const SphereDetail = ({ params }) => {
     const router = useRouter();
     const { id } = params;
-    const sphere = sphereData.find((s) => s.id === parseInt(id));
+    const [sphere, setSphere] = useState(null);
+    const [showProfileIncompleteModal, setShowProfileIncompleteModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [isRefundable, setIsRefundable] = useState(null); // 환불 가능 여부 상태\
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 취소 완료 모달
+
+    // 최초 데이터 불러오기
+    useEffect(() => {
+        const fetchDetails = async () => {
+            try {
+                const sphereData = await getSphereDetails(id);
+                setSphere(sphereData);
+            } catch (err) {
+                setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
+                console.error('Detailed error:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDetails();
+    }, [id]);
+
+    if (isLoading) {
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
+    }
+
+    if (error) {
+        return <div className="text-center py-10 text-red-500">{error}</div>;
+    }
 
     if (!sphere) {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
-    // 참여하기 버튼 클릭 핸들러
+    // 참여하기를 누르면 참여 페이지로 이동
     const handleJoinClick = () => {
-        router.push(`/sphere/${id}/join`);
+        switch (sphere.canJoin) {
+            case 'haveToWriteProfile':
+                setShowProfileIncompleteModal(true);
+                break;
+            case 'haveToSignin':
+                alert('로그인 후 이용해주세요.');
+                router.push('/signin');
+                break;
+            case 'canJoin':
+                router.push(`/sphere/${id}/join`);
+                break;
+            default:
+                console.error(`Unhandled state for sphere.canJoin: ${sphere.canJoin}`);
+                alert('예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+    };
+
+    // 취소 버튼 클릭 시점에 환불가능 여부에 따라 모달 표시가 달라야 함.
+    const handleCancelClick = async () => {
+        try {
+            const { isRefundable } = await getIsRefundable(id); // 서버에서 환불 가능 여부 가져오기
+            setIsRefundable(isRefundable);
+            setShowCancelModal(true); // 모달 표시
+        } catch (error) {
+            console.error('Error fetching refundable status:', error);
+        }
+    };
+
+    const handleCancelNo = () => {
+        setShowCancelModal(false); // 모달 닫기
+        setIsRefundable(null); // 상태 초기화
+    };
+
+    const handleCloseModal = () => {
+        setShowProfileIncompleteModal(false);
+    };
+
+    const handleGoToProfile = () => {
+        router.push('/my-profile');
     };
 
     return (
         <div className="max-w-[500px] space-y-8 text-center">
-            <div className="w-full max-w-[500px] h-[150px] overflow-hidden">
-                <Image src={sphere.image} alt="Sphere Image" width={500} height={300} className="w-full object-cover" />
+            <div className="w-full max-w-[500px] h-[100px] overflow-hidden">
+                <Image
+                    src={sphere.thumbnail}
+                    alt="Sphere Image"
+                    width={500}
+                    height={300}
+                    className="w-full object-cover object-center"
+                />
+            </div>
+            <SphereHeader
+                title={sphere.title}
+                subtitle={sphere.subtitle}
+                place={sphere.place}
+                firstDate={sphere.firstDate}
+                secondDate={sphere.secondDate}
+                time={sphere.time}
+            />
+
+            <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
+                <SphereDetails
+                    description={sphere.description}
+                    place={sphere.place}
+                    address={sphere.address}
+                    subImage1={sphere.subImage1}
+                    subImage2={sphere.subImage2}
+                    placeStory={sphere.placeStory}
+                />
+                <SphereParticipants
+                    participants={sphere.participants}
+                    canNotViewNamesAndImages={sphere.canNotViewNamesAndImages}
+                />
+                <SphereQuestions questions={sphere.questions} />
+
+                {sphere.showJoinOrCancelOrClosed === 'showClosed' ? (
+                    <div className="w-full mt-8 py-3 bg-gray-400 text-white font-bold rounded-xl text-center">
+                        참여가 마감된 스피어입니다.
+                    </div>
+                ) : sphere.showJoinOrCancelOrClosed === 'showCancel' ? (
+                    <button
+                        onClick={handleCancelClick}
+                        className="w-full mt-8 py-3 bg-black text-white font-bold rounded-xl"
+                    >
+                        취소하기
+                    </button>
+                ) : sphere.showJoinOrCancelOrClosed === 'showAlreadyCanceled' ? (
+                    <div className="w-full mt-8 py-3  bg-gray-400 text-white font-bold rounded-xl text-center">
+                        한번 취소한 스피어는 참여할 수 없습니다.
+                    </div>
+                ) : (
+                    <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
+                        <button
+                            onClick={handleJoinClick}
+                            className="w-full py-3 bg-black text-white font-bold rounded-xl"
+                        >
+                            참여하기
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {/* 섹션 1 */}
-            <section className="border-b border-black pb-8 space-y-4">
-                <h1 className="text-2xl font-bold">{sphere.title}</h1>
-                <p>{sphere.description}</p>
-                <div className="flex items-center justify-center space-x-2">
-                    <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                    <span>{sphere.location}</span>
-                    <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
-                    <span>{sphere.date}</span>
-                </div>
-            </section>
-            <div className="max-w-[500px] mx-auto px-4 space-y-8 text-center">
-                {/* 섹션 2 */}
-                <section className="pb-4 space-y-4">
-                    <p className="text-lg pb-4" style={{ whiteSpace: 'pre-line' }}>
-                        {sphere.briefIntro}
-                    </p>
-
-                    {/* h2와 주소 정보 div를 묶는 래퍼 div */}
-                    <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
-                        <h2 className="text-xl font-bold">{sphere.location}</h2>
-                        <div className="flex items-center justify-center space-x-2">
-                            <Image src={locationIcon} alt="Location Icon" width={16} height={16} />
-                            <span>{sphere.address}</span>
+            {showProfileIncompleteModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
+                        <p>
+                            프로필을 완성해야 참여할 수 있습니다.
+                            <br />
+                            프로필 페이지로 이동하시겠습니까?
+                        </p>
+                        <div className="space-x-4">
+                            <button
+                                onClick={handleGoToProfile}
+                                className="w-32 py-2 bg-black text-white font-bold rounded-xl"
+                            >
+                                확인
+                            </button>
+                            <button
+                                onClick={handleCloseModal}
+                                className="w-32 py-2 bg-gray-200 text-black font-bold rounded-xl"
+                            >
+                                취소
+                            </button>
                         </div>
                     </div>
-
-                    {sphere.additionalImages.map((img, index) => (
-                        <Image
-                            key={index}
-                            src={img}
-                            alt={`Location Image ${index + 1}`}
-                            width={500}
-                            height={300}
-                            className="w-full pt-4"
-                        />
-                    ))}
-
-                    <p className="text-lg pt-4 pb-4" style={{ whiteSpace: 'pre-line' }}>
-                        {sphere.placeStory}
-                    </p>
-                </section>
-
-                {/* 섹션 3 - 참여자 현황 */}
-                <section className="pb-28 pb-16 space-y-4">
-                    {/* h2와 p를 묶는 래퍼 div */}
-                    <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
-                        <h2 className="text-xl font-bold">참여자 현황</h2>
-                        <p className="text-sm text-gray-600">버튼을 눌러 프로필을 조회해보세요</p>
-                    </div>
-                    <div className="relative w-32 h-32 mx-auto">
-                        {Array.from({ length: 4 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={`absolute w-20 h-20 flex items-center justify-center rounded-full border-2 m ${
-                                    sphere.participants[index] ? 'bg-black text-white' : 'bg-gray-300 text-gray-400'
-                                }`}
-                                style={{
-                                    top: index === 0 ? '0%' : index === 2 ? '100%' : '50%',
-                                    left: index === 1 ? '0%' : index === 3 ? '100%' : '50%',
-                                    transform: 'translate(-50%, 0%)',
-                                }}
-                            >
-                                {sphere.participants[index] ? (
-                                    <span className="text-center text-sm font-bold">{sphere.participants[index]}</span>
-                                ) : (
-                                    <span>&nbsp;</span>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* 섹션 4 */}
-                <section className="pb-6 space-y-4">
-                    {/* h2 래퍼 div */}
-                    <div className="border-t border-b border-black mx-auto max-w-[300px] py-4 space-y-2">
-                        <h2 className="text-xl font-bold">Sphere Contents</h2>
-                    </div>
-                    <ul className="list-disc ml-6 space-y-1 text-left inline-block">
-                        {sphere.questions.map((question, index) => (
-                            <li key={index}>{question}</li>
-                        ))}
-                    </ul>
-                </section>
-
-                {/* 참여하기 버튼 */}
-                <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] px-4 pb-4 flex justify-center">
-                    <button onClick={handleJoinClick} className="w-full py-3 bg-black text-white font-bold rounded-xl">
-                        참여하기
-                    </button>
                 </div>
-            </div>
+            )}
+
+            {showCancelModal &&
+                (isRefundable ? (
+                    // 환불 가능한 경우
+                    <CancelNoticeModal onClose={handleCancelNo} id={id} />
+                ) : (
+                    // 환불 불가능한 경우
+                    <CancelNoRefundModal
+                        onClose={handleCancelNo}
+                        id={id}
+                        onConfirm={() => {
+                            handleImmediateCancel();
+                            handleCloseModal();
+                        }}
+                    />
+                ))}
+
+            {showCancelConfirmation && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                        <p>취소되었습니다.</p>
+                        <button
+                            onClick={() => {
+                                setShowCancelConfirmation(false);
+                                router.push(`/sphere/${id}`);
+                            }}
+                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                        >
+                            확인
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
