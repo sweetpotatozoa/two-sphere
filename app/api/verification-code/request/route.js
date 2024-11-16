@@ -11,7 +11,7 @@ export async function POST(req) {
         const { phoneNumber } = await req.json();
 
         if (!phoneNumber) {
-            return NextResponse.json({ message: 'Phone number is required' }, { status: 400 });
+            return NextResponse.json({ message: '전화번호를 입력해 주세요.' }, { status: 400 });
         }
 
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -37,7 +37,7 @@ export async function POST(req) {
             createdAt: new Date(),
         });
 
-        return NextResponse.json({ message: '인증 코드가 발송되었습니다.' }, { status: 200 });
+        return NextResponse.json({ message: '인증번호가 발송되었습니다.' }, { status: 200 });
     } catch (error) {
         console.error('Request code error:', error);
         return NextResponse.json({ message: 'An error occurred during code request' }, { status: 500 });

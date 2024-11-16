@@ -226,15 +226,17 @@ const CancelComplete = ({ params }) => {
 
             {/* 완료 모달 */}
             {showCompletionModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white w-80 p-6 rounded-xl shadow-lg text-center">
-                        <p className="text-lg font-semibold mb-4">취소 신청이 완료되었습니다</p>
-                        <button
-                            onClick={handleCompletionConfirm}
-                            className="w-full py-2 bg-black text-white font-bold rounded-xl"
-                        >
-                            확인
-                        </button>
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] h-[calc(100vh-3rem)] z-40 flex">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white w-80 p-6 rounded-xl shadow-lg text-center">
+                            <p className="text-lg font-semibold mb-4">취소 신청이 완료되었습니다</p>
+                            <button
+                                onClick={handleCompletionConfirm}
+                                className="w-full py-2 bg-black text-white font-bold rounded-xl"
+                            >
+                                확인
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -10,7 +10,7 @@ export async function POST(req) {
 
         // 유효성 검사
         if (!userName) {
-            return NextResponse.json({ message: '아이디를 입력해주세요' }, { status: 400 });
+            return NextResponse.json({ message: '아이디를 입력해 주세요' }, { status: 400 });
         }
 
         // MongoDB 연결

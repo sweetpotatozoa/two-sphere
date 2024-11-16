@@ -59,17 +59,13 @@ export default function MyProfilePage() {
                     className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center cursor-pointer"
                     onClick={openModal} // 클릭 시 모달 열기
                 >
-                    {user.image ? (
-                        <Image
-                            src={user.image}
-                            alt="User Profile"
-                            width={96}
-                            height={96}
-                            className="size-full rounded-full"
-                        />
-                    ) : (
-                        <Image src="/profile-icon-black.svg" alt="User Icon" width={48} height={48} />
-                    )}
+                    <Image
+                        src={user.image || '/profile-icon-black.svg'} // 조건부 렌더링
+                        alt="User Profile"
+                        width={48}
+                        height={48}
+                        className="size-full rounded-full"
+                    />
                 </div>
             </div>
             <div className="flex justify-center items-center">
@@ -107,15 +103,17 @@ export default function MyProfilePage() {
 
             {/* 모달 */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
-                        <p>
-                            프로필 사진 등록을 원하시는 경우,
-                            <br /> 카카오톡 '투스피어'로 사진을 보내주세요.
-                        </p>
-                        <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
-                            닫기
-                        </button>
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] h-[calc(100vh-3rem)] z-40 flex">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
+                            <p>
+                                프로필 사진 등록을 원하시는 경우,
+                                <br /> 카카오톡 '투스피어'로 사진을 보내주세요.
+                            </p>
+                            <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
+                                닫기
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

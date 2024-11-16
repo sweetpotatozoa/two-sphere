@@ -21,6 +21,7 @@ const SphereDetail = ({ params }) => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showCancelConfirmation, setShowCancelConfirmation] = useState(false); // 취소 완료 모달
+    const [showFullCapacityModal, setShowFullCapacityModal] = useState(false); // 마감된 Sphere 모달 상태
 
     // 최초 데이터 불러오기
     useEffect(() => {
@@ -29,7 +30,7 @@ const SphereDetail = ({ params }) => {
                 const sphereData = await getSphereDetails(id);
                 setSphere(sphereData);
             } catch (err) {
-                setError(`스피어 정보를 불러오는 데 실패했습니다: ${err.message}`);
+                setError(`스피어 정보를 불러오는 데 실패했습니다.`);
                 console.error('Detailed error:', err);
             } finally {
                 setIsLoading(false);
@@ -51,22 +52,36 @@ const SphereDetail = ({ params }) => {
         return <p>스피어 정보를 찾을 수 없습니다.</p>;
     }
 
-    // 참여하기를 누르면 참여 페이지로 이동
-    const handleJoinClick = () => {
-        switch (sphere.canJoin) {
-            case 'haveToWriteProfile':
-                setShowProfileIncompleteModal(true);
-                break;
-            case 'haveToSignin':
+    // 참여하기를 누르면 참가자 수 확인 후 페이지 이동 또는 모달 표시
+    const handleJoinClick = async () => {
+        try {
+            // 로그인 필요 여부 확인
+            if (sphere.canJoin === 'haveToSignin') {
                 alert('로그인 후 이용해주세요.');
                 router.push('/signin');
-                break;
-            case 'canJoin':
+                return; // 로그인 후에 다시 이 버튼을 눌러야 진행됨
+            }
+
+            // 프로필 미완성 시 모달 표시
+            if (sphere.canJoin === 'haveToWriteProfile') {
+                setShowProfileIncompleteModal(true);
+                return; // 프로필 완성 후 다시 진행
+            }
+
+            // 최신 참가자 데이터를 서버에서 가져옴
+            const sphereData = await getSphereDetails(id);
+            if (sphereData.participants.length >= 4) {
+                setShowFullCapacityModal(true); // 참가자 수가 4 이상이면 마감 모달 표시
+                return; // 더 이상 진행하지 않음
+            }
+
+            // 참여 조건을 충족한 경우 참여 페이지로 이동
+            if (sphere.canJoin === 'canJoin') {
                 router.push(`/sphere/${id}/join`);
-                break;
-            default:
-                console.error(`Unhandled state for sphere.canJoin: ${sphere.canJoin}`);
-                alert('예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.');
+            }
+        } catch (err) {
+            console.error('Error checking participants:', err);
+            alert('참여 상태를 확인하는 데 실패했습니다. 다시 시도해주세요.');
         }
     };
 
@@ -86,8 +101,8 @@ const SphereDetail = ({ params }) => {
         setIsRefundable(null); // 상태 초기화
     };
 
-    const handleCloseModal = () => {
-        setShowProfileIncompleteModal(false);
+    const handleCloseModal = (modalSetter) => {
+        modalSetter(false);
     };
 
     const handleGoToProfile = () => {
@@ -172,7 +187,7 @@ const SphereDetail = ({ params }) => {
                                 확인
                             </button>
                             <button
-                                onClick={handleCloseModal}
+                                onClick={() => handleCloseModal(setShowProfileIncompleteModal)}
                                 className="w-32 py-2 bg-gray-200 text-black font-bold rounded-xl"
                             >
                                 취소
@@ -211,6 +226,23 @@ const SphereDetail = ({ params }) => {
                         >
                             확인
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* 마감된 Sphere 모달 */}
+            {showFullCapacityModal && (
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] h-[calc(100vh-3rem)] z-40 flex">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                            <p>마감된 Sphere입니다.</p>
+                            <button
+                                onClick={() => handleCloseModal(setShowFullCapacityModal)}
+                                className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                            >
+                                확인
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

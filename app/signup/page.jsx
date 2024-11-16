@@ -293,10 +293,7 @@ const SignUpPage = () => {
             </div>
 
             {/* 인증번호 요청 */}
-            <button
-                onClick={requestVerificationCode}
-                className="w-full py-3 bg-gray-800 text-white font-bold rounded-xl"
-            >
+            <button onClick={requestVerificationCode} className="w-full py-3 bg-black text-white font-bold rounded-xl">
                 인증번호 요청
             </button>
 

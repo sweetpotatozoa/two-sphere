@@ -39,6 +39,7 @@ export async function POST(req) {
             createdAt: new Date(),
             updatedAt: new Date(),
             isProfiled: false,
+            job: '',
             career: '',
             answers: {
                 career: '',
