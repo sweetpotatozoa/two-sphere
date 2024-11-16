@@ -18,7 +18,10 @@ export async function GET(req) {
 
         const user = await db
             .collection('users')
-            .findOne({ _id: new ObjectId(userId) }, { projection: { name: 1, career: 1, answers: 1, image: 1 } });
+            .findOne(
+                { _id: new ObjectId(userId) },
+                { projection: { name: 1, role: 1, job: 1, career: 1, answers: 1, image: 1 } }
+            );
 
         if (!user) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
@@ -50,7 +53,7 @@ export async function PUT(req) {
 
         // 요청 본문에서 업데이트할 데이터 가져오기
         const updates = await req.json();
-        const allowedUpdates = ['career', 'answers', 'image']; // 업데이트 가능한 필드만 허용
+        const allowedUpdates = ['job', 'career', 'answers', 'image']; // 업데이트 가능한 필드만 허용
         const updateFields = {};
 
         // 유효한 필드만 updateFields에 추가
@@ -68,17 +71,14 @@ export async function PUT(req) {
         // updatedAt 필드 추가
         updateFields.updatedAt = new Date();
 
-        // career와 answer를 입력했다면 프로필 완성으로 체크
-        if (updateFields.career && updateFields.answers) {
-            // answers의 모든 필드가 값이 있는지 확인
-            const allAnswersFilled = Object.values(updateFields.answers).every(
-                (value) => value !== null && value !== undefined && value !== ''
-            );
+        // 프로필 완성 여부를 확인
+        const allFieldsFilled = updateFields.job && updateFields.career && updateFields.answers;
+        const allAnswersFilled =
+            allFieldsFilled &&
+            Object.values(updateFields.answers).every((value) => value !== null && value !== undefined && value !== '');
 
-            if (allAnswersFilled) {
-                updateFields.isProfiled = true;
-            }
-        }
+        // 모든 필드가 채워져 있으면 isProfiled를 true로 설정, 그렇지 않으면 false
+        updateFields.isProfiled = allAnswersFilled;
 
         // MongoDB에서 사용자 정보 업데이트
         const result = await db.collection('users').updateOne({ _id: new ObjectId(userId) }, { $set: updateFields });

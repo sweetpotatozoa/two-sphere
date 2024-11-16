@@ -68,6 +68,8 @@ const JoinPage = ({ params }) => {
                 subtitle={sphere.subtitle} // MongoDB 데이터 사용
                 place={sphere.place} // MongoDB 데이터 사용
                 firstDate={sphere.firstDate} // MongoDB 데이터 사용
+                secondDate={sphere.secondDate} // MongoDB 데이터 사용
+                time={sphere.time}
             />
 
             {/* 리더 희망 여부 */}
@@ -138,15 +140,17 @@ const JoinPage = ({ params }) => {
 
             {/* 마감된 Sphere 모달 */}
             {showFullCapacityModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
-                        <p>마감된 Sphere입니다.</p>
-                        <button
-                            onClick={() => router.push(`/sphere/${id}`)} // 스피어 상세 페이지로 이동
-                            className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
-                        >
-                            확인
-                        </button>
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] h-[calc(100vh-3rem)] z-40 flex">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl max-w-xs w-full text-center">
+                            <p>마감된 Sphere입니다.</p>
+                            <button
+                                onClick={() => router.push(`/sphere/${id}`)} // 스피어 상세 페이지로 이동
+                                className="w-full mt-4 py-2 bg-black text-white font-bold rounded-xl"
+                            >
+                                확인
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

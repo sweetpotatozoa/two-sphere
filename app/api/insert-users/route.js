@@ -22,6 +22,7 @@ export async function POST() {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 career: '서울대학교 컴퓨터공학과',
+                job: '',
                 answers: {
                     career: '일개 학생',
                     keyword: '개발, 디자인, 마케팅',

@@ -3,6 +3,36 @@ import Image from 'next/image';
 
 const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => {
     const [selectedParticipant, setSelectedParticipant] = useState(null);
+    const [user, setUser] = useState(null);
+
+    // 사용자 데이터를 가져오는 useEffect
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem('token'); // 토큰 가져오기
+            if (!token) return; // 토큰이 없으면 아무 작업도 하지 않음
+
+            try {
+                const response = await fetch('/api/my-profile', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    cache: 'no-store',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUser(data.user); // 사용자 데이터 설정
+                } else {
+                    console.error('Failed to fetch user data:', response.status);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         return () => {
@@ -28,6 +58,8 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
         '다른 사람들에게 어떻게 기억되고 싶나요?',
     ];
 
+    const canViewAllDetails = user?.role === 'admin' || !canNotViewNamesAndImages;
+
     return (
         <section className="pb-12 space-y-4">
             <div className="border-t border-b border-black mx-auto max-w-[300px] py-4">
@@ -49,12 +81,15 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                             }}
                             onClick={() => participants[index] && handleParticipantClick(participants[index])}
                         >
+                            {/* 여기 아래서 페이지 원 안의 텍스트 수정할 수 있음!!!!!! */}
                             {participants[index] ? (
-                                canNotViewNamesAndImages ? (
-                                    <div className="text-center text-sm font-bold">
+                                canNotViewNamesAndImages && user?.role !== 'admin' ? (
+                                    <div className="text-center text-xs font-bold">
                                         <p>{participants[index]?.age || '나이대 정보 없음'}</p>
-                                        <p className="text-xs">{participants[index]?.sex || '성별 정보 없음'}</p>
-                                        <p className="text-xs">{participants[index]?.jobStatus || '직업 정보 없음'}</p>
+                                        {/* <p className="text-xs">{participants[index]?.sex || '성별 정보 없음'}</p> */}
+                                        <p className="text-sm">{participants[index]?.job || '직업 간략소개 없음'}</p>
+                                        {/* 공백 포함 15글자 */}
+                                        {/* <p className="text-sm">{participants[index]?.jobStatus || '직업 정보 없음'}</p> */}
                                     </div>
                                 ) : participants[index]?.image ? (
                                     <Image
@@ -65,7 +100,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                         className="size-full rounded-full"
                                     />
                                 ) : (
-                                    <p className="text-sm font-bold text-white">
+                                    <p className="text-base font-bold text-white">
                                         {participants[index]?.name || '이름 없음'}
                                     </p>
                                 )
@@ -86,12 +121,15 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                     <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative overflow-y-auto max-h-[80vh]">
                         {/* 검정색 원 */}
                         <div className="relative w-32 h-32 mx-auto">
-                            {canNotViewNamesAndImages ? (
+                            {/* 여기 아래서 모달 원 안의 텍스트 수정할 수 있음!!!!!! */}
+                            {canNotViewNamesAndImages && user?.role !== 'admin' ? (
                                 <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
-                                    <div className="text-center text-sm font-bold text-white">
+                                    <div className="text-center text-base font-bold text-white">
                                         <p>{selectedParticipant?.age || '나이대 정보 없음'}</p>
-                                        <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p>
-                                        <p className="text-xs">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p>
+                                        {/* <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p> */}
+                                        <p className="text-lg">{selectedParticipant?.job || '직업 간략소개 없음'}</p>
+                                        {/* 공백 포함 15글자 */}
+                                        {/* <p className="text-lg">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p> */}
                                     </div>
                                 </div>
                             ) : selectedParticipant?.image ? (
@@ -104,7 +142,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                 />
                             ) : (
                                 <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
-                                    <p className="text-lg font-bold text-white">
+                                    <p className="text-2xl font-bold text-white">
                                         {selectedParticipant?.name || '이름 없음'}
                                     </p>
                                 </div>
@@ -112,16 +150,30 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                         </div>
 
                         {/* 이름이 한 번 더 표시 (career 보다 한 계층 높음) */}
+                        {/* 입금 완료 한 사람에게 뜨는 실명 프로필 */}
                         {!canNotViewNamesAndImages && (
                             <div className="text-xl font-bold mt-4">
                                 {selectedParticipant?.name || '이름 없음'} |{'  '}
                                 {selectedParticipant?.age || '나이대 정보 없음'} |{'  '}
-                                {selectedParticipant?.sex || '성별 정보 없음'}
+                                {selectedParticipant?.job || '직업 정보 없음'}
                             </div>
                         )}
 
+                        {canViewAllDetails && (
+                            <>
+                                <div className="text-xl font-bold mt-4">
+                                    {selectedParticipant?.name || '이름 없음'} |{' '}
+                                    {selectedParticipant?.age || '나이대 정보 없음'} |{' '}
+                                    {selectedParticipant?.job || '직업 정보 없음'}
+                                </div>
+                                <p className="text-gray-600">
+                                    전화번호: {selectedParticipant?.phoneNumber || '전화번호 없음'}
+                                </p>
+                            </>
+                        )}
+
                         {/* career */}
-                        <p className="text-gray-600">{selectedParticipant?.career || '경력 정보 없음'}</p>
+                        <p className="text-gray-500 font-bold">{selectedParticipant?.career || '경력 정보 없음'}</p>
 
                         {/* 질문 및 답변 */}
                         <div className="space-y-4 text-left mt-16">

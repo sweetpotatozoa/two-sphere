@@ -9,6 +9,7 @@ import { questions } from '../page';
 export default function EditProfilePage() {
     const router = useRouter();
     const [user, setUser] = useState(null);
+    const [job, setJob] = useState('');
     const [career, setCareer] = useState('');
     const [answers, setAnswers] = useState(Array(5).fill('')); // 기본값으로 빈 배열 설정
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function EditProfilePage() {
                 if (response.ok) {
                     const data = await response.json();
                     setUser(data.user);
+                    setJob(data.user.job || '');
                     setCareer(data.user.career || '');
                     setAnswers(Array.isArray(data.user.answers) ? data.user.answers : Array(5).fill('')); // answers 검증
                 } else {
@@ -61,7 +63,7 @@ export default function EditProfilePage() {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ career, answers }),
+                body: JSON.stringify({ job, career, answers }),
             });
             if (response.ok) {
                 router.push('/my-profile'); // 저장 성공 시 프로필 페이지로 이동
@@ -89,7 +91,7 @@ export default function EditProfilePage() {
                     >
                         <Image
                             src={user.image || '/profile-icon-black.svg'} // 조건부 렌더링
-                            alt="User Icon"
+                            alt="User Profile"
                             width={48}
                             height={48}
                             className="size-full rounded-full"
@@ -107,7 +109,36 @@ export default function EditProfilePage() {
                     value={career}
                     onChange={(e) => setCareer(e.target.value)}
                     className="w-[calc(100%-16px)] border border-gray-300 rounded-xl mx-2 px-4 py-2 outline-none"
-                    placeholder="한 줄 커리어를 입력하세요"
+                    placeholder="ex) 유튜브 '조코딩' 대표 / 전) LG CNS 앱 개발자"
+                />
+            </div>
+
+            {/* 직업 수정 */}
+            <div className="mb-4">
+                <label className="ml-3 block text-md font-bold mb-2">프로필 미리보기용 간략 커리어</label>
+                <input
+                    type="text"
+                    value={job}
+                    onChange={(e) => {
+                        const input = e.target.value;
+
+                        // 한글은 2자, 영어와 숫자는 1자로 계산
+                        const calculateLength = (str) => {
+                            let length = 0;
+                            for (let char of str) {
+                                // 한글 문자는 정규식으로 체크하여 길이 2로 계산
+                                length += /[가-힣]/.test(char) ? 2 : 1;
+                            }
+                            return length;
+                        };
+
+                        // 문자열 길이 계산
+                        if (calculateLength(input) <= 25) {
+                            setJob(input);
+                        }
+                    }}
+                    className="w-[calc(100%-16px)] border border-gray-300 rounded-xl mx-2 px-4 py-2 outline-none"
+                    placeholder="공백 포함 한글 기준 13자, 영어 기준 25자 이내"
                 />
             </div>
 
@@ -134,15 +165,17 @@ export default function EditProfilePage() {
 
             {/* 모달 */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
-                        <p>
-                            프로필 사진 등록을 원하시는 경우,
-                            <br /> 카카오톡 '투스피어'로 사진을 보내주세요.
-                        </p>
-                        <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
-                            닫기
-                        </button>
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-[500px] h-[calc(100vh-3rem)] z-40 flex">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
+                            <p>
+                                프로필 사진 등록을 원하시는 경우,
+                                <br /> 카카오톡 '투스피어'로 사진을 보내주세요.
+                            </p>
+                            <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
+                                닫기
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -104,20 +104,19 @@ export async function GET(req, { params }) {
             createdAt: 0,
             updatedAt: 0,
             isProfiled: 0,
-            phoneNumber: 0,
             password: 0,
             userName: 0,
         };
 
         // 모임이 종료되었거나 이름과 이미지를 볼 수 없는 경우 이름과 이미지를 제외
         if (sphere.status === 'closed' || canNotViewNamesAndImages) {
-            projection = { ...projection, name: 0, image: 0 };
+            projection.image = 0;
         }
 
         // 참여자 정보 가져오기
         const users = await db
             .collection('users')
-            .find({ _id: { $in: participantIds } }, { projection })
+            .find({ _id: { $in: participantIds } }, { projection, name: 1, job: 1, phoneNumber: 1 })
             .toArray();
 
         // 나이대를 계산하는 함수
@@ -144,8 +143,14 @@ export async function GET(req, { params }) {
 
             return {
                 ...participant,
-                ...userInfoWithoutId,
-                age: calculateAgeGroup(userInfoWithoutId.birthDate),
+                userId: participant.userId, // 유지
+                name: userInfo.name || '이름 없음',
+                job: userInfo.job || '직업 없음',
+                phoneNumber: userInfo.phoneNumber || '전화번호 없음',
+                age: calculateAgeGroup(userInfo.birthDate),
+                career: userInfo.career || '커리어 없음',
+                answers: userInfo.answers || [],
+                image: userInfo.image || null,
             };
         });
 
@@ -161,10 +166,11 @@ export async function GET(req, { params }) {
                 .replace('.', '일'); // 월과 일 추가
         };
 
-        // 한국 시간대로 오전/오후 ~시 형식 변환
-        const formatToHour = (date) => {
+        // 한국 시간대로 오전/오후 ~시 ~분 형식 변환
+        const formatToHourMinute = (date) => {
             return date.toLocaleTimeString('ko-KR', {
                 hour: 'numeric',
+                minute: 'numeric',
                 hour12: true,
                 timeZone: 'Asia/Seoul',
             });
@@ -174,7 +180,7 @@ export async function GET(req, { params }) {
             ...sphere,
             firstDate: formatToMonthDay(new Date(sphere.firstDate)),
             secondDate: formatToMonthDay(new Date(sphere.secondDate)),
-            time: formatToHour(new Date(sphere.firstDate)),
+            time: formatToHourMinute(new Date(sphere.firstDate)),
         };
 
         return NextResponse.json(formattedSphere, { status: 200 });

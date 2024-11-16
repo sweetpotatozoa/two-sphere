@@ -59,9 +59,10 @@ export async function GET(req) {
         };
 
         // 한국 시간대로 오전/오후 ~시 형식 변환
-        const formatToHour = (date) => {
+        const formatToHourMinute = (date) => {
             return date.toLocaleTimeString('ko-KR', {
                 hour: 'numeric',
+                minute: 'numeric',
                 hour12: true,
                 timeZone: 'Asia/Seoul',
             });
@@ -134,7 +135,11 @@ export async function GET(req) {
                     const koreanSecondDate = toKoreanDate(secondDate);
 
                     let remainingDays;
-                    if (koreanCurrentDate < koreanFirstDate) {
+                    if (koreanCurrentDate.getTime() === koreanFirstDate.getTime()) {
+                        remainingDays = 0;
+                    } else if (koreanCurrentDate.getTime() === koreanSecondDate.getTime()) {
+                        remainingDays = 0;
+                    } else if (koreanCurrentDate < koreanFirstDate) {
                         remainingDays = Math.ceil((koreanFirstDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
                     } else if (koreanCurrentDate < koreanSecondDate) {
                         remainingDays = Math.ceil((koreanSecondDate - koreanCurrentDate) / (1000 * 60 * 60 * 24));
@@ -148,7 +153,7 @@ export async function GET(req) {
                 sphere.remainingDays = remainingDays;
 
                 // 한국 시간대 기준으로 날짜와 시간 형식 설정
-                sphere.time = formatToHour(new Date(sphere.firstDate));
+                sphere.time = formatToHourMinute(new Date(sphere.firstDate));
                 sphere.firstDate = formatToMonthDay(new Date(sphere.firstDate));
                 sphere.secondDate = formatToMonthDay(new Date(sphere.secondDate));
 

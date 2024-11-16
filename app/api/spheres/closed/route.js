@@ -41,9 +41,10 @@ export async function GET() {
         };
 
         // "오전/오후 ~시" 형식으로 시간 변환 함수
-        const formatToHour = (date) => {
+        const formatToHourMinute = (date) => {
             return date.toLocaleTimeString('ko-KR', {
                 hour: 'numeric',
+                minute: 'numeric',
                 hour12: true,
                 timeZone: 'Asia/Seoul',
             });
@@ -90,7 +91,7 @@ export async function GET() {
                 placeName: sphere.place.name,
                 firstDate: formatToMonthDay(firstDate),
                 secondDate: formatToMonthDay(secondDate),
-                time: formatToHour(firstDate),
+                time: formatToHourMinute(firstDate),
                 remainingDays,
             };
         });

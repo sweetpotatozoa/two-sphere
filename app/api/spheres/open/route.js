@@ -47,9 +47,10 @@ export async function GET() {
             const formattedSecondDate = formatToMonthDay(secondDate);
 
             // "오전/오후 ~시" 형식으로 시간 변환 (항상 한국 시간대 적용)
-            const formatToHour = (date) => {
+            const formatToHourMinute = (date) => {
                 return date.toLocaleTimeString('ko-KR', {
                     hour: 'numeric',
+                    minute: 'numeric',
                     hour12: true,
                     timeZone: 'Asia/Seoul',
                 });
@@ -79,7 +80,7 @@ export async function GET() {
                 placeName: sphere.place.name,
                 firstDate: formattedFirstDate,
                 secondDate: formattedSecondDate,
-                time: formatToHour(firstDate),
+                time: formatToHourMinute(firstDate),
                 remainingDays,
             };
         });

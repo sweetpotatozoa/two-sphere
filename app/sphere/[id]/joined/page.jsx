@@ -56,6 +56,8 @@ const JoinedPage = ({ params }) => {
                 subtitle={sphere.subtitle} // MongoDB 데이터 사용
                 place={sphere.place} // MongoDB 데이터 사용
                 firstDate={sphere.firstDate} // MongoDB 데이터 사용
+                secondDate={sphere.secondDate} // MongoDB 데이터 사용
+                time={sphere.time}
             />
 
             <section className="pb-4 space-y-4">
