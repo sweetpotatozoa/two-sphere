@@ -121,18 +121,18 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                     <div className="bg-white rounded-xl max-w-[400px] w-full mx-4 p-6 space-y-4 text-center relative overflow-y-auto max-h-[80vh]">
                         {/* 검정색 원 */}
                         <div className="relative w-32 h-32 mx-auto">
-                            {/* 여기 아래서 모달 원 안의 텍스트 수정할 수 있음!!!!!! */}
+                            {/* 여기 아래서 모달 원 안의 텍스트 수정 가능 */}
                             {canNotViewNamesAndImages && user?.role !== 'admin' ? (
+                                // 이름과 이미지를 볼 수 없고 관리자가 아닌 경우
                                 <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
                                     <div className="text-center text-base font-bold text-white">
+                                        {/* 나이대와 직업만 표시 */}
                                         <p>{selectedParticipant?.age || '나이대 정보 없음'}</p>
-                                        {/* <p className="text-xs">{selectedParticipant?.sex || '성별 정보 없음'}</p> */}
                                         <p className="text-lg">{selectedParticipant?.job || '직업 간략소개 없음'}</p>
-                                        {/* 공백 포함 15글자 */}
-                                        {/* <p className="text-lg">{selectedParticipant?.jobStatus || '직업 정보 없음'}</p> */}
                                     </div>
                                 </div>
                             ) : selectedParticipant?.image ? (
+                                // 이름과 이미지를 볼 수 있거나 관리자인 경우, 이미지가 있을 경우 표시
                                 <Image
                                     src={selectedParticipant.image}
                                     alt="Participant Image"
@@ -141,6 +141,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                     className="size-full rounded-full mx-auto"
                                 />
                             ) : (
+                                // 이미지가 없을 경우 이름 표시
                                 <div className="w-32 h-32 rounded-full bg-black flex items-center justify-center mx-auto">
                                     <p className="text-2xl font-bold text-white">
                                         {selectedParticipant?.name || '이름 없음'}
