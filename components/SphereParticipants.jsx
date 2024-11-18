@@ -58,7 +58,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
         '다른 사람들에게 어떻게 기억되고 싶나요?',
     ];
 
-    const canViewAllDetails = user?.role === 'admin' || !canNotViewNamesAndImages;
+    const isAdmin = user?.role === 'admin';
 
     return (
         <section className="pb-12 space-y-4">
@@ -84,14 +84,13 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                             {/* 여기 아래서 페이지 원 안의 텍스트 수정할 수 있음!!!!!! */}
                             {participants[index] ? (
                                 canNotViewNamesAndImages && user?.role !== 'admin' ? (
+                                    // 이름과 이미지를 볼 수 없고 관리자가 아닌 경우
                                     <div className="text-center text-xs font-bold">
                                         <p>{participants[index]?.age || '나이대 정보 없음'}</p>
-                                        {/* <p className="text-xs">{participants[index]?.sex || '성별 정보 없음'}</p> */}
                                         <p className="text-sm">{participants[index]?.job || '직업 간략소개 없음'}</p>
-                                        {/* 공백 포함 15글자 */}
-                                        {/* <p className="text-sm">{participants[index]?.jobStatus || '직업 정보 없음'}</p> */}
                                     </div>
                                 ) : participants[index]?.image ? (
+                                    // 이름과 이미지를 볼 수 있거나 관리자인 경우, 이미지가 있을 경우 표시
                                     <Image
                                         src={participants[index].image}
                                         alt="Participant Image"
@@ -100,6 +99,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                                         className="size-full rounded-full"
                                     />
                                 ) : (
+                                    // 이미지가 없을 경우 이름 표시
                                     <p className="text-base font-bold text-white">
                                         {participants[index]?.name || '이름 없음'}
                                     </p>
@@ -150,8 +150,7 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                             )}
                         </div>
 
-                        {/* 이름이 한 번 더 표시 (career 보다 한 계층 높음) */}
-                        {/* 입금 완료 한 사람에게 뜨는 실명 프로필 */}
+                        {/* 입금 완료한 사람 또는 관리자에게 뜨는 실명 프로필 */}
                         {!canNotViewNamesAndImages && (
                             <div className="text-xl font-bold mt-4">
                                 {selectedParticipant?.name || '이름 없음'} |{'  '}
@@ -160,13 +159,9 @@ const SphereParticipants = ({ participants = [], canNotViewNamesAndImages }) => 
                             </div>
                         )}
 
-                        {canViewAllDetails && (
+                        {/* 관리자에게는 추가적으로 전화번호 표시 */}
+                        {isAdmin && (
                             <>
-                                <div className="text-xl font-bold mt-4">
-                                    {selectedParticipant?.name || '이름 없음'} |{' '}
-                                    {selectedParticipant?.age || '나이대 정보 없음'} |{' '}
-                                    {selectedParticipant?.job || '직업 정보 없음'}
-                                </div>
                                 <p className="text-gray-600">
                                     전화번호: {selectedParticipant?.phoneNumber || '전화번호 없음'}
                                 </p>
