@@ -107,7 +107,7 @@ export default function MyProfilePage() {
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-xl max-w-xs w-full space-y-4 text-center">
                             <p>
-                                프로필 사진 등록을 원하시는 경우,
+                                프로필 사진 등록/수정을 원하시는 경우,
                                 <br /> 카카오톡 '투스피어'로 사진을 보내주세요.
                             </p>
                             <button onClick={closeModal} className="bg-black text-white px-4 py-2 rounded-xl">
