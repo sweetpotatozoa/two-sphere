@@ -49,7 +49,7 @@ const JoinPage = ({ params }) => {
     };
 
     if (!sphere) {
-        return <p className="text-center">스피어 데이터를 불러오는 중입니다...</p>;
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
     }
 
     return (

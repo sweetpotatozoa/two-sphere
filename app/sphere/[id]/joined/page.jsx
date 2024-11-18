@@ -37,7 +37,7 @@ const JoinedPage = ({ params }) => {
     }
 
     if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
     }
 
     return (

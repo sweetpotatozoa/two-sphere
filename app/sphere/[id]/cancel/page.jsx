@@ -70,7 +70,7 @@ const CancelComplete = ({ params }) => {
     }, [id]);
 
     if (isLoading) {
-        return <div className="text-center py-10">스피어 상태를 불러오는 중입니다...</div>;
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
     }
 
     if (error) {
@@ -78,7 +78,7 @@ const CancelComplete = ({ params }) => {
     }
 
     if (!sphereStatus) {
-        return <div className="text-center py-10 text-gray-500">스피어 상태를 확인할 수 없습니다.</div>;
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
     }
 
     const handleReasonSelect = (reason) => {
