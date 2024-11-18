@@ -8,11 +8,14 @@ export async function GET(req, { params }) {
         const { id } = params;
         const userId = req.headers.get('x-user-id');
 
-        // 사용자 role 가져오기
-        const user = userId ? await db.collection('users').findOne({ _id: new ObjectId(userId) }) : null;
-
         const client = await clientPromise;
         const db = client.db();
+
+        // 사용자 role 가져오기 (userId 유효성 검사 추가)
+        let user = null;
+        if (userId && ObjectId.isValid(userId)) {
+            user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+        }
 
         // sphere 정보 가져오기
         const sphere = await db.collection('spheres').findOne(
