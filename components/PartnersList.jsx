@@ -63,13 +63,13 @@ const PartnersList = () => {
             name: '텐바',
             region: '성수',
             image: 'https://drive.google.com/uc?export=view&id=1ZG4hXALS92pzmgGxMjI10ZygIcBfw-4r',
-            link: 'https://naver.me/xf5xo9N5',
+            link: 'https://naver.me/IGmKlZde',
         },
         {
             name: '멜트',
             region: '용산',
             image: 'https://drive.google.com/uc?export=view&id=1G8nFCYEWPRKwzqgLHHJUV3sKvgsW7nP4',
-            link: 'https://naver.me/IGmKlZde',
+            link: 'https://naver.me/FoRPvGbp',
         },
         {
             name: '시즈널리티',
