@@ -32,7 +32,7 @@ const SphereDetails = ({ description, place, subImage1, subImage2, placeStory })
                     className="w-full object-cover rounded-lg"
                 />
             ) : (
-                <p className="text-center text-gray-600">이미지 1이 없습니다.</p>
+                <p className="text-center text-gray-600">이미지가 없습니다.</p>
             )}
             {subImage2 ? (
                 <Image
@@ -43,7 +43,7 @@ const SphereDetails = ({ description, place, subImage1, subImage2, placeStory })
                     className="w-full object-cover rounded-lg"
                 />
             ) : (
-                <p className="text-center text-gray-600">이미지 2가 없습니다.</p>
+                <p className="text-center text-gray-600">이미지가 없습니다.</p>
             )}
         </div>
 
