@@ -82,7 +82,7 @@ export default function MySpheresPage() {
                     <span className="flex items-center space-x-1">
                         <Image src="/calendar-icon.svg" alt="Calendar Icon" width={12} height={12} />
                         <span>
-                            {sphere.firstDate} / {sphere.secondDate}
+                            {sphere.firstDate} {sphere.time}
                         </span>
                     </span>
                 </div>

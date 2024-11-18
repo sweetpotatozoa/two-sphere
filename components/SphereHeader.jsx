@@ -16,7 +16,7 @@ const SphereHeader = ({ title, subtitle, place, firstDate, secondDate, time }) =
             <div className="flex items-center justify-center space-x-2">
                 <Image src={calendarIcon} alt="Calendar Icon" width={16} height={16} />
                 <span>
-                    {firstDate} / {secondDate} {time}
+                    {firstDate} {time}
                 </span>
             </div>
         </div>
