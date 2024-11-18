@@ -49,7 +49,7 @@ const SphereDetail = ({ params }) => {
     }
 
     if (!sphere) {
-        return <p>스피어 정보를 찾을 수 없습니다.</p>;
+        return <div className="text-center py-10">스피어 정보를 불러오는 중입니다...</div>;
     }
 
     // 참여하기를 누르면 참가자 수 확인 후 페이지 이동 또는 모달 표시
