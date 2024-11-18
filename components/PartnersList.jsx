@@ -51,7 +51,7 @@ const PartnersList = () => {
     ];
 
     // 리스트 반복으로 무한 스크롤 구현
-    const repeatedList = [...partnersList, ...partnersList, ...partnersList];
+    const repeatedList = Array.from({ length: 50 }, () => partnersList).flat();
     const sliderRef = useRef(null);
     const controls = useAnimation();
 
