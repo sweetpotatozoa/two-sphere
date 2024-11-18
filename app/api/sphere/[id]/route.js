@@ -8,6 +8,9 @@ export async function GET(req, { params }) {
         const { id } = params;
         const userId = req.headers.get('x-user-id');
 
+        // 사용자 role 가져오기
+        const user = userId ? await db.collection('users').findOne({ _id: new ObjectId(userId) }) : null;
+
         const client = await clientPromise;
         const db = client.db();
 
@@ -44,12 +47,14 @@ export async function GET(req, { params }) {
             : null;
 
         // 완료된 스피어거나, 요청 유저의 참여 정보가 없거나 결제가 완료되지 않았거나 취소한 경우 이름과 이미지를 볼 수 없음
+        // 단, 사용자가 admin일 경우 제외
         const canNotViewNamesAndImages =
-            !userId ||
-            !userParticipant ||
-            userParticipant.payment === 'unpaid' ||
-            userParticipant.cancelInfo?.isCancel ||
-            sphere.status === 'closed';
+            !(user?.role === 'admin') && // 관리자는 항상 이름과 이미지를 볼 수 있음
+            (!userId ||
+                !userParticipant ||
+                userParticipant.payment === 'unpaid' ||
+                userParticipant.cancelInfo?.isCancel ||
+                sphere.status === 'closed');
 
         // 이름과 이미지를 볼 수 있는지 여부 넣어주기
         sphere.canNotViewNamesAndImages = canNotViewNamesAndImages;
