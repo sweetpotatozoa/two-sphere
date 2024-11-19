@@ -155,7 +155,7 @@ export default function MySpheresPage() {
                         <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 w-[90%] max-w-[400px]">
                             <h2 className="text-xl font-bold text-center">입금 정보</h2>
                             <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-xl text-center">
-                                참여비: 300,000원 <br />
+                                참여비: 20,000원 <br />
                                 계좌 : 토스 112119114111 <br />
                             </p>
 

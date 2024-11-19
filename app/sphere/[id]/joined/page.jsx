@@ -63,7 +63,7 @@ const JoinedPage = ({ params }) => {
             <section className="pb-4 space-y-4">
                 <h2 className="text-xl font-bold">참여 신청이 완료되었습니다!</h2>
                 <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-xl">
-                    참여비: 300,000원 <br />
+                    참여비 : 20,000원 <br />
                     계좌 : 토스 112119114111 <br />
                 </p>
                 <p className="text-sm text-gray-600">
