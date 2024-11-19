@@ -64,7 +64,7 @@ const JoinedPage = ({ params }) => {
                 <h2 className="text-xl font-bold">참여 신청이 완료되었습니다!</h2>
                 <p className="text-sm mx-auto max-w-[300px] py-4 space-y-2 border border-black rounded-xl">
                     참여비 : 20,000원 <br />
-                    계좌 : 토스 112119114111 <br />
+                    계좌 : 카카오뱅크 7942-08-61471 <br />
                 </p>
                 <p className="text-sm text-gray-600">
                     위 계좌로 참여비 입금 시 참여 확정되며
